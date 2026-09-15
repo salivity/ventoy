@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Ventoy and How Does It Work? - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source tool designed to create bootable USB drives by allowing users to boot directly from ISO, WIM, IMG, VHD(x), and EFI files without constantly formatting the drive. Unlike traditional bootable media creators that unpack and write di">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/what-is-ventoy-and-how-does-it-work">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Ventoy and How Does It Work? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/what-is-ventoy-and-how-does-it-work" />
+    <meta property="og:image:url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source tool designed to create bootable USB drives by allowing users to boot directly from ISO, WIM, IMG, VHD(x), and EFI files without constantly formatting the drive. Unlike traditional bootable media creators that unpack and write di" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <article><h1 id="what-is-ventoy-and-how-does-it-work">What Is Ventoy and How Does
+It Work?</h1>
+<p>Ventoy is an open-source tool designed to create bootable USB drives
+by allowing users to boot directly from ISO, WIM, IMG, VHD(x), and EFI
+files without constantly formatting the drive. Unlike traditional
+bootable media creators that unpack and write disk image contents
+directly to USB partitions, Ventoy installs a specialized bootloader
+onto a dedicated partition while leaving the rest of the storage free
+for storing raw image files. Users can copy multiple operating system
+images onto the drive, and Ventoy automatically detects them at startup,
+presenting a clean graphical menu to select and launch any system on
+demand.</p>
+<h2 id="the-traditional-bootable-usb-bottleneck">The Traditional
+Bootable USB Bottleneck</h2>
+<p>Standard boot creation utilities, such as Rufus or balenaEtcher,
+typically require a full wipe and reformat of the flash drive every time
+a new operating system needs testing or installation. These tools
+extract the internal file structure of a single ISO image directly onto
+the drive's file system and write boot records specific to that
+operating system.</p>
+<p>This traditional workflow introduces distinct friction points:</p>
+<ul>
+<li><strong>Single-image limitation:</strong> Most utilities assign the
+entire USB drive to a single operating system image, wasting storage on
+high-capacity thumb drives.</li>
+<li><strong>Repetitive drive wear:</strong> Constantly re-formatting
+flash storage to swap between Linux distributions, Windows installers,
+or recovery environments accelerates drive degradation.</li>
+<li><strong>Storage lock-in:</strong> Once formatted for booting,
+standard drives are awkward to use for general file storage alongside
+the installer files.</li>
+</ul>
+<h2 id="how-ventoy-works-under-the-hood">How Ventoy Works Under the
+Hood</h2>
+<p>Ventoy solves these constraints through an architecture that
+decouples the bootloader mechanism from the disk images themselves.</p>
+<p>When you initialize a drive with Ventoy, it divides the storage into
+two distinct partitions:</p>
+<ol type="1">
+<li><strong>The VTOYEFI Partition:</strong> A small, protected partition
+formatted in FAT. This partition houses the core Ventoy software,
+including GRUB bootloaders, EFI binaries, and hardware abstraction
+drivers required to initiate boot sequences on both legacy BIOS and
+modern UEFI systems.</li>
+<li><strong>The Data Partition:</strong> The remaining drive space,
+formatted by default as exFAT (though NTFS, FAT32, and ext4 are
+supported). This space remains accessible as standard USB storage across
+Windows, macOS, and Linux.</li>
+</ol>
+<p>During the computer's boot sequence, the machine executes the Ventoy
+bootloader stored on the VTOYEFI partition. Ventoy's software scans the
+data partition for recognized disk image formats, dynamically constructs
+an interactive menu listing every file found, and waits for your
+selection.</p>
+<p>Once you pick an operating system, Ventoy hooks into the boot process
+via custom runtime memory patches. It mounts the selected ISO image into
+system memory virtually, presenting it to the launching operating system
+as if it were an actual physical optical disc or dedicated drive. The
+operating system kernel boots normally without realizing it is executing
+from an unextracted image file.</p>
+<h2 id="key-capabilities-and-features">Key Capabilities and
+Features</h2>
+<p>Beyond running multiple operating systems from a single USB drive,
+Ventoy includes several practical management features:</p>
+<ul>
+<li><strong>Universal architecture support:</strong> Native
+compatibility with x86 Legacy BIOS, IA32 UEFI, x86_64 UEFI, ARM64 UEFI,
+and MIPS64EL UEFI platforms.</li>
+<li><strong>Secure Boot support:</strong> Integrated keys enable
+compatibility with UEFI Secure Boot configurations across diverse
+motherboard vendors.</li>
+<li><strong>Persistence plugins:</strong> Linux live environments can
+retain user data, installed packages, and system settings across reboots
+by associating the ISO with a persistence image file.</li>
+<li><strong>Automated installation scripts:</strong> Support for
+automated kickstart files, Windows <code>unattend.xml</code> answer
+files, and autoinstall configurations directly injected during
+boot.</li>
+<li><strong>Drag-and-drop management:</strong> Updating an OS installer
+requires only copying the new ISO file into the data folder and deleting
+the outdated file.</li>
+</ul></article>
+        <div id="comments-container"></div>
+
+        <script>
+            const utterancesScript = document.createElement('script');
+            
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Support Booting on Legacy BIOS? - ventoy</title>
+    <meta name="description" content="Ventoy fully supports booting on systems that use legacy BIOS firmware in addition to modern UEFI-based architectures. Because Ventoy automatically configures the boot medium to accommodate both firmware environments, users can boot multiple operating sy">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-support-booting-on-legacy-bios">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Support Booting on Legacy BIOS? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-support-booting-on-legacy-bios" />
+    <meta property="og:image:url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports booting on systems that use legacy BIOS firmware in addition to modern UEFI-based architectures. Because Ventoy automatically configures the boot medium to accommodate both firmware environments, users can boot multiple operating sy" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <article><h1 id="does-ventoy-support-booting-on-legacy-bios">Does Ventoy Support
+Booting on Legacy BIOS?</h1>
+<p>Ventoy fully supports booting on systems that use legacy BIOS
+firmware in addition to modern UEFI-based architectures. Because Ventoy
+automatically configures the boot medium to accommodate both firmware
+environments, users can boot multiple operating systems from a single
+USB drive regardless of whether a machine relies on an older BIOS or
+modern UEFI settings. This guide explains how Ventoy achieves legacy
+BIOS compatibility, the hardware configurations to verify, and essential
+considerations when working with aging hardware.</p>
+<h3 id="how-ventoy-implements-legacy-bios-support">How Ventoy Implements
+Legacy BIOS Support</h3>
+<p>Ventoy creates a dual-partition structure during installation. One
+partition stores the user's bootable disk images, such as ISO, WIM, IMG,
+or VHD files, while a second hidden partition contains the bootloader
+files necessary for both UEFI and legacy BIOS environments.</p>
+<p>When plugged into an older motherboard, the legacy BIOS reads the
+Master Boot Record (MBR) on the drive. Ventoy's bootloader executes
+seamlessly within the standard 16-bit real mode required by legacy
+hardware before transitioning into protected mode to present the
+graphical boot menu.</p>
+<h3 id="partition-style-mbr-vs-gpt">Partition Style: MBR vs. GPT</h3>
+<p>When installing Ventoy to a USB drive, the installer allows users to
+select between MBR and GPT partition tables:</p>
+<ul>
+<li><strong>MBR (Master Boot Record):</strong> Recommended for maximum
+compatibility if older legacy BIOS machines are the primary target.
+While MBR works universally across legacy systems, it also boots on
+modern UEFI systems when legacy or CSM mode is enabled.</li>
+<li><strong>GPT (GUID Partition Table):</strong> Optimized for modern
+UEFI systems and large drives above 2 terabytes. Some older BIOS
+implementations fail to boot from GPT-partitioned drives entirely.</li>
+</ul>
+<p>Selecting MBR remains the safest choice when broad legacy BIOS
+compatibility is a priority.</p>
+<h3 id="firmware-configuration-on-legacy-hardware">Firmware
+Configuration on Legacy Hardware</h3>
+<p>Booting Ventoy on an older computer rarely requires specialized
+configuration, but a few BIOS settings should be confirmed:</p>
+<ul>
+<li><strong>Boot Order:</strong> Ensure USB drives are prioritized above
+the internal hard drives in the BIOS boot order.</li>
+<li><strong>USB Emulation Mode:</strong> If the motherboard offers
+legacy USB emulation settings, set them to auto or hard disk emulation
+rather than floppy or CD-ROM emulation.</li>
+<li><strong>CSM Settings:</strong> On hybrid motherboards running early
+UEFI firmware, the Compatibility Support Module (CSM) must be enabled to
+activate the legacy BIOS subsystem.</li>
+</ul>
+<h3 id="known-limitations-with-older-hardware">Known Limitations with
+Older Hardware</h3>
+<p>While Ventoy supports legacy BIOS natively, certain hardware
+constraints on older systems can cause boot failures:</p>
+<ul>
+<li><strong>BIOS Access Range Limits:</strong> Certain vintage BIOS
+implementations have limitations (such as the 137 GB or 8 GB boundary)
+regarding how far down the physical drive sectors they can read. If a
+target ISO image is stored physically past the sector limit that the
+motherboard's BIOS can address, it will fail to load.</li>
+<li><strong>Low System Memory:</strong> Ventoy loads a compact runtime
+environment, but older machines with very limited RAM (such as systems
+with under 512 MB of memory) might struggle to execute large modern
+payloads or live distributions.</li>
+<li><strong>Slow USB Transfer Rates:</strong> Machines limited to USB
+1.1 or USB 2.0 ports will load the initial boot menu quickly, but
+loading large operating system images into memory will take
+significantly longer than on modern interfaces.</li>
+</ul></article>
+        <div id="comments-container"></div>
+
+        <script>
+            const utterancesScript = document.createElement('script');
+            
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
