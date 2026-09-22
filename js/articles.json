@@ -1,0 +1,62 @@
+[
+  [
+    10,
+    "How Does Ventoy Handle UEFI Boot Compared to Legacy BIOS?",
+    "Ventoy provides a unified multiboot solution by formatting the USB drive into two distinct partitions that accommodate both legacy BIOS and modern UEFI architectures. When a system powers on, the computer's firmware dictates the execution path: legacy BI",
+    false
+  ],
+  [
+    9,
+    "Does Ventoy Support Booting on Legacy BIOS?",
+    "Ventoy fully supports booting on systems that use legacy BIOS firmware in addition to modern UEFI-based architectures. Because Ventoy automatically configures the boot medium to accommodate both firmware environments, users can boot multiple operating sy",
+    false
+  ],
+  [
+    8,
+    "What Are the Minimum Hardware Requirements for Ventoy?",
+    "Ventoy is an open-source tool designed to create bootable USB media without repeated reformatting, requiring only a fraction of storage space to install its core boot architecture. While the software itself consumes roughly 32 MB of disk space for its EF",
+    false
+  ],
+  [
+    7,
+    "How Does Ventoy Boot ISO Files Without Reformatting?",
+    "Ventoy eliminates the need to repeatedly reformat USB drives by separating the boot environment from the storage space and loading ISO files directly from a standard filesystem. Instead of extracting or overwriting the drive's contents each time an opera",
+    false
+  ],
+  [
+    6,
+    "What OS Officially Runs the Ventoy Installer?",
+    "The Ventoy installation tool officially supports Microsoft Windows and Linux as host operating systems for writing the bootable environment to target USB or disk storage. While the resulting Ventoy drive can subsequently boot hundreds of operating system",
+    false
+  ],
+  [
+    5,
+    "What License Is Ventoy Released Under?",
+    "Ventoy is an open-source bootable USB creation tool primarily released under the GNU General Public License version 3.0 or later (GPLv3+). This article explains the licensing framework governing Ventoy's codebase, highlights the nuances regarding bundled",
+    false
+  ],
+  [
+    4,
+    "How Does Ventoy Differ from Rufus for Bootable USBs?",
+    "Ventoy fundamentally rethinks bootable USB creation by acting as a bootloader rather than a drive writer. Where traditional utilities like Rufus extract and overwrite the entire flash drive for a single operating system image, Ventoy partitions the USB o",
+    false
+  ],
+  [
+    3,
+    "What Programming Languages Is Ventoy Written In?",
+    "Ventoy is a multi-boot USB creator whose codebase relies primarily on low-level systems programming to interface directly with computer firmware. While its core boot mechanics and image hooking systems are written almost entirely in C and Assembly, the b",
+    false
+  ],
+  [
+    2,
+    "Who Created and Developed Ventoy?",
+    "Ventoy is an open-source multiboot USB utility created and primarily maintained by a software developer known online as longpanda (real name Hailong Sun). This article covers the origins of Ventoy, the identity of its creator, the breakthrough features l",
+    false
+  ],
+  [
+    1,
+    "What Is Ventoy and How Does It Work?",
+    "Ventoy is an open-source tool designed to create bootable USB drives by allowing users to boot directly from ISO, WIM, IMG, VHD(x), and EFI files without constantly formatting the drive. Unlike traditional bootable media creators that unpack and write di",
+    false
+  ]
+]
