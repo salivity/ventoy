@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booting Embedded and Industrial Linux with Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy can boot custom industrial and automotive Linux embedded images, provided that the image format and the target system's boot architecture align with standard PC or UEFI boot standards. While Ventoy excels at booting standard ISO and raw disk image">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/booting-embedded-and-industrial-linux-with-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Booting Embedded and Industrial Linux with Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/booting-embedded-and-industrial-linux-with-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can boot custom industrial and automotive Linux embedded images, provided that the image format and the target system's boot architecture align with standard PC or UEFI boot standards. While Ventoy excels at booting standard ISO and raw disk image" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="booting-embedded-and-industrial-linux-with-ventoy">Booting
+Embedded and Industrial Linux with Ventoy</h1>
+<p>Ventoy can boot custom industrial and automotive Linux embedded
+images, provided that the image format and the target system's boot
+architecture align with standard PC or UEFI boot standards. While Ventoy
+excels at booting standard ISO and raw disk images on x86-based
+industrial PCs and development benches, specialized automotive or
+embedded environments running non-UEFI firmware or proprietary ARM
+System-on-Chip (SoC) architectures require specific adaptations or may
+not be supported at all.</p>
+<h2 id="architecture-and-firmware-requirements">Architecture and
+Firmware Requirements</h2>
+<p>Ventoy acts as a bootloader manager operating primarily in x86 BIOS,
+x86_64 UEFI, and standard ARM64 UEFI environments. Compatibility hinges
+on two main elements:</p>
+<ul>
+<li><strong>Processor Architecture:</strong> If the target hardware is
+an x86 or standard ARM64 board, Ventoy can initialize the boot
+environment. However, hardware relying on 32-bit ARM, RISC-V, or MIPS
+processors is generally incompatible.</li>
+<li><strong>System Firmware:</strong> Ventoy requires standard BIOS or
+UEFI firmware to launch. Most automotive and industrial embedded
+platforms utilize U-Boot, coreboot without standard payload support, or
+proprietary boot ROMs instead of a standardized UEFI implementation.
+Unless the hardware provides a standard UEFI abstraction layer (such as
+U-Boot with UEFI support enabled), Ventoy cannot execute.</li>
+</ul>
+<h2 id="supported-image-formats-for-embedded-builds">Supported Image
+Formats for Embedded Builds</h2>
+<p>Ventoy does not interact with the inner application layer of your
+custom Linux distribution; it simply exposes image files to the system's
+firmware:</p>
+<ul>
+<li><strong>Raw Disk Images (.img, .raw, .vhd):</strong> Custom embedded
+builds generated by tools like Yocto Project, Buildroot, or Automotive
+Grade Linux (AGL) are frequently output as full disk images with
+partition tables (GPT/MBR). Ventoy can boot these images using its raw
+image extension or standard direct-boot mechanisms if they contain a
+valid EFI system partition or standard master boot record.</li>
+<li><strong>Hybrid ISOs (.iso):</strong> If your embedded build system
+packages the operating system as an ISO9660 hybrid image (common for
+live maintenance, installer, and field diagnostic media), Ventoy
+provides native support out of the box.</li>
+</ul>
+<h2 id="embedded-and-automotive-specific-challenges">Embedded and
+Automotive-Specific Challenges</h2>
+<p>Deploying specialized embedded systems via Ventoy introduces several
+practical hurdles:</p>
+<h3 id="1-device-tree-blobs-dtbs">1. Device Tree Blobs (DTBs)</h3>
+<p>Embedded hardware frequently requires a specific Device Tree to
+configure peripheral buses (CAN, I2C, SPI, GPIO) and onboard hardware.
+Standard Ventoy boot routines do not natively inject custom
+<code>.dtb</code> files into the kernel boot sequence. If the kernel
+depends on the bootloader to load the device tree, the boot process will
+halt unless packaged into an initramfs or UEFI-compliant payload.</p>
+<h3 id="2-root-filesystem-mounting">2. Root Filesystem Mounting</h3>
+<p>During a standard boot, embedded Linux mounts the root filesystem
+(<code>rootfs</code>) from internal eMMC, NVMe, or flash partitions
+defined in the kernel command line (e.g.,
+<code>root=/dev/mmcblk0p2</code>). When running through Ventoy, the root
+filesystem resides inside a virtual container on a USB drive. If the
+custom initramfs does not include the necessary logic to find,
+loop-mount, and switch root to the container image on the Ventoy drive,
+the kernel will panic with a mount error.</p>
+<h3 id="3-read-only-and-ephemeral-storage">3. Read-Only and Ephemeral
+Storage</h3>
+<p>Many industrial designs configure the root filesystem as read-only
+(SquashFS) with an overlay (OverlayFS) for temporary writes. To maintain
+persistent configuration or logging during field testing, Ventoy's
+persistence plugin must be manually configured to match the partition
+layout of the custom image.</p>
+<h2 id="summary">Summary</h2>
+<p>Ventoy supports custom industrial and automotive Linux images when
+deployed on x86-based industrial hardware or standard UEFI-compliant
+ARM64 reference boards, provided the image is packaged as a standard
+bootable ISO or raw disk image. It is not suitable for bare-metal SoC
+targets that require direct NAND flashing, proprietary pre-loaders, or
+non-UEFI U-Boot routines.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

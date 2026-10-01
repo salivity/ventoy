@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Legacy BIOS Boot Ventoy ISOs Past 2TB? - ventoy</title>
+    <meta name="description" content="Booting an ISO located beyond the 2TB boundary on a large Ventoy drive is generally not possible on a machine running an outdated legacy BIOS. While Ventoy itself supports large capacities and modern partition styles, the fundamental disk-addressing limi">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-legacy-bios-boot-ventoy-is-os-past-2-tb">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Legacy BIOS Boot Ventoy ISOs Past 2TB? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-legacy-bios-boot-ventoy-is-os-past-2-tb" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Booting an ISO located beyond the 2TB boundary on a large Ventoy drive is generally not possible on a machine running an outdated legacy BIOS. While Ventoy itself supports large capacities and modern partition styles, the fundamental disk-addressing limi" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-legacy-bios-boot-ventoy-isos-past-2tb">Can Legacy BIOS Boot
+Ventoy ISOs Past 2TB?</h1>
+<p>Booting an ISO located beyond the 2TB boundary on a large Ventoy
+drive is generally not possible on a machine running an outdated legacy
+BIOS. While Ventoy itself supports large capacities and modern partition
+styles, the fundamental disk-addressing limitations and firmware bugs
+present in older BIOS architectures prevent the system from reading data
+stored past the 2.2TB limit.</p>
+<h3 id="the-2tb-barrier-in-legacy-bios">The 2TB Barrier in Legacy
+BIOS</h3>
+<p>The 2TB limitation stems from the standard Master Boot Record (MBR)
+partition scheme and traditional BIOS interrupt calls. Standard 32-bit
+Logical Block Addressing (LBA) with 512-byte sectors maxes out at
+exactly 2,199,023,255,552 bytes (approximately 2.2TB).</p>
+<p>To access sectors beyond this threshold, the system must utilize
+64-bit LBA addressing via extended BIOS disk services (INT 13h
+Extensions, specifically Function 42h). While the INT 13h extension
+standard technically supports 64-bit addressing, outdated BIOS
+implementations routinely fail to handle it properly. Many older
+motherboards contain firmware that silently truncates addresses to 32
+bits, causing an address wrap-around error where the machine attempts to
+read from the beginning of the drive instead of past the 2TB mark.</p>
+<h3 id="how-ventoy-interacts-with-the-drive">How Ventoy Interacts with
+the Drive</h3>
+<p>Ventoy installs into two partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (VTOY):</strong> The large data partition
+formatted as exFAT, NTFS, or ext4, where you store ISO files.</li>
+<li><strong>Partition 2 (VTOYBOOT):</strong> A tiny, protected boot
+partition containing the core bootloader code.</li>
+</ol>
+<p>When you boot a Ventoy drive in legacy BIOS mode, the BIOS executes
+the boot code from the start of the disk. Ventoy successfully launches
+its initial menu because its boot files are located within the
+reachable, low-LBA sectors. However, the failure occurs at the moment
+you select an image: Ventoy relies on BIOS calls to map and load the ISO
+into memory. If the ISO is physically located at a sector beyond the 2TB
+boundary, an outdated BIOS will fail to read the file, resulting in disk
+read errors, black screens, or bootloader crashes.</p>
+<h3 id="partition-table-constraints">Partition Table Constraints</h3>
+<p>Ventoy can format large drives using either MBR or GPT:</p>
+<ul>
+<li><strong>MBR Disks:</strong> An MBR partition table cannot physically
+define or address storage past 2TB. Any capacity past this point is
+inaccessible regardless of BIOS quality.</li>
+<li><strong>GPT Disks:</strong> While GPT supports drives much larger
+than 2TB, legacy BIOS firmware does not natively understand GPT. Ventoy
+uses a hybrid approach to make GPT bootable on BIOS systems, but this
+still relies on the BIOS INT 13h routines to read individual sectors. If
+the BIOS firmware cannot handle 64-bit sector math, it cannot retrieve
+the ISO.</li>
+</ul>
+<h3 id="workarounds-for-outdated-systems">Workarounds for Outdated
+Systems</h3>
+<p>To ensure compatibility with older hardware when using a
+high-capacity drive:</p>
+<ul>
+<li><strong>Keep Critical ISOs Under 2TB:</strong> Store the operating
+systems you intend to boot on legacy hardware within the first 2TB of
+the data partition.</li>
+<li><strong>Partition Splitting:</strong> Create an initial partition
+strictly under the 2TB mark dedicated to legacy BIOS systems, leaving
+the remainder of the drive for storage or UEFI-only boots.</li>
+<li><strong>Switch to UEFI:</strong> If the computer supports UEFI mode
+(even early UEFI implementations), enable it. UEFI natively handles GPT
+and 64-bit LBA addressing, allowing it to boot ISOs placed anywhere on
+the drive.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

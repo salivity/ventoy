@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Remove Ventoy MOK Keys in Linux - ventoy</title>
+    <meta name="description" content="When you boot Ventoy on a host machine with Secure Boot enabled, you are prompted to enroll Ventoy’s Machine Owner Key (MOK) to authenticate its bootloader. Once testing is complete, leaving this third-party certificate in your system's NVRAM poses an">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-remove-ventoy-mok-keys-in-linux">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Remove Ventoy MOK Keys in Linux - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-remove-ventoy-mok-keys-in-linux" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When you boot Ventoy on a host machine with Secure Boot enabled, you are prompted to enroll Ventoy’s Machine Owner Key (MOK) to authenticate its bootloader. Once testing is complete, leaving this third-party certificate in your system's NVRAM poses an" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-remove-ventoy-mok-keys-in-linux">How to Remove Ventoy MOK
+Keys in Linux</h1>
+<p>When you boot Ventoy on a host machine with Secure Boot enabled, you
+are prompted to enroll Ventoy’s Machine Owner Key (MOK) to authenticate
+its bootloader. Once testing is complete, leaving this third-party
+certificate in your system's NVRAM poses an unnecessary security risk.
+This guide provides the exact steps to locate, target, and delete the
+Ventoy MOK certificate from your Linux system using the
+<code>mokutil</code> utility and MokManager.</p>
+<h3 id="step-1-identify-the-ventoy-certificate">Step 1: Identify the
+Ventoy Certificate</h3>
+<p>Before deleting anything, verify which keys are currently enrolled in
+your system’s MOK list. Open a terminal and run:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mokutil</span> <span class="at">--list-enrolled</span></span></code></pre></div>
+<p>Scroll through the output to find the entry associated with Ventoy.
+The certificate details will typically display <code>Ventoy</code> or
+<code>Ventoy OS</code> under the <code>Issuer</code> or
+<code>Subject</code> lines.</p>
+<h3 id="step-2-export-the-enrolled-keys">Step 2: Export the Enrolled
+Keys</h3>
+<p>To safely delete only the Ventoy key without disrupting other
+enrolled keys (such as proprietary drivers), export all active keys to
+your current directory:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mokutil</span> <span class="at">--export</span></span></code></pre></div>
+<p>This command extracts the enrolled certificates as DER-encoded files
+named <code>MOK-0001.der</code>, <code>MOK-0002.der</code>, and so
+forth.</p>
+<p>Find which specific file belongs to Ventoy by inspecting each
+exported key with OpenSSL:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cert <span class="kw">in</span> MOK-<span class="pp">*</span>.der<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;=== </span><span class="va">$cert</span><span class="st"> ===&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">openssl</span> x509 <span class="at">-in</span> <span class="st">&quot;</span><span class="va">$cert</span><span class="st">&quot;</span> <span class="at">-inform</span> DER <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<p>Identify the filename (e.g., <code>MOK-0002.der</code>) corresponding
+to the Ventoy certificate.</p>
+<h3 id="step-3-issue-the-deletion-request">Step 3: Issue the Deletion
+Request</h3>
+<p>Once you have identified the Ventoy certificate file, mark it for
+removal using <code>mokutil</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mokutil <span class="at">--delete</span> MOK-XXXX.der</span></code></pre></div>
+<p><em>(Replace <code>MOK-XXXX.der</code> with the actual file name
+associated with Ventoy.)</em></p>
+<p>The terminal will prompt you to enter and confirm a temporary
+password. Choose a simple password that you can remember during the next
+system reboot.</p>
+<p><em>(Alternative: If you do not have other custom keys and want to
+purge all custom MOKs entirely, you can run
+<code>sudo mokutil --reset</code> instead.)</em></p>
+<h3 id="step-4-confirm-removal-in-mokmanager">Step 4: Confirm Removal in
+MokManager</h3>
+<p>The key is not fully removed until authorized within the UEFI
+environment:</p>
+<ol type="1">
+<li>Restart your computer:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span></code></pre></div></li>
+<li>During boot, before the OS loads, the blue
+<strong>MokManager</strong> screen ("Perform MOK management") will
+appear.</li>
+<li>Press any key to enter the configuration menu.</li>
+<li>Select <strong>Enroll MOK</strong> or <strong>Delete MOK</strong>
+(depending on whether you initiated a single deletion or a reset).</li>
+<li>Select <strong>View key</strong> to verify it is the Ventoy
+certificate, then choose <strong>Continue</strong>.</li>
+<li>When prompted, select <strong>Yes</strong> to confirm the deletion
+and enter the password you created in Step 3.</li>
+<li>Select <strong>Reboot</strong> to boot back into your operating
+system.</li>
+</ol>
+<h3 id="step-5-verify-deletion">Step 5: Verify Deletion</h3>
+<p>After booting back into Linux, confirm that the Ventoy key has been
+successfully removed from NVRAM:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mokutil</span> <span class="at">--list-enrolled</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> ventoy</span></code></pre></div>
+<p>If the command returns no output, the Ventoy MOK certificate has been
+permanently cleared. You can now safely delete the exported
+<code>.der</code> files from your working directory.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

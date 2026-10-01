@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy GRUB2 Mode Explained - ventoy</title>
+    <meta name="description" content="Ventoy is a popular open-source tool used to create bootable USB drives simply by copying ISO files onto the storage device. While Ventoy relies on its proprietary "Normal Mode" by default, it includes an essential fallback mechanism known as GRUB2 mode.">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-grub-2-mode-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy GRUB2 Mode Explained - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-grub-2-mode-explained" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is a popular open-source tool used to create bootable USB drives simply by copying ISO files onto the storage device. While Ventoy relies on its proprietary "Normal Mode" by default, it includes an essential fallback mechanism known as GRUB2 mode." />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-grub2-mode-explained">Ventoy GRUB2 Mode Explained</h1>
+<p>Ventoy is a popular open-source tool used to create bootable USB
+drives simply by copying ISO files onto the storage device. While Ventoy
+relies on its proprietary "Normal Mode" by default, it includes an
+essential fallback mechanism known as <strong>GRUB2 mode</strong>. This
+article explains what Ventoy's GRUB2 mode is, how it operates behind the
+scenes, when you should use it, and its current limitations.</p>
+<h2 id="what-is-normal-mode-vs-grub2-mode">What Is Normal Mode vs. GRUB2
+Mode?</h2>
+<p>To understand GRUB2 mode, you must first understand how Ventoy boots
+files by default:</p>
+<ul>
+<li><strong>Normal Mode (Default):</strong> Ventoy intercepts the boot
+process using custom runtime hooks. It creates a virtual disk in system
+memory to map the ISO file, allowing the operating system installer to
+see the virtual drive as if it were a physical CD/DVD or raw USB
+drive.</li>
+<li><strong>GRUB2 Mode (Secondary Boot):</strong> Instead of using
+Ventoy's custom virtualization hooks, GRUB2 mode utilizes the standard
+GNU GRUB2 bootloader’s native loopback capabilities. It passes control
+directly to the boot configuration files pre-packaged inside the ISO
+itself (such as <code>loopback.cfg</code> or
+<code>grub.cfg</code>).</li>
+</ul>
+<h2 id="why-does-grub2-mode-exist">Why Does GRUB2 Mode Exist?</h2>
+<p>Although Ventoy's default hooking mechanism works for thousands of
+images, it can occasionally fail due to:</p>
+<ul>
+<li>Unusual kernel configurations or custom initramfs scripts inside the
+ISO.</li>
+<li>Strict hardware or firmware quirks in specific UEFI
+implementations.</li>
+<li>New or experimental Linux distribution releases that conflict with
+Ventoy's memory-hooking code.</li>
+</ul>
+<p>When Normal Mode results in a black screen, a boot loop, or an error
+stating that the installation media cannot be found, GRUB2 mode acts as
+an alternative execution path to launch the file without altering the
+USB drive.</p>
+<h2 id="how-grub2-mode-works">How GRUB2 Mode Works</h2>
+<p>When you launch an ISO in GRUB2 mode, the process follows these
+steps:</p>
+<ol type="1">
+<li>Ventoy mounts the target ISO image as a standard loopback device
+using GRUB2 syntax.</li>
+<li>It inspects the ISO for standard GRUB configuration scripts,
+typically located at <code>/boot/grub/loopback.cfg</code> or
+<code>/boot/grub/grub.cfg</code>.</li>
+<li>Ventoy loads that native configuration file into the active GRUB
+environment.</li>
+<li>Control is handed entirely over to the operating system's internal
+bootloader menu, bypassing Ventoy's custom initialization scripts.</li>
+</ol>
+<p>Because this method relies on standard boot standards created by
+Linux distribution maintainers, it frequently succeeds where third-party
+hooks fail.</p>
+<h2 id="limitations-of-grub2-mode">Limitations of GRUB2 Mode</h2>
+<p>While highly effective as a recovery option, GRUB2 mode has distinct
+boundaries:</p>
+<ul>
+<li><strong>Linux-Centric:</strong> It primarily works with Linux
+distributions that include built-in loopback support (such as Ubuntu,
+Debian, Fedora, Arch Linux, and Linux Mint).</li>
+<li><strong>No Windows Support:</strong> Standard Windows installation
+ISOs and WinPE environments do not use GRUB2 configurations and cannot
+be booted via this mode.</li>
+<li><strong>Dependency on Upstream Support:</strong> If an ISO creator
+did not include a valid GRUB2 configuration file inside their image,
+GRUB2 mode will fail to initialize.</li>
+</ul>
+<h2 id="how-to-boot-into-grub2-mode">How to Boot into GRUB2 Mode</h2>
+<p>You can launch GRUB2 mode on demand directly from the main Ventoy
+interface:</p>
+<ol type="1">
+<li>Plug in your Ventoy USB drive and boot your computer.</li>
+<li>Navigate to the ISO file you want to start.</li>
+<li>Press <strong>Ctrl + r</strong> on your keyboard (or press
+<strong>Enter</strong> to open the secondary action menu, depending on
+your Ventoy theme and version).</li>
+<li>Select <strong>Boot in GRUB2 mode</strong> from the list of
+options.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

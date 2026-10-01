@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert TTF to PF2 Font for Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy uses the GRUB2 bootloader engine to render its visual themes, which relies on the custom PFF2 (.pf2) bitmap font format rather than modern scalable TrueType (.ttf) or OpenType (.otf) fonts. To customize the typography of your Ventoy menu, you must">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/convert-ttf-to-pf-2-font-for-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Convert TTF to PF2 Font for Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/convert-ttf-to-pf-2-font-for-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy uses the GRUB2 bootloader engine to render its visual themes, which relies on the custom PFF2 (.pf2) bitmap font format rather than modern scalable TrueType (.ttf) or OpenType (.otf) fonts. To customize the typography of your Ventoy menu, you must" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="convert-ttf-to-pf2-font-for-ventoy">Convert TTF to PF2 Font for
+Ventoy</h1>
+<p>Ventoy uses the GRUB2 bootloader engine to render its visual themes,
+which relies on the custom PFF2 (<code>.pf2</code>) bitmap font format
+rather than modern scalable TrueType (<code>.ttf</code>) or OpenType
+(<code>.otf</code>) fonts. To customize the typography of your Ventoy
+menu, you must convert your TTF files into the PF2 format using the
+<code>grub-mkfont</code> utility. This guide walks you through
+installing the required tool, converting the font at your desired size,
+and placing the resulting file onto your Ventoy drive.</p>
+<h3 id="step-1-install-grub-mkfont">Step 1: Install grub-mkfont</h3>
+<p>The <code>grub-mkfont</code> tool is the official utility used to
+generate PF2 files. It is natively available on Linux and can be used on
+Windows via the Windows Subsystem for Linux (WSL).</p>
+<p>Install it using your system's package manager:</p>
+<ul>
+<li><strong>Ubuntu / Debian / WSL:</strong>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install grub-common</span></code></pre></div></li>
+<li><strong>Fedora / RHEL:</strong>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install grub2-tools</span></code></pre></div></li>
+<li><strong>Arch Linux:</strong>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> pacman <span class="at">-S</span> grub</span></code></pre></div></li>
+</ul>
+<h3 id="step-2-convert-the-ttf-font-to-pf2">Step 2: Convert the TTF Font
+to PF2</h3>
+<p>Because PF2 is a pre-rendered bitmap format, you must specify the
+exact font size during conversion. If you need multiple sizes for
+different elements (such as titles versus menu items), you must generate
+separate PF2 files for each size.</p>
+<p>Run the <code>grub-mkfont</code> command with the following
+syntax:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">grub-mkfont</span> <span class="at">-s</span> <span class="pp">[</span><span class="ss">size</span><span class="pp">]</span> <span class="at">-o</span> <span class="pp">[</span><span class="ss">output.pf2</span><span class="pp">]</span> <span class="pp">[</span><span class="ss">input.ttf</span><span class="pp">]</span></span></code></pre></div>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>-s</code>: Sets the font size in points/pixels (common sizes
+are 14, 16, 18, or 24).</li>
+<li><code>-o</code>: Defines the path and filename for the generated
+<code>.pf2</code> file.</li>
+</ul>
+<p><strong>Example:</strong> To convert <code>Roboto-Regular.ttf</code>
+into a 16pt font named <code>roboto_16.pf2</code>, run:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">grub-mkfont</span> <span class="at">-s</span> 16 <span class="at">-o</span> roboto_16.pf2 Roboto-Regular.ttf</span></code></pre></div>
+<h3 id="step-3-add-the-pf2-font-to-ventoy">Step 3: Add the PF2 Font to
+Ventoy</h3>
+<ol type="1">
+<li>Plug in your Ventoy USB drive and open the primary partition.</li>
+<li>Navigate to your theme directory (typically located at
+<code>ventoy/theme/YourThemeName/</code>).</li>
+<li>Copy your newly created <code>.pf2</code> file into the theme
+directory.</li>
+<li>Open your theme's <code>theme.txt</code> configuration file in a
+text editor.</li>
+<li>Update the font properties to target your new file:</li>
+</ol>
+<pre class="text"><code>title-font: &quot;roboto_16.pf2&quot;
+item_font: &quot;roboto_16.pf2&quot;</code></pre>
+<p>Save the file and reboot your system to verify the new typography in
+your Ventoy boot menu.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

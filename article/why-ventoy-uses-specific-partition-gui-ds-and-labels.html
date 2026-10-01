@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Uses Specific Partition GUIDs and Labels - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source utility that creates bootable USB drives capable of launching multiple operating systems directly from raw ISO and image files. To achieve this seamless, multi-boot capability across vastly different computer architectures, Vento">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-uses-specific-partition-gui-ds-and-labels">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Uses Specific Partition GUIDs and Labels - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-uses-specific-partition-gui-ds-and-labels" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source utility that creates bootable USB drives capable of launching multiple operating systems directly from raw ISO and image files. To achieve this seamless, multi-boot capability across vastly different computer architectures, Vento" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-uses-specific-partition-guids-and-labels">Why Ventoy
+Uses Specific Partition GUIDs and Labels</h1>
+<p>Ventoy is an open-source utility that creates bootable USB drives
+capable of launching multiple operating systems directly from raw ISO
+and image files. To achieve this seamless, multi-boot capability across
+vastly different computer architectures, Ventoy relies strictly on
+specific partition Globally Unique Identifiers (GUIDs) and filesystem
+labels. This overview explains how these identifiers enable the Ventoy
+bootloader to reliably locate its core system files, distinguish between
+user data and internal runtime environments, and maintain cross-platform
+stability without depending on unpredictable hardware enumeration.</p>
+<h3 id="the-problem-of-inconsistent-disk-numbering">The Problem of
+Inconsistent Disk Numbering</h3>
+<p>In low-level pre-boot environments (both legacy BIOS and modern
+UEFI), device enumeration is volatile. A USB drive assigned as
+<code>hd0</code> or <code>Disk 0</code> on one computer may be
+designated as <code>hd1</code>, <code>hd2</code>, or entirely different
+device handles on another, depending on the motherboard firmware,
+plugged-in peripherals, and controller configurations.</p>
+<p>Hardcoding device paths into boot configurations is impossible for a
+portable utility. Ventoy avoids this limitation by scanning all
+connected storage devices at boot time for explicit filesystem labels
+and GUID markers, ensuring it always finds its payload regardless of
+which port or controller hosts the drive.</p>
+<h3 id="managing-ventoys-dual-partition-architecture">Managing Ventoy's
+Dual-Partition Architecture</h3>
+<p>When a disk is formatted with Ventoy, it is intentionally divided
+into two separate partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Data Volume):</strong> Formatted by default
+with exFAT (though NTFS, ext4, and other filesystems are supported).
+This is where users place ISO, WIM, and IMG files.</li>
+<li><strong>Partition 2 (Boot/System Volume):</strong> A small,
+protected FAT-formatted partition that holds the core boot files,
+including the GRUB core image, EFI binaries, drivers, fonts, and runtime
+scripts.</li>
+</ol>
+<p>To transition from the initial firmware handover to the interactive
+boot menu, the pre-boot loader must immediately locate Partition 2.
+Ventoy searches specifically for the volume label <code>VTOYEFI</code>.
+Using this predetermined label allows runtime scripts to locate, verify,
+and mount the bootloader slice without needing to inspect the contents
+of every storage drive attached to the machine.</p>
+<h3 id="partition-type-guids-in-gpt-schemes">Partition Type GUIDs in GPT
+Schemes</h3>
+<p>On GPT-partitioned disks, each partition possesses both a unique
+Partition GUID and a Partition Type GUID. Ventoy leverages standardized
+and custom Type GUIDs to fulfill specific low-level tasks:</p>
+<ul>
+<li><strong>OS Protection:</strong> By setting specific partition type
+attributes and GUIDs, Ventoy instructs desktop operating systems (like
+Windows) to treat the secondary boot partition as a hidden or
+system-reserved volume. This prevents users from accidentally deleting,
+reformatting, or modifying the core boot infrastructure.</li>
+<li><strong>Firmware Compliance:</strong> UEFI firmware specifications
+require specific EFI System Partition (ESP) type GUIDs
+(<code>C12A7328-F81F-11D2-BA4B-00A0C93EC93B</code>) to recognize the
+partition as bootable. Ventoy ensures the secondary partition matches
+these specifications so motherboards automatically index the
+<code>.efi</code> loaders.</li>
+</ul>
+<h3 id="decoupling-boot-files-from-user-storage">Decoupling Boot Files
+from User Storage</h3>
+<p>Because users are permitted to reformat, encrypt, or change the
+filesystem of Partition 1 to suit their needs, Ventoy cannot rely on
+predictable paths or structures on the main data partition.</p>
+<p>By anchoring its core dependencies to an isolated, distinctly labeled
+filesystem (<code>VTOYEFI</code>) with strict GUID attributes, the
+primary boot mechanism remains entirely decoupled from user data. The
+bootloader reliably initializes its required drivers and hooks into the
+hardware first, before attempting to parse whatever arbitrary filesystem
+the user has chosen for their bootable images.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

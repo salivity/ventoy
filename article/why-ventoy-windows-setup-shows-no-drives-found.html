@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Windows Setup Shows No Drives Found - ventoy</title>
+    <meta name="description" content="When installing Windows using a Ventoy multiboot USB drive, encountering the error "No drives were found" is a frequent issue that prevents users from selecting an installation destination. This problem usually does not indicate a defective hard drive or">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-windows-setup-shows-no-drives-found">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Windows Setup Shows No Drives Found - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-windows-setup-shows-no-drives-found" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When installing Windows using a Ventoy multiboot USB drive, encountering the error "No drives were found" is a frequent issue that prevents users from selecting an installation destination. This problem usually does not indicate a defective hard drive or" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-windows-setup-shows-no-drives-found">Why Ventoy
+Windows Setup Shows No Drives Found</h1>
+<p>When installing Windows using a Ventoy multiboot USB drive,
+encountering the error "No drives were found" is a frequent issue that
+prevents users from selecting an installation destination. This problem
+usually does not indicate a defective hard drive or SSD; instead, it is
+primarily caused by missing storage controller drivers in the standard
+Windows installer image, specific UEFI/BIOS storage configurations, or
+outdated Ventoy software. This guide covers the root causes of this
+error and provides direct methods to resolve it.</p>
+<h3 id="missing-storage-controller-drivers-intel-vmd--amd-raid">Missing
+Storage Controller Drivers (Intel VMD / AMD RAID)</h3>
+<p>The most common reason modern systems fail to detect internal drives
+during Windows installation is the absence of native controller
+drivers.</p>
+<p>Starting with 11th Gen Intel Core processors, many motherboards
+utilize Intel Volume Management Device (VMD) to manage NVMe drives.
+Similarly, systems configured with AMD RAID controllers require
+proprietary drivers. Standard Windows installation ISOs do not bundle
+these specific storage controller drivers. Consequently, when the
+Windows installer loads via Ventoy, it cannot communicate with the
+storage controller, resulting in an empty drive selection screen.</p>
+<h3 id="biosuefi-controller-modes">BIOS/UEFI Controller Modes</h3>
+<p>Factory motherboard settings often have storage modes configured to
+proprietary setups rather than standard protocols:</p>
+<ul>
+<li><strong>Intel RST / RAID On:</strong> Many pre-built laptops and
+desktops (such as Dell, HP, or Lenovo) ship with storage set to RAID On
+or Intel RST (Rapid Storage Technology) mode instead of standard
+AHCI/NVMe.</li>
+<li><strong>VMD Controller Enabled:</strong> On newer Intel systems, VMD
+is often enabled by default in the firmware, obfuscating direct NVMe
+access from general operating system installers.</li>
+</ul>
+<p>Without active drivers loaded in Windows PE (the pre-installation
+environment), Windows cannot interact with drives managed under these
+modes.</p>
+<h3
+id="outdated-ventoy-installation-or-driver-injection-glitches">Outdated
+Ventoy Installation or Driver Injection Glitches</h3>
+<p>Ventoy uses a background hook to mount the Windows ISO into memory so
+that setup files remain accessible after the initial boot phase. If the
+installed version of Ventoy is outdated, it may contain compatibility
+bugs with newer Windows 11/10 builds or newer hardware chipsets,
+preventing the storage stack from properly enumerating attached
+drives.</p>
+<hr />
+<h3 id="how-to-resolve-the-error">How to Resolve the Error</h3>
+<h4 id="method-1-load-the-storage-controller-driver-manually">Method 1:
+Load the Storage Controller Driver Manually</h4>
+<ol type="1">
+<li>Download the appropriate driver from your computer manufacturer’s
+support site or Intel’s website (e.g., <strong>Intel Rapid Storage
+Technology (RST) Driver with VMD Support</strong>).</li>
+<li>Extract the driver archive so that raw files (<code>.inf</code>,
+<code>.sys</code>, and <code>.cat</code>) are visible.</li>
+<li>Copy the extracted driver folder onto the root of your Ventoy USB
+drive.</li>
+<li>Boot into the Windows installer through Ventoy and proceed until the
+"Where do you want to install Windows?" screen appears.</li>
+<li>Click <strong>Load driver</strong> in the bottom-left corner.</li>
+<li>Click <strong>Browse</strong>, navigate to the driver folder on your
+Ventoy USB, select the relevant <code>.inf</code> file, and confirm. The
+target drive should immediately become visible.</li>
+</ol>
+<h4 id="method-2-adjust-biosuefi-settings">Method 2: Adjust BIOS/UEFI
+Settings</h4>
+<p>If you do not require RAID or Intel Optane acceleration:</p>
+<ol type="1">
+<li>Restart your PC and access the BIOS/UEFI menu (typically by pressing
+F2, F12, Del, or Esc during startup).</li>
+<li>Locate the <strong>Storage</strong>, <strong>SATA
+Operation</strong>, or <strong>System Configuration</strong> menu.</li>
+<li>Change the storage mode from <strong>RAID On / Intel RST</strong> to
+<strong>AHCI / NVMe</strong>.</li>
+<li>If an option for <strong>Intel VMD Technology</strong> exists, set
+it to <strong>Disabled</strong>.</li>
+<li>Save the settings, restart, and boot back into the Windows installer
+via Ventoy.</li>
+</ol>
+<h4 id="method-3-update-ventoy">Method 3: Update Ventoy</h4>
+<p>Ensure your Ventoy USB drive has the latest release installed.
+Connect the drive to a working computer, launch the Ventoy installer
+utility, and click <strong>Update</strong>. Updating does not delete the
+ISO files stored on the drive and ensures maximum compatibility with
+modern hardware and ISO layouts.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

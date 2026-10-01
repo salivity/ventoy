@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Background Image Resolution and Color Depth - ventoy</title>
+    <meta name="description" content="Customizing the Ventoy boot menu background enhances the user interface, but using improper image specifications can lead to rendering glitches, distortion, or black screens. This guide provides the recommended resolution, optimal color depth, supported">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-background-image-resolution-and-color-depth">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Background Image Resolution and Color Depth - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-background-image-resolution-and-color-depth" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Customizing the Ventoy boot menu background enhances the user interface, but using improper image specifications can lead to rendering glitches, distortion, or black screens. This guide provides the recommended resolution, optimal color depth, supported" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-background-image-resolution-and-color-depth">Ventoy
+Background Image Resolution and Color Depth</h1>
+<p>Customizing the Ventoy boot menu background enhances the user
+interface, but using improper image specifications can lead to rendering
+glitches, distortion, or black screens. This guide provides the
+recommended resolution, optimal color depth, supported file formats, and
+technical requirements needed to ensure your custom background displays
+properly across both legacy BIOS and modern UEFI systems.</p>
+<h3 id="recommended-resolution">Recommended Resolution</h3>
+<p>The ideal resolution depends on the target display and the boot mode
+of your hardware:</p>
+<ul>
+<li><strong>Standard Modern Systems (UEFI):</strong> <strong>1920x1080
+(Full HD)</strong> is the most widely recommended resolution. It
+provides a sharp, clean appearance on the vast majority of modern
+laptops and desktop monitors.</li>
+<li><strong>Maximum Compatibility (Legacy BIOS / Older
+Displays):</strong> <strong>1024x768</strong> or
+<strong>800x600</strong> is recommended if you frequently boot older
+machines. Legacy BIOS systems and certain virtual machines cannot
+initialize high-resolution VESA/GOP display modes and will default to
+standard 4:3 resolutions.</li>
+<li><strong>4K and High-DPI Displays:</strong> While
+<strong>3840x2160</strong> can be used on modern UEFI systems that
+support high-resolution GOP drivers, it may result in extremely small
+fonts in the GRUB2 interface. For 4K screens, 1920x1080 remains the
+safer choice as it scales predictably.</li>
+</ul>
+<p>Ventoy's underlying GRUB2 engine will stretch or clip images that do
+not match the active display mode. To prevent distortion, match the
+image resolution to the <code>resolution</code> property defined in your
+<code>theme.txt</code> or ensure it matches the native aspect ratio
+(typically 16:9) of your screen.</p>
+<h3 id="recommended-color-depth">Recommended Color Depth</h3>
+<ul>
+<li><strong>Optimal Color Depth:</strong> <strong>24-bit TrueColor (8
+bits per channel RGB)</strong>.</li>
+<li><strong>Alpha Channel Support:</strong> <strong>32-bit (24-bit RGB +
+8-bit Alpha channel)</strong> is supported for PNG files, allowing for
+transparency effects in UI elements.</li>
+</ul>
+<p>Avoid using <strong>8-bit indexed color palettes</strong> (common in
+animated GIFs or optimized web assets), as the bootloader may fail to
+map colors correctly, resulting in banding, inverted colors, or complete
+rendering failure.</p>
+<h3 id="supported-file-formats-and-encoding">Supported File Formats and
+Encoding</h3>
+<ul>
+<li><strong>PNG (Recommended):</strong> Use standard non-interlaced PNG
+files. PNG is the preferred format because GRUB2 renders it cleanly
+without JPEG compression artifacts, ensuring sharp menu lines and
+readable text overlays.</li>
+<li><strong>JPG / JPEG:</strong> Use standard baseline JPG files. Avoid
+saving images with "progressive" encoding, as the GRUB2 bootloader does
+not support progressive JPEGs and will display a black screen.</li>
+</ul>
+<h3 id="implementation-guidelines">Implementation Guidelines</h3>
+<p>To apply your background, place the image file inside the
+<code>ventoy</code> directory on your USB drive (for example,
+<code>/ventoy/theme/background.png</code>) and reference it in your
+<code>theme.txt</code> file under the desktop image attribute:</p>
+<pre class="text"><code>desktop-image: &quot;background.png&quot;</code></pre>
+<p>If specifying a custom display mode, ensure the
+<code>set theme</code> or display resolution entry in your Ventoy theme
+matches your background's exact pixel dimensions to avoid unwanted
+stretching.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Organize ISOs on a Ventoy USB Drive - ventoy</title>
+    <meta name="description" content="Ventoy makes multiboot USB creation simple by booting image files directly, eliminating the need to extract or reformat disks for different operating systems. This guide explains how to establish an efficient folder structure to keep your ISOs organized">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-organize-is-os-on-a-ventoy-usb-drive">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Organize ISOs on a Ventoy USB Drive - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-organize-is-os-on-a-ventoy-usb-drive" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy makes multiboot USB creation simple by booting image files directly, eliminating the need to extract or reformat disks for different operating systems. This guide explains how to establish an efficient folder structure to keep your ISOs organized" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-organize-isos-on-a-ventoy-usb-drive">How to Organize ISOs
+on a Ventoy USB Drive</h1>
+<p>Ventoy makes multiboot USB creation simple by booting image files
+directly, eliminating the need to extract or reformat disks for
+different operating systems. This guide explains how to establish an
+efficient folder structure to keep your ISOs organized on a Ventoy
+drive, streamline your boot menu navigation, and prevent clutter as your
+image library expands.</p>
+<h3 id="understanding-ventoys-directory-scanning">Understanding Ventoy's
+Directory Scanning</h3>
+<p>By default, Ventoy recursively scans every directory and subdirectory
+on the data partition to locate bootable images (<code>.iso</code>,
+<code>.img</code>, <code>.vhd</code>, <code>.wim</code>). This means you
+do not need to place all your files in the root directory. You can
+create custom folders and nest them to match your workflow, and Ventoy
+will automatically discover and list the bootable files on startup.</p>
+<h3 id="recommended-folder-layout">Recommended Folder Layout</h3>
+<p>A categorized layout prevents confusion and keeps the physical
+storage drive easy to navigate from your desktop file manager. Create a
+dedicated directory tree like the following on the main Ventoy
+partition:</p>
+<pre class="text"><code>Ventoy-Drive/
+├── Linux/
+│   ├── Arch/
+│   ├── Debian-Ubuntu/
+│   └── Fedora-RHEL/
+├── Windows/
+│   ├── Windows-10/
+│   ├── Windows-11/
+│   └── Windows-Server/
+├── Rescue-Recovery/
+│   ├── Clonezilla/
+│   ├── GParted/
+│   └── Hiren-BootCD/
+├── Antivirus/
+│   ├── Bitdefender/
+│   └── Kaspersky/
+└── ventoy/
+    └── ventoy.json</code></pre>
+<ul>
+<li><strong>Linux/</strong>: Group distributions either alphabetically
+or by family (Debian-based, Red Hat-based, independent).</li>
+<li><strong>Windows/</strong>: Keep consumer client releases separate
+from server images and WinPE environments.</li>
+<li><strong>Rescue-Recovery/</strong>: Store diagnostic, disk-cloning,
+and system repair utilities together for fast access during
+emergencies.</li>
+<li><strong>Antivirus/</strong>: Dedicate a directory for offline
+bootable malware removal discs.</li>
+<li><strong>ventoy/</strong>: Reserved strictly for configuration
+scripts, plugins, and custom themes (such as
+<code>ventoy.json</code>).</li>
+</ul>
+<h3 id="best-practices-for-file-and-folder-management">Best Practices
+for File and Folder Management</h3>
+<ol type="1">
+<li><strong>Avoid Spaces and Special Characters</strong>: While Ventoy
+supports spaces, using hyphens (<code>-</code>) or underscores
+(<code>_</code>) in folder and file names prevents potential parsing
+errors with custom scripts or specific Linux bootloaders.</li>
+<li><strong>Include Architecture and Version Details</strong>: Keep the
+original ISO naming conventions intact or clearly label architecture
+(e.g., <code>x86_64</code>, <code>arm64</code>) to avoid accidentally
+booting the wrong image.</li>
+<li><strong>Use <code>.ventoyignore</code> for Non-Boot Media</strong>:
+If you use the USB drive to store general data, backups, or raw disk
+images that you do not want to appear in the boot menu, place an empty
+file named <code>.ventoyignore</code> inside that folder. Ventoy will
+skip the entire directory during its boot scan.</li>
+<li><strong>Limit Directory Depth</strong>: Keep your folder nesting
+within two to three levels deep. Excessive nesting makes directory
+navigation slower when browsing in Ventoy's "Tree View" mode.</li>
+</ol>
+<h3 id="switching-between-list-view-and-tree-view">Switching Between
+List View and Tree View</h3>
+<p>Ventoy provides two primary ways to view files in its boot
+environment:</p>
+<ul>
+<li><strong>List View (Default)</strong>: Displays all discovered ISOs
+in a single flat list, regardless of which folder they reside in.</li>
+<li><strong>Tree View (Press <code>F3</code>)</strong>: Displays your
+actual folder structure, allowing you to browse through directories just
+as you laid them out on your computer.</li>
+</ul>
+<p>Using Tree View makes an organized folder structure significantly
+more useful, ensuring quick access to the exact operating system or
+diagnostic utility you need.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy MBR vs GPT: How to Choose the Right Style - ventoy</title>
+    <meta name="description" content="Choosing between MBR and GPT when installing Ventoy determines how your bootable USB drive interacts with different computer hardware and motherboards. While both partition schemes allow Ventoy to boot multiple ISO files seamlessly, each has distinct adv">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-mbr-vs-gpt-how-to-choose-the-right-style">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy MBR vs GPT: How to Choose the Right Style - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-mbr-vs-gpt-how-to-choose-the-right-style" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Choosing between MBR and GPT when installing Ventoy determines how your bootable USB drive interacts with different computer hardware and motherboards. While both partition schemes allow Ventoy to boot multiple ISO files seamlessly, each has distinct adv" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-mbr-vs-gpt-how-to-choose-the-right-style">Ventoy MBR vs
+GPT: How to Choose the Right Style</h1>
+<p>Choosing between MBR and GPT when installing Ventoy determines how
+your bootable USB drive interacts with different computer hardware and
+motherboards. While both partition schemes allow Ventoy to boot multiple
+ISO files seamlessly, each has distinct advantages regarding system
+compatibility, firmware support, and drive capacity. This guide explains
+the core differences between MBR and GPT in Ventoy and helps you select
+the best option for your specific use case.</p>
+<h2 id="understanding-mbr-and-gpt">Understanding MBR and GPT</h2>
+<ul>
+<li><strong>MBR (Master Boot Record):</strong> The legacy partition
+standard introduced in 1983. It supports drive sizes up to 2TB and works
+natively with older Legacy BIOS systems, as well as modern UEFI systems
+through compatibility modes.</li>
+<li><strong>GPT (GUID Partition Table):</strong> The modern partition
+standard designed to replace MBR. It supports drives larger than 2TB,
+provides better data redundancy through backup headers, and is built
+specifically for modern UEFI firmware.</li>
+</ul>
+<p>Ventoy supports both partition schemes and installs a dual-partition
+layout regardless of your choice: a small hidden VTOYEFI partition to
+handle booting, and a main exFAT/NTFS partition to store your ISO
+files.</p>
+<h2 id="when-to-choose-mbr">When to Choose MBR</h2>
+<p>Select <strong>MBR</strong> if your primary goal is universal
+compatibility across as many systems as possible.</p>
+<ul>
+<li><strong>Broad Compatibility:</strong> Ventoy configured with MBR can
+boot on both older Legacy BIOS motherboards and modern UEFI
+systems.</li>
+<li><strong>Troubleshooting Varied Hardware:</strong> If you are an IT
+technician, technician, or hobbyist using the drive on different
+machines (including older laptops and desktops built before 2012), MBR
+is the safest choice.</li>
+<li><strong>Standard USB Drive Sizes:</strong> If your USB flash drive
+is 2TB or smaller, MBR provides full access to the drive's entire
+storage capacity without limitations.</li>
+</ul>
+<h2 id="when-to-choose-gpt">When to Choose GPT</h2>
+<p>Select <strong>GPT</strong> if you exclusively work with contemporary
+systems or use very high-capacity storage.</p>
+<ul>
+<li><strong>Modern UEFI Environments:</strong> If you only plug your
+drive into modern computers (typically manufactured after 2015), GPT is
+the modern standard and ensures native UEFI integration.</li>
+<li><strong>Large Drives (&gt;2TB):</strong> If you are installing
+Ventoy on an external hard drive or high-capacity flash drive exceeding
+2TB, GPT is required to utilize all available space.</li>
+<li><strong>Pure UEFI Systems:</strong> Some newer hardware
+architectures (such as newer Intel platforms) have completely dropped
+Legacy BIOS support (CSM). While MBR can often still boot under UEFI,
+GPT is native to these configurations.</li>
+</ul>
+<h2 id="how-to-set-mbr-or-gpt-in-the-ventoy-installer">How to Set MBR or
+GPT in the Ventoy Installer</h2>
+<ol type="1">
+<li>Open the <strong>Ventoy2Disk</strong> application on your
+computer.</li>
+<li>Click on the <strong>Option</strong> menu in the top toolbar.</li>
+<li>Hover over <strong>Partition Style</strong>.</li>
+<li>Select either <strong>MBR</strong> or <strong>GPT</strong> according
+to your needs.</li>
+<li>Select your target USB device and click
+<strong>Install</strong>.</li>
+</ol>
+<h2 id="the-bottom-line">The Bottom Line</h2>
+<p>For most users creating a general-purpose rescue or installation
+drive, <strong>MBR is the recommended choice</strong>. It offers maximum
+flexibility by allowing you to boot from both older Legacy BIOS machines
+and modern UEFI systems. Choose <strong>GPT</strong> only if your
+storage device is larger than 2TB or if you specifically target modern,
+UEFI-only hardware environments.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

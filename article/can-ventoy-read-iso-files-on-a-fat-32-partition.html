@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Read ISO Files on a FAT32 Partition? - ventoy</title>
+    <meta name="description" content="Ventoy fully supports reading and booting ISO files stored on a FAT32-formatted data partition. While Ventoy defaults to the exFAT file system when preparing a USB drive, users can easily choose FAT32 instead to maximize compatibility with certain hardwa">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-read-iso-files-on-a-fat-32-partition">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Read ISO Files on a FAT32 Partition? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-read-iso-files-on-a-fat-32-partition" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports reading and booting ISO files stored on a FAT32-formatted data partition. While Ventoy defaults to the exFAT file system when preparing a USB drive, users can easily choose FAT32 instead to maximize compatibility with certain hardwa" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-read-iso-files-on-a-fat32-partition">Can Ventoy Read
+ISO Files on a FAT32 Partition?</h1>
+<p>Ventoy fully supports reading and booting ISO files stored on a
+FAT32-formatted data partition. While Ventoy defaults to the exFAT file
+system when preparing a USB drive, users can easily choose FAT32 instead
+to maximize compatibility with certain hardware and legacy firmware.
+However, utilizing FAT32 introduces an important file size limitation
+that users must consider before transferring disk images to their
+drive.</p>
+<h3 id="ventoys-native-support-for-fat32">Ventoy's Native Support for
+FAT32</h3>
+<p>When you create a bootable USB drive using Ventoy, the tool divides
+the physical drive into two distinct partitions:</p>
+<ol type="1">
+<li><strong>Partition 2 (VTOYEFI):</strong> A small, hidden EFI system
+partition responsible for loading the Ventoy bootloader.</li>
+<li><strong>Partition 1:</strong> The user-accessible data partition
+where ISO, WIM, IMG, and VHD files are stored.</li>
+</ol>
+<p>Ventoy's bootloader is designed with native read support for various
+file systems on Partition 1, including exFAT, FAT32, NTFS,
+ext2/ext3/ext4, UDF, and XFS. When formatted as FAT32, Ventoy
+automatically scans the partition, detects compatible disk images, and
+adds them to the dynamic boot menu without requiring additional
+configuration.</p>
+<h3 id="the-4gb-file-size-limitation">The 4GB File Size Limitation</h3>
+<p>The primary drawback to using a FAT32-formatted partition is the
+architectural limit of the file system itself: no individual file can
+exceed 4GB (specifically, 4,294,967,295 bytes).</p>
+<ul>
+<li><strong>Smaller Distributions:</strong> Linux distributions, rescue
+tools, and lightweight utilities (such as Alpine Linux, Arch Linux,
+MemTest86+, or Clonezilla) fit easily within this boundary.</li>
+<li><strong>Larger Operating Systems:</strong> Modern operating system
+images, particularly standard Windows 10 and Windows 11 installation
+ISOs, regularly exceed 5GB or 6GB. These files cannot be copied to a
+FAT32 partition.</li>
+</ul>
+<p>If you must boot images larger than 4GB, exFAT or NTFS is
+required.</p>
+<h3 id="why-choose-fat32-for-ventoy">Why Choose FAT32 for Ventoy?</h3>
+<p>Despite the size limit, formatting the Ventoy data partition as FAT32
+offers distinct advantages:</p>
+<ul>
+<li><strong>Universal Firmware Compatibility:</strong> Almost every
+UEFI-based machine includes built-in drivers to read FAT32 partitions
+natively. Some older or proprietary UEFI firmware lacks native drivers
+for NTFS or exFAT. While Ventoy loads its own EFI drivers during
+initialization, using FAT32 ensures the broadest baseline
+compatibility.</li>
+<li><strong>Broad Device Support:</strong> If you use the remaining
+space on your USB drive to store general files, FAT32 ensures
+cross-compatibility with older operating systems, media players, smart
+TVs, and embedded systems.</li>
+</ul>
+<h3 id="how-to-format-the-ventoy-partition-to-fat32">How to Format the
+Ventoy Partition to FAT32</h3>
+<p>You can set the partition format to FAT32 during the initial
+installation using the official Ventoy configuration options:</p>
+<ol type="1">
+<li>Open the <strong>Ventoy2Disk</strong> application.</li>
+<li>Select <strong>Option</strong> from the top menu bar.</li>
+<li>Click on <strong>Partition Style / File System</strong> and choose
+<strong>FAT32</strong>.</li>
+<li>Click <strong>Install</strong>.</li>
+</ol>
+<p>Alternatively, if Ventoy is already installed on your USB drive, you
+can safely format Partition 1 (the larger data partition) to FAT32 using
+your operating system's built-in disk management tools. As long as you
+do not alter or delete the hidden EFI boot partition (Partition 2),
+Ventoy will continue to boot properly and detect any valid ISO images
+placed on the new FAT32 partition.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

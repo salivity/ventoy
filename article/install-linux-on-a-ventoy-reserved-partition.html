@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Linux on a Ventoy Reserved Partition - ventoy</title>
+    <meta name="description" content="It is entirely possible to use the reserved space on a Ventoy USB drive for an independent, fully functional Linux installation. By configuring Ventoy to leave unallocated space at the end of the drive during setup, you can treat that space as a standard">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/install-linux-on-a-ventoy-reserved-partition">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Install Linux on a Ventoy Reserved Partition - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/install-linux-on-a-ventoy-reserved-partition" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="It is entirely possible to use the reserved space on a Ventoy USB drive for an independent, fully functional Linux installation. By configuring Ventoy to leave unallocated space at the end of the drive during setup, you can treat that space as a standard" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="install-linux-on-a-ventoy-reserved-partition">Install Linux on a
+Ventoy Reserved Partition</h1>
+<p>It is entirely possible to use the reserved space on a Ventoy USB
+drive for an independent, fully functional Linux installation. By
+configuring Ventoy to leave unallocated space at the end of the drive
+during setup, you can treat that space as a standard storage block. This
+article explains how the reserved partition works, how to properly
+install a standalone Linux distribution into that space, and how to
+manage the bootloader without breaking Ventoy's core multiboot
+functionality.</p>
+<h3 id="understanding-the-ventoy-disk-layout">Understanding the Ventoy
+Disk Layout</h3>
+<p>By default, Ventoy formats a flash drive into two partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (exFAT):</strong> The main partition that stores
+your bootable ISO, IMG, and VHD files.</li>
+<li><strong>Partition 2 (FAT):</strong> A small, hidden EFI system
+partition (VTOYEFI) containing the Ventoy bootloader and core
+files.</li>
+</ol>
+<p>When you specify reserved space during the Ventoy creation process,
+Ventoy shrinks the primary data partition, leaving unallocated space at
+the end of the drive. This unallocated block can be partitioned into
+standard file systems (such as ext4, btrfs, or swap) to host an
+independent operating system.</p>
+<h3 id="step-1-reserving-space-in-ventoy">Step 1: Reserving Space in
+Ventoy</h3>
+<p>Before installing Linux, you must configure the drive with available
+space:</p>
+<ol type="1">
+<li>Open the <strong>Ventoy2Disk</strong> utility.</li>
+<li>Go to <strong>Option</strong> &gt; <strong>Partition
+Configuration</strong> (or use the <code>-r</code> flag in the
+CLI).</li>
+<li>Check the option to reserve space at the bottom of the drive and
+enter the desired capacity (e.g., 20 GB or more for a modern Linux
+distribution).</li>
+<li>Install or update Ventoy on the target USB drive.</li>
+</ol>
+<p>Ventoy will create its two standard partitions while leaving the
+specified amount as raw, unallocated space.</p>
+<h3 id="step-2-installing-the-linux-distribution">Step 2: Installing the
+Linux Distribution</h3>
+<ol type="1">
+<li>Place the installation ISO of your chosen Linux distribution into
+the main Ventoy exFAT partition.</li>
+<li>Boot your computer from the Ventoy USB drive and select the Linux
+installer ISO from the menu.</li>
+<li>Launch the distribution's installer and proceed to the disk
+partitioning stage.</li>
+<li>Select <strong>Manual Partitioning</strong> (often labeled
+"Something Else" or "Manual").</li>
+<li>Locate the unallocated space on the USB drive. Do not modify the
+existing Ventoy partitions (the large exFAT partition and the small
+VTOYEFI partition).</li>
+<li>Create your new partitions in the unallocated space:
+<ul>
+<li><strong>Root (<code>/</code>):</strong> Format as <code>ext4</code>
+or <code>btrfs</code>.</li>
+<li><strong>Swap:</strong> Optional, depending on your RAM
+requirements.</li>
+<li><strong>EFI System Partition (ESP):</strong> If you wish to keep the
+installation completely independent of Ventoy's EFI partition, create a
+dedicated ESP (100–300 MB, FAT32) within the reserved space.</li>
+</ul></li>
+</ol>
+<h3 id="step-3-managing-the-bootloader">Step 3: Managing the
+Bootloader</h3>
+<p>The most critical step is managing where the GRUB bootloader
+installs:</p>
+<ul>
+<li><strong>Dedicated EFI Partition:</strong> If you created a dedicated
+ESP within the reserved space, instruct the installer to place the
+bootloader there. This prevents the Linux installer from overwriting or
+corrupting Ventoy's native EFI partition.</li>
+<li><strong>Avoid Modifying <code>VTOYEFI</code>:</strong> Overwriting
+files in the original Ventoy EFI partition can break Ventoy's ability to
+boot its primary menu. Always verify the target device for bootloader
+installation before confirming the installation process.</li>
+</ul>
+<h3 id="step-4-booting-the-independent-linux-system">Step 4: Booting the
+Independent Linux System</h3>
+<p>Once the installation is complete, you can boot your installed Linux
+system using two methods:</p>
+<ul>
+<li><strong>Motherboard Boot Menu:</strong> Press your system's boot
+selection key (F8, F11, or F12) during startup and select the specific
+UEFI entry created for your Linux installation on the USB drive.</li>
+<li><strong>Ventoy Interface:</strong> Ventoy can chainload other
+operating systems on the same drive. From the main Ventoy menu, press
+<strong>F6</strong> to access the local boot menu, which scans the
+drive's partitions for existing GRUB installations and allows you to
+boot into your installed distribution directly.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

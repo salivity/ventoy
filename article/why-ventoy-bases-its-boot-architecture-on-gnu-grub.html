@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Bases Its Boot Architecture on GNU GRUB - ventoy</title>
+    <meta name="description" content="Ventoy utilizes GNU GRUB as the foundation of its core boot architecture to achieve its signature capability: booting operating systems directly from ISO files without extracting them or reformatting drives. By leveraging GRUB, Ventoy inherits decades of">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-bases-its-boot-architecture-on-gnu-grub">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Bases Its Boot Architecture on GNU GRUB - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-bases-its-boot-architecture-on-gnu-grub" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy utilizes GNU GRUB as the foundation of its core boot architecture to achieve its signature capability: booting operating systems directly from ISO files without extracting them or reformatting drives. By leveraging GRUB, Ventoy inherits decades of" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-bases-its-boot-architecture-on-gnu-grub">Why Ventoy
+Bases Its Boot Architecture on GNU GRUB</h1>
+<p>Ventoy utilizes GNU GRUB as the foundation of its core boot
+architecture to achieve its signature capability: booting operating
+systems directly from ISO files without extracting them or reformatting
+drives. By leveraging GRUB, Ventoy inherits decades of low-level
+bootloader development, robust hardware compatibility, native support
+for modern file systems, and an extensible architecture capable of
+dynamic runtime patching. This architecture allows Ventoy to hook into
+memory and redirect disk input/output operations, enabling a truly
+plug-and-play multiboot USB tool.</p>
+<h3 id="universal-hardware-and-firmware-compatibility">Universal
+Hardware and Firmware Compatibility</h3>
+<p>Building a bootloader from scratch requires accounting for thousands
+of motherboard quirks, firmware bugs, and hardware revisions. GNU GRUB
+(specifically GRUB 2) is already tested across virtually all modern
+computing environments. It provides out-of-the-box support for both
+legacy BIOS and modern UEFI architectures, covering IA32, x86_64, ARM64,
+and MIPS platforms. By building on GRUB, Ventoy avoided reinventing the
+wheel for low-level machine initialization and gained instant, reliable
+access to diverse hardware configurations.</p>
+<h3 id="advanced-pre-boot-file-system-drivers">Advanced Pre-Boot File
+System Drivers</h3>
+<p>Most bootloaders operate under severe size constraints and only
+support basic file systems like FAT12 or FAT16. Ventoy allows users to
+copy arbitrary, large files—often exceeding the 4 GB limit of FAT32—onto
+an exFAT, NTFS, or ext4 partition. GRUB contains native, mature read
+drivers for these complex file systems. This allows the Ventoy core to
+load its own configuration, scan the partition for bootable media, and
+read ISO, WIM, IMG, and VHD files entirely within the pre-boot
+environment.</p>
+<h3 id="dynamic-scripting-and-runtime-memory-patching">Dynamic Scripting
+and Runtime Memory Patching</h3>
+<p>The fundamental mechanism behind Ventoy is its ability to fool an
+operating system into believing an ISO file stored on a USB drive is an
+actual CD/DVD drive. To accomplish this, Ventoy relies on GRUB's
+flexible execution environment and module system. Ventoy extends GRUB
+with custom modules that intercept standard system calls:</p>
+<ul>
+<li>In Legacy BIOS environments, it hooks <code>INT 13h</code> disk
+interrupts to create virtual CD-ROM drives directly in RAM.</li>
+<li>In UEFI environments, it hooks the UEFI <code>BlockIO</code>
+protocol to redirect read and write requests to the offset of the ISO
+file.</li>
+</ul>
+<p>GRUB's support for dynamic loading and runtime memory manipulation
+provides the precise execution control required to inject these hooks
+into the kernel initialization process of Windows, Linux, and other
+operating systems.</p>
+<h3 id="proven-stability-and-open-source-ecosystem">Proven Stability and
+Open Source Ecosystem</h3>
+<p>GNU GRUB is the industry-standard bootloader for Linux distributions.
+Decades of active maintenance mean that edge cases—such as non-standard
+memory maps, obscure ACPI configurations, and secure boot
+implementations—have already been addressed. Choosing an open-source,
+GPL-licensed codebase allowed Ventoy’s developer to inspect, fork, and
+adapt proven boot code rapidly, focusing development efforts on virtual
+disk emulation rather than low-level platform bring-up.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iVentoy PXE Booting Without USB Drives - ventoy</title>
+    <meta name="description" content="iVentoy revolutionizes network deployment by functioning as an enhanced PXE (Preboot Execution Environment) server that allows client machines to boot directly from ISO images stored on a central server. By bundling essential network services, serving ra">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/i-ventoy-pxe-booting-without-usb-drives">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="iVentoy PXE Booting Without USB Drives - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/i-ventoy-pxe-booting-without-usb-drives" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="iVentoy revolutionizes network deployment by functioning as an enhanced PXE (Preboot Execution Environment) server that allows client machines to boot directly from ISO images stored on a central server. By bundling essential network services, serving ra" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="iventoy-pxe-booting-without-usb-drives">iVentoy PXE Booting
+Without USB Drives</h1>
+<p>iVentoy revolutionizes network deployment by functioning as an
+enhanced PXE (Preboot Execution Environment) server that allows client
+machines to boot directly from ISO images stored on a central server. By
+bundling essential network services, serving raw ISO files without
+extraction, and virtualizing access to media over the local network,
+iVentoy completely removes the requirement for client-side physical USB
+drives or media flashing.</p>
+<h3 id="the-pxe-handshake-and-network-initialization">The PXE Handshake
+and Network Initialization</h3>
+<p>Client computers initiate the process through standard PXE
+capabilities built into their network interface cards (NICs). When a
+client system powers on with network boot selected in BIOS or UEFI:</p>
+<ol type="1">
+<li><strong>DHCP Request:</strong> The client broadcasts a request for
+network configuration.</li>
+<li><strong>Network Offer:</strong> iVentoy provides an IP address
+(either via its internal DHCP server or by proxying alongside an
+existing router DHCP server) along with the <code>next-server</code> IP
+and bootloader filename.</li>
+<li><strong>TFTP Stage:</strong> The client downloads an initial,
+lightweight network bootloader (iPXE) via Trivial File Transfer Protocol
+(TFTP).</li>
+<li><strong>HTTP Transition:</strong> Once the iPXE environment
+initializes, iVentoy switches communication to high-speed HTTP, which
+drastically improves data transfer speeds compared to standard
+TFTP.</li>
+</ol>
+<h3 id="direct-iso-reading-without-extraction">Direct ISO Reading
+Without Extraction</h3>
+<p>Traditional network boot configurations require system administrators
+to extract operating system ISOs, configure specific kernel parameters,
+and build custom boot scripts for every individual distribution. iVentoy
+bypasses this entirely:</p>
+<ul>
+<li><strong>Central Storage Repository:</strong> Administrators drop
+standard, unmodified ISO files into iVentoy's designated
+<code>iso</code> directory.</li>
+<li><strong>Dynamic Menu Generation:</strong> When the client connects,
+iVentoy scans the directory and presents an interactive boot menu
+listing all available operating systems.</li>
+<li><strong>Direct Streaming:</strong> The client selects an image, and
+iVentoy streams the necessary boot sectors and runtime files directly
+from the ISO file over the local network.</li>
+</ul>
+<h3 id="runtime-virtual-drive-emulation">Runtime Virtual Drive
+Emulation</h3>
+<p>The primary obstacle to booting an installer without a physical drive
+is that operating system installers expect a local storage device (like
+a DVD drive or USB flash drive) once the kernel loads.</p>
+<p>iVentoy solves this through runtime memory hooks and virtual drive
+emulation:</p>
+<ul>
+<li><strong>Bootloader Hooking:</strong> iVentoy intercepts the initial
+OS boot sequence and injects a custom driver into the loading
+environment.</li>
+<li><strong>Virtual Media Presentation:</strong> This driver connects
+back to the iVentoy server over the network and emulates a local
+CD/DVD-ROM or USB device inside the client's operating memory.</li>
+<li><strong>Installer Transparency:</strong> The operating system
+installer interacts with the virtual device as if it were a physical USB
+stick plugged directly into the machine, pulling installation packages
+across the network without failing due to missing installation
+media.</li>
+</ul>
+<h3 id="cross-architecture-firmware-compatibility">Cross-Architecture
+Firmware Compatibility</h3>
+<p>iVentoy handles diverse client hardware automatically. It detects
+whether a client connects via Legacy BIOS, 32-bit UEFI, 64-bit UEFI, or
+ARM64 UEFI. It dynamically serves the correct architecture-specific
+bootloader to the client without requiring manual reconfiguration or
+separate network shares, ensuring a seamless, plug-and-play network boot
+infrastructure.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

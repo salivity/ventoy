@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Boot ISO Files with Spaces in Filenames? - ventoy</title>
+    <meta name="description" content="Ventoy can technically detect and display ISO files with spaces in their filenames, but you should avoid them because they frequently cause boot failures. While Ventoy's own menu engine can parse these names, the operating system kernels and bootloaders">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-boot-iso-files-with-spaces-in-filenames">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Boot ISO Files with Spaces in Filenames? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-boot-iso-files-with-spaces-in-filenames" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can technically detect and display ISO files with spaces in their filenames, but you should avoid them because they frequently cause boot failures. While Ventoy's own menu engine can parse these names, the operating system kernels and bootloaders" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-boot-iso-files-with-spaces-in-filenames">Can Ventoy
+Boot ISO Files with Spaces in Filenames?</h1>
+<p>Ventoy can technically detect and display ISO files with spaces in
+their filenames, but you should avoid them because they frequently cause
+boot failures. While Ventoy's own menu engine can parse these names, the
+operating system kernels and bootloaders inside the ISO often cannot
+handle path spaces during runtime. To ensure reliable booting, Ventoy
+officially recommends keeping filenames free of spaces and non-ASCII
+characters.</p>
+<h3 id="the-official-recommendation">The Official Recommendation</h3>
+<p>According to the official Ventoy documentation, ISO, WIM, IMG, and
+VHD files—as well as the directories containing them—must not contain
+spaces or non-ASCII characters. The system is designed to read standard
+ASCII paths to maximize compatibility across hundreds of different
+operating systems.</p>
+<h3 id="what-happens-when-you-use-spaces">What Happens When You Use
+Spaces</h3>
+<p>If you copy an ISO containing spaces (for example,
+<code>Ubuntu 22.04 Live.iso</code>) to your Ventoy USB drive:</p>
+<ol type="1">
+<li><strong>The Menu Works:</strong> Ventoy will scan the drive, locate
+the file, and list it in the boot selection menu without an issue.</li>
+<li><strong>The Boot Loader Launches:</strong> When selected, Ventoy
+mounts the ISO virtually and passes the boot parameters to the image's
+internal bootloader (such as GRUB, Syslinux, or Windows Boot
+Manager).</li>
+<li><strong>The Kernel Fails to Mount:</strong> The failure typically
+occurs during the second stage of booting. As the operating system
+kernel and its initial RAM disk (initramfs) load, they parse
+command-line arguments to find and mount the ISO file. Many Linux
+distributions and recovery utilities do not properly escape spaces in
+these scripts, leading to errors like "Unable to find a medium
+containing a live file system" or dropping to a basic shell prompt.</li>
+</ol>
+<h3 id="best-practices-for-naming-iso-files">Best Practices for Naming
+ISO Files</h3>
+<p>To prevent boot crashes and ensure maximum compatibility across all
+operating systems:</p>
+<ul>
+<li><strong>Use Underscores or Hyphens:</strong> Replace every space
+with an underscore (<code>_</code>) or a hyphen (<code>-</code>). For
+example, rename <code>Windows 11 23H2.iso</code> to
+<code>Windows_11_23H2.iso</code>.</li>
+<li><strong>Stick to Standard ASCII:</strong> Avoid special characters,
+symbols (such as parentheses, brackets, or ampersands), and accented
+letters.</li>
+<li><strong>Keep Directory Paths Clean:</strong> If you organize your
+images into folders on the Ventoy partition, ensure that the folder
+names also follow the same rules (e.g., <code>/Linux_ISOs/</code>
+instead of <code>/Linux ISOs/</code>).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

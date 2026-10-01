@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy DUD Plugin: Fix Missing Storage Drivers - ventoy</title>
+    <meta name="description" content="Installing modern enterprise Linux distributions on specialized hardware often fails when the installer lacks native drivers for proprietary RAID cards, SAS controllers, or modern NVMe drives. The Ventoy Driver Update Disk (DUD) plugin resolves this issu">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-dud-plugin-fix-missing-storage-drivers">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy DUD Plugin: Fix Missing Storage Drivers - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-dud-plugin-fix-missing-storage-drivers" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Installing modern enterprise Linux distributions on specialized hardware often fails when the installer lacks native drivers for proprietary RAID cards, SAS controllers, or modern NVMe drives. The Ventoy Driver Update Disk (DUD) plugin resolves this issu" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-dud-plugin-fix-missing-storage-drivers">Ventoy DUD
+Plugin: Fix Missing Storage Drivers</h1>
+<p>Installing modern enterprise Linux distributions on specialized
+hardware often fails when the installer lacks native drivers for
+proprietary RAID cards, SAS controllers, or modern NVMe drives. The
+Ventoy Driver Update Disk (DUD) plugin resolves this issue by
+automatically injecting manufacturer-supplied driver packages into the
+operating system installer during boot. By associating specific driver
+image files with targeted OS images, the plugin enables the operating
+system to detect and configure storage devices without requiring
+permanent modification of the base installation ISO.</p>
+<h3 id="the-storage-driver-problem-during-os-installation">The Storage
+Driver Problem During OS Installation</h3>
+<p>Enterprise operating system installers—such as Red Hat Enterprise
+Linux, CentOS, Rocky Linux, Oracle Linux, and SUSE—rely on a generic
+kernel to bootstrap the setup environment. When hardware features a
+newer or proprietary storage controller (such as modern Broadcom
+MegaRAID, Dell PERC, or Microsemi Adaptec adapters), the installation
+kernel fails to recognize the attached drives. The installer halts with
+a "No storage devices found" error, preventing system deployment.</p>
+<p>Traditionally, addressing this required either:</p>
+<ul>
+<li>Rebuilding the installation ISO to include the missing kernel
+modules (<code>.ko</code>).</li>
+<li>Creating a separate physical USB drive containing the Driver Update
+Disk and manually specifying boot parameters like <code>inst.dd</code>
+during bootloader selection.</li>
+</ul>
+<h3 id="how-the-ventoy-dud-plugin-operates">How the Ventoy DUD Plugin
+Operates</h3>
+<p>The Ventoy DUD plugin automates the delivery of Driver Update Disks
+via software configuration. It functions through a three-step
+mechanism:</p>
+<h4 id="1-configuration-and-association">1. Configuration and
+Association</h4>
+<p>Ventoy utilizes a centralized configuration file located at
+<code>/ventoy/ventoy.json</code> on the USB drive. Within the
+<code>"dud"</code> object, administrators map specific ISO files to
+their corresponding driver image files (which typically end in
+<code>.iso</code>, <code>.img</code>, or <code>.dud</code>).</p>
+<p>Multiple drivers can be mapped to a single ISO, allowing complex
+environments to load network and storage drivers simultaneously.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;dud&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Rocky-9.3-x86_64-dvd.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;dud&quot;</span><span class="fu">:</span> <span class="st">&quot;/driver/megaraid_sas.iso&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="2-virtual-disk-presentation-and-parameter-injection">2. Virtual
+Disk Presentation and Parameter Injection</h4>
+<p>When the user boots an ISO configured with the DUD plugin:</p>
+<ul>
+<li>Ventoy reads the <code>ventoy.json</code> mapping.</li>
+<li>It loads the specified driver image into system memory.</li>
+<li>Ventoy dynamically intercepts the bootloader configuration (such as
+GRUB) and appends the necessary kernel command-line arguments (for
+example, <code>inst.dd</code> in Red Hat-family installers) pointing
+directly to the virtual driver disk location in memory.</li>
+</ul>
+<h4 id="3-execution-by-the-installer">3. Execution by the Installer</h4>
+<p>Once the Linux kernel boots into the installation environment:</p>
+<ul>
+<li>The OS installer's driver detection framework (such as Anaconda or
+YaST) processes the injected parameters.</li>
+<li>The installer mounts the driver disk, locates the signed kernel
+module compatible with the running kernel version, and inserts it via
+<code>modprobe</code>.</li>
+<li>With the driver active, the storage controller initializes, exposing
+the logical drives or RAID arrays to the partitioning utility.</li>
+</ul>
+<p>By decoupling the driver payload from the installation medium, the
+Ventoy DUD plugin allows clean, automated storage initialization while
+keeping base OS images fully unmodified.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boot a VDI File Directly From Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy allows you to boot Linux VirtualBox disk images (.vdi) directly on physical hardware without converting them into standard ISO files. This guide details the preparation process using the official vtoyboot script, how to format the image file name">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/boot-a-vdi-file-directly-from-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Boot a VDI File Directly From Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/boot-a-vdi-file-directly-from-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy allows you to boot Linux VirtualBox disk images (.vdi) directly on physical hardware without converting them into standard ISO files. This guide details the preparation process using the official vtoyboot script, how to format the image file name" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="boot-a-vdi-file-directly-from-ventoy">Boot a VDI File Directly
+From Ventoy</h1>
+<p>Ventoy allows you to boot Linux VirtualBox disk images
+(<code>.vdi</code>) directly on physical hardware without converting
+them into standard ISO files. This guide details the preparation process
+using the official <code>vtoyboot</code> script, how to format the image
+file name so Ventoy recognizes it, and the final steps to launch your
+virtual environment from a USB drive.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>A USB drive with the latest version of Ventoy installed.</li>
+<li>A VirtualBox virtual machine running a Linux distribution.</li>
+<li>The <code>vtoyboot</code> tool, which injects the necessary kernel
+modules and scripts into the virtual machine to allow it to interface
+with physical hardware.</li>
+</ul>
+<h3 id="step-1-prepare-the-virtual-machine-with-vtoyboot">Step 1:
+Prepare the Virtual Machine with vtoyboot</h3>
+<p>Before Ventoy can boot a <code>.vdi</code> image, the guest operating
+system must be patched to load the proper storage and filesystem drivers
+at boot time.</p>
+<ol type="1">
+<li>Start your Linux virtual machine inside VirtualBox.</li>
+<li>Download the latest <code>vtoyboot</code> release archive inside the
+guest OS.</li>
+<li>Extract the downloaded archive.</li>
+<li>Open a terminal, navigate to the extracted directory, and run the
+installation script with root privileges:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> bash vtoyboot.sh</span></code></pre></div></li>
+<li>Once the script finishes successfully, shut down the virtual machine
+completely. Do not power it back on inside VirtualBox, as doing so may
+undo the changes made by <code>vtoyboot</code>.</li>
+</ol>
+<h3 id="step-2-rename-the-vdi-file">Step 2: Rename the .vdi File</h3>
+<p>Ventoy relies on specific file extensions to identify how to process
+virtual disk images.</p>
+<ol type="1">
+<li>Locate the <code>.vdi</code> file on your host computer (typically
+found in your <code>VirtualBox VMs</code> directory).</li>
+<li>Append <code>.vtoy</code> to the end of the file name. For example,
+rename <code>ubuntu.vdi</code> to:
+<pre class="text"><code>ubuntu.vdi.vtoy</code></pre></li>
+</ol>
+<h3 id="step-3-copy-to-ventoy-and-boot">Step 3: Copy to Ventoy and
+Boot</h3>
+<ol type="1">
+<li>Copy the renamed <code>.vdi.vtoy</code> file onto your Ventoy USB
+partition just like a normal ISO.</li>
+<li>Safely eject the USB drive and insert it into the target physical
+computer.</li>
+<li>Boot the computer from the USB drive to enter the Ventoy menu.</li>
+<li>Select your <code>.vdi.vtoy</code> file from the list to boot the
+operating system.</li>
+</ol>
+<h3 id="key-considerations">Key Considerations</h3>
+<ul>
+<li><strong>OS Support:</strong> Currently, the <code>vtoyboot</code>
+hook primarily supports Linux-based operating systems. Windows
+<code>.vdi</code> files are not supported natively through this method
+(Windows requires VHD/VHDX formats).</li>
+<li><strong>Hardware Drivers:</strong> Because the guest OS boots on
+physical hardware, ensure the Linux kernel installed in the image
+contains standard open-source drivers (such as graphics and network
+drivers) for the target machine.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

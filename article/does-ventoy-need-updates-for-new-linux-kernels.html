@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Need Updates for New Linux Kernels? - ventoy</title>
+    <meta name="description" content="Ventoy does not require an update every time a Linux distribution releases a new kernel version. Because Ventoy operates by injecting boot-time hooks and handing off execution directly to the operating system's native bootloader, standard Linux kernel po">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-need-updates-for-new-linux-kernels">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Need Updates for New Linux Kernels? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-need-updates-for-new-linux-kernels" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not require an update every time a Linux distribution releases a new kernel version. Because Ventoy operates by injecting boot-time hooks and handing off execution directly to the operating system's native bootloader, standard Linux kernel po" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-need-updates-for-new-linux-kernels">Does Ventoy Need
+Updates for New Linux Kernels?</h1>
+<p>Ventoy does not require an update every time a Linux distribution
+releases a new kernel version. Because Ventoy operates by injecting
+boot-time hooks and handing off execution directly to the operating
+system's native bootloader, standard Linux kernel point releases and
+routine updates will continue to boot without requiring you to flash a
+newer version of Ventoy to your USB drive.</p>
+<h3 id="how-ventoy-interacts-with-the-linux-kernel">How Ventoy Interacts
+with the Linux Kernel</h3>
+<p>When you boot a Linux ISO using Ventoy, Ventoy does not modify the
+contents of the image or replace the distribution's kernel. Instead,
+Ventoy configures a virtual drive in memory and hooks into the
+distribution’s initial RAM disk (<code>initramfs</code> or
+<code>initrd</code>) scripts.</p>
+<p>Once the machine passes control to the kernel inside the ISO, the
+kernel uses standard drivers to mount the ISO mapped by Ventoy as the
+root filesystem. Because the Linux kernel maintains stable boot
+protocols and interfaces across versions, regular kernel upgrades—such
+as moving from Linux 6.5 to 6.6—do not disrupt the mapping mechanism
+Ventoy uses.</p>
+<h3 id="when-ventoy-actually-needs-an-update">When Ventoy Actually Needs
+an Update</h3>
+<p>While normal kernel version changes do not break Ventoy, you will
+need to update the tool under specific circumstances:</p>
+<ul>
+<li><strong>Changes to <code>initramfs</code> Tools:</strong> If a
+distribution fundamentally redesigns how its early boot scripts locate
+and mount root media (such as major overhauls in Dracut, Casper, or
+systemd-boot), Ventoy may require a patch to properly intercept the new
+process.</li>
+<li><strong>New ISO Formats or Structures:</strong> Distributions that
+alter their internal directory structures, partition layouts, or
+bootloader chains can prevent Ventoy from locating boot components.</li>
+<li><strong>Secure Boot Shim Revocations:</strong> Microsoft
+occasionally revokes vulnerable UEFI keys, requiring Ventoy to update
+its Secure Boot binaries and shims to maintain compatibility on systems
+with Secure Boot enabled.</li>
+<li><strong>Specific Kernel Hardware Drivers:</strong> In rare cases, if
+a newly released kernel introduces a regression or architecture change
+affecting memory mapping during early boot, a Ventoy update might be
+released to implement a workaround.</li>
+</ul>
+<h3 id="best-practices">Best Practices</h3>
+<p>You can safely drop updated Linux ISOs onto your Ventoy drive without
+flashing new Ventoy releases each time. As a general rule, you only need
+to update Ventoy itself if a specific new ISO fails to boot, if you
+encounter hardware-compatibility issues on a modern machine, or to
+benefit from periodic bug and security patches.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Headless Install in CI Pipelines - ventoy</title>
+    <meta name="description" content="Ventoy can support automated, unattended installations, but it requires specific configurations and virtualization layers to function within headless continuous integration (CI) pipelines. While Ventoy is primarily an interactive multiboot tool designed">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-headless-install-in-ci-pipelines">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Headless Install in CI Pipelines - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-headless-install-in-ci-pipelines" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can support automated, unattended installations, but it requires specific configurations and virtualization layers to function within headless continuous integration (CI) pipelines. While Ventoy is primarily an interactive multiboot tool designed" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-headless-install-in-ci-pipelines">Ventoy Headless Install
+in CI Pipelines</h1>
+<p>Ventoy can support automated, unattended installations, but it
+requires specific configurations and virtualization layers to function
+within headless continuous integration (CI) pipelines. While Ventoy is
+primarily an interactive multiboot tool designed for physical USB
+storage, its built-in automation plugins and command-line utilities
+allow CI environments to generate virtual boot media and execute fully
+automated operating system deployments without manual intervention.</p>
+<h3 id="how-ventoy-handles-unattended-automation">How Ventoy Handles
+Unattended Automation</h3>
+<p>Ventoy includes an Auto Install Plugin that bypasses manual installer
+prompts. By defining an unattended configuration file—such as a Linux
+Kickstart (<code>ks.cfg</code>), Debian Preseed, or Windows
+<code>autounattend.xml</code>—you map specific ISO files to their
+respective unattended configuration scripts via a central
+<code>ventoy.json</code> configuration file.</p>
+<p>To eliminate manual interaction at the boot screen, Ventoy also
+supports an automated boot selection mechanism. Through the
+<code>control</code> configuration block in <code>ventoy.json</code>,
+you can define default boot options, reduce timeout values to zero, or
+specify an exact image to launch automatically upon system
+initialization.</p>
+<h3 id="running-ventoy-in-headless-ci-environments">Running Ventoy in
+Headless CI Environments</h3>
+<p>Standard CI/CD runners (such as GitHub Actions, GitLab CI, or
+Jenkins) do not have direct access to physical USB drives or monitor
+displays. To use Ventoy headlessly in these environments, deployments
+must rely on virtualized targets:</p>
+<ol type="1">
+<li><strong>Virtual Disk Creation:</strong> Use the Linux CLI tool
+<code>Ventoy2Disk.sh</code> to install Ventoy onto a raw disk image file
+(<code>.img</code> or <code>.raw</code>) rather than a physical USB
+device.</li>
+<li><strong>Mounting and Injecting Assets:</strong> Mount the secondary
+Ventoy partition on the runner to programmatically copy target ISO
+images, unattended configuration templates, and the
+<code>ventoy.json</code> control file into the directory tree.</li>
+<li><strong>Headless Hypervisor Execution:</strong> Launch a hypervisor
+like QEMU or KVM with the <code>-nographic</code> or
+<code>-display none</code> flags, attaching the Ventoy image as the
+primary virtual boot drive. The unattended scripts handle OS setup from
+start to finish, writing the final OS to a secondary target disk.</li>
+</ol>
+<h3 id="limitations-in-cicd-pipelines">Limitations in CI/CD
+Pipelines</h3>
+<p>While feasible through virtualization, using Ventoy within CI/CD
+pipelines introduces architectural overhead:</p>
+<ul>
+<li><strong>No Native Orchestration API:</strong> Ventoy lacks REST APIs
+or status-reporting mechanisms to directly signal to a pipeline runner
+that an installation has succeeded or failed. CI pipelines must infer
+state via serial console logs, guest agent pings, or hypervisor exit
+codes.</li>
+<li><strong>Storage Footprint:</strong> Packaging large ISO files into
+virtual Ventoy drives consumes significant storage bandwidth and disk
+cache within ephemeral CI runner instances.</li>
+<li><strong>Specialized Purpose:</strong> Ventoy is architected around
+live boot media. For pure continuous integration, cloud-native tools
+like HashiCorp Packer, direct QEMU kernel/initrd booting, or network
+boot protocols (iPXE) are significantly faster and easier to automate
+natively.</li>
+</ul>
+<h3 id="conclusion">Conclusion</h3>
+<p>Ventoy supports automated headless installations, provided it is
+paired with its Auto Install Plugin and run inside a headless hypervisor
+like QEMU. However, because it is inherently designed as a USB-based
+bootloader rather than an infrastructure automation framework, it is
+generally best reserved for testing boot media workflows rather than
+acting as a standard CI operating system provisioner.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

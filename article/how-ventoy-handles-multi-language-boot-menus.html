@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles Multi-Language Boot Menus - ventoy</title>
+    <meta name="description" content="Ventoy provides comprehensive multi-language support in its boot menu through a combination of built-in translation files, dynamic hotkey switching, Unicode font rendering, and persistent configuration options. By decoupling language settings from the bo">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-multi-language-boot-menus">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles Multi-Language Boot Menus - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-multi-language-boot-menus" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy provides comprehensive multi-language support in its boot menu through a combination of built-in translation files, dynamic hotkey switching, Unicode font rendering, and persistent configuration options. By decoupling language settings from the bo" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-multi-language-boot-menus">How Ventoy Handles
+Multi-Language Boot Menus</h1>
+<p>Ventoy provides comprehensive multi-language support in its boot menu
+through a combination of built-in translation files, dynamic hotkey
+switching, Unicode font rendering, and persistent configuration options.
+By decoupling language settings from the booted ISO files, Ventoy
+enables users to navigate its interface, system prompts, and
+configuration menus in their preferred language natively at boot
+time.</p>
+<h3 id="built-in-translation-architecture">Built-In Translation
+Architecture</h3>
+<p>Ventoy’s multi-language framework relies on standard JSON files that
+store key-value pairs mapping internal string identifiers to localized
+text. These files cover all menu text, including navigation tips, error
+alerts, function key descriptions, and secondary menu labels. Because
+the UI is built on a modified GRUB2 environment, the system utilizes
+integrated Unicode fonts (such as GNU Unifont) to correctly render
+non-Latin scripts, including Cyrillic, Greek, Arabic, and CJK (Chinese,
+Japanese, and Korean) characters.</p>
+<h3 id="dynamic-runtime-switching">Dynamic Runtime Switching</h3>
+<p>Users can change the display language on the fly directly from the
+main boot screen without restarting the computer:</p>
+<ul>
+<li><strong>The "L" Hotkey:</strong> Pressing the <code>L</code> key on
+the keyboard instantly invokes the language selection popup menu.</li>
+<li><strong>Instant Redraw:</strong> Selecting a language from this list
+immediately updates the interface text without requiring a reload of the
+disk contents or the underlying GRUB engine.</li>
+<li><strong>Session Scope:</strong> Changes made via the runtime menu
+remain active for the duration of the current boot session.</li>
+</ul>
+<h3 id="permanent-configuration-via-ventoyjson">Permanent Configuration
+via <code>ventoy.json</code></h3>
+<p>To make a language preference permanent, Ventoy allows administrators
+and users to define a default language using the
+<code>ventoy.json</code> configuration file placed in the
+<code>ventoy</code> directory of the USB drive's primary partition.</p>
+<p>Within the <code>control</code> section of this file, the
+<code>VTOY_DEFAULT_MENU_LANG</code> parameter can be assigned a specific
+language code (such as <code>"zh_CN"</code> for Simplified Chinese,
+<code>"de_DE"</code> for German, or <code>"es_ES"</code> for Spanish).
+When Ventoy boots, it reads this configuration and initializes the
+interface directly into the specified language, bypassing the default
+English setting.</p>
+<h3 id="custom-translations-and-overrides">Custom Translations and
+Overrides</h3>
+<p>Ventoy supports custom localization additions and modifications. If
+an existing translation needs corrections, or if a user wants to add an
+unsupported language or dialect, they can provide a custom
+<code>languages.json</code> file inside the <code>/ventoy/</code>
+directory. Ventoy checks for external language definition files first,
+allowing local files to override or expand upon the internal translation
+database without altering the underlying core installation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

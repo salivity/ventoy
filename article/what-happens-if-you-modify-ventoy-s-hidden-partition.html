@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Happens If You Modify Ventoy's Hidden Partition - ventoy</title>
+    <meta name="description" content="Ventoy relies on a specific dual-partition scheme to deliver its seamless multi-boot functionality, placing user ISO files in the primary partition and critical boot files inside a smaller, typically hidden EFI partition. Modifying, moving, or resizing t">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/what-happens-if-you-modify-ventoy-s-hidden-partition">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Happens If You Modify Ventoy's Hidden Partition - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/what-happens-if-you-modify-ventoy-s-hidden-partition" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy relies on a specific dual-partition scheme to deliver its seamless multi-boot functionality, placing user ISO files in the primary partition and critical boot files inside a smaller, typically hidden EFI partition. Modifying, moving, or resizing t" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-happens-if-you-modify-ventoys-hidden-partition">What
+Happens If You Modify Ventoy's Hidden Partition</h1>
+<p>Ventoy relies on a specific dual-partition scheme to deliver its
+seamless multi-boot functionality, placing user ISO files in the primary
+partition and critical boot files inside a smaller, typically hidden EFI
+partition. Modifying, moving, or resizing this second partition almost
+always breaks the drive's ability to boot, causes legacy BIOS or UEFI
+startup failures, and prevents future non-destructive Ventoy updates.
+Understanding the mechanics of this partition explains why altering it
+leads to immediate drive failure and how the issues can be resolved.</p>
+<h3 id="the-purpose-of-ventoys-second-partition">The Purpose of Ventoy’s
+Second Partition</h3>
+<p>When Ventoy formats a USB drive, it creates two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Ventoy):</strong> A large, visible partition
+formatted as exFAT by default (though NTFS, ext4, or FAT32 can be used).
+This stores your ISO, WIM, IMG, and VHD files.</li>
+<li><strong>Partition 2 (VTOYEFI):</strong> A small (typically 32MB),
+hidden FAT-formatted partition located at the end of the drive. It
+contains the GRUB2 bootloader, EFI binaries, drivers, and Secure Boot
+key enrollment tools.</li>
+</ol>
+<h3 id="what-happens-if-you-move-the-partition">What Happens If You Move
+the Partition</h3>
+<ul>
+<li><strong>Legacy BIOS Boot Breaks:</strong> In MBR/BIOS mode, the
+Master Boot Record points to specific hardcoded disk sectors to load
+core GRUB components. Moving the partition changes the starting Logical
+Block Addressing (LBA) sector, causing the BIOS boot process to drop
+immediately into a <code>grub rescue&gt;</code> prompt with an
+<code>error: no such partition</code> notice.</li>
+<li><strong>Update Verification Fails:</strong> Ventoy's installation
+and update utilities strictly inspect the partition table. If Partition
+2 does not sit at its expected location or order, the Ventoy installer
+will fail to detect the drive as an existing Ventoy installation. As a
+result, you will lose the ability to perform non-destructive updates and
+will be forced to wipe the drive entirely.</li>
+</ul>
+<h3 id="what-happens-if-you-modify-files-inside-the-partition">What
+Happens If You Modify Files Inside the Partition</h3>
+<ul>
+<li><strong>UEFI Boot Failure:</strong> Modern UEFI systems look
+specifically for <code>/EFI/BOOT/BOOTX64.EFI</code> (or
+architecture-specific equivalents) on FAT partitions. Altering,
+replacing, or deleting files in this partition prevents the UEFI
+firmware from initializing the Ventoy loader.</li>
+<li><strong>Loss of Secure Boot Functionality:</strong> Ventoy includes
+specialized Secure Boot loaders and certificates. Modifying these
+binaries will trigger <code>Security Violation</code> errors on any
+system with Secure Boot enabled.</li>
+<li><strong>Broken Core Functionality:</strong> Ventoy’s custom GRUB
+modules are tailored to mount ISO files into memory and pass control to
+the operating system kernel. Altering the configuration files or
+binaries corrupts the runtime environment, leading to system hangs,
+kernel panics, or missing disk errors when an ISO launches.</li>
+</ul>
+<h3 id="what-happens-if-you-resize-the-partition">What Happens If You
+Resize the Partition</h3>
+<p>While simply expanding the second partition inward might
+theoretically preserve UEFI boot if the filesystem remains intact, it
+disrupts the partition boundary rules Ventoy expects. Any modification
+to the size of Partition 2 confuses the Ventoy automated upgrade
+scripts, which expect the default 32MB layout.</p>
+<h3 id="how-to-fix-a-corrupted-ventoy-partition">How to Fix a Corrupted
+Ventoy Partition</h3>
+<p>If the second partition has been shifted, resized, or had its files
+damaged:</p>
+<ol type="1">
+<li>Connect the USB drive to your computer.</li>
+<li>Launch the official <strong>Ventoy GUI</strong> installer
+(<code>Ventoy2Disk</code>).</li>
+<li>Select your drive and click <strong>Update</strong>.</li>
+<li>The update utility will attempt to rewrite Partition 2 and
+re-establish the standard boot files without erasing the ISO images
+stored on Partition 1.</li>
+<li>If the partition layout was altered too drastically (such as
+deleting or repositioning the partition entirely), the update process
+will fail. In this case, you must select <strong>Install</strong>, which
+completely wipes and re-partitions the drive back to its default
+state.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

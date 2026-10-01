@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inject Custom Network Drivers into ESXi with Ventoy - ventoy</title>
+    <meta name="description" content="Installing VMware ESXi on hardware with consumer or unsupported network interface cards (NICs), such as Realtek or newer Intel chipsets, typically halts with a "No Network Adapters" error. Because Ventoy operates as an ISO-booting framework rather than a">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/inject-custom-network-drivers-into-es-xi-with-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Inject Custom Network Drivers into ESXi with Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/inject-custom-network-drivers-into-es-xi-with-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Installing VMware ESXi on hardware with consumer or unsupported network interface cards (NICs), such as Realtek or newer Intel chipsets, typically halts with a "No Network Adapters" error. Because Ventoy operates as an ISO-booting framework rather than a" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="inject-custom-network-drivers-into-esxi-with-ventoy">Inject
+Custom Network Drivers into ESXi with Ventoy</h1>
+<p>Installing VMware ESXi on hardware with consumer or unsupported
+network interface cards (NICs), such as Realtek or newer Intel chipsets,
+typically halts with a "No Network Adapters" error. Because Ventoy
+operates as an ISO-booting framework rather than an OS-level driver
+injection tool, you cannot pass raw driver files dynamically during
+boot. Instead, the solution requires slipstreaming the custom Community
+Networking Driver bundles into a modified ESXi installer ISO using
+VMware PowerCLI, and then deploying that customized ISO directly onto
+your Ventoy USB drive.</p>
+<h3 id="step-1-prepare-the-driver-and-tools">Step 1: Prepare the Driver
+and Tools</h3>
+<ol type="1">
+<li><strong>Install VMware PowerCLI</strong>: Open PowerShell as
+Administrator on a Windows machine and install the PowerCLI module:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Install-Module <span class="op">-</span>Name VMware<span class="op">.</span><span class="fu">PowerCLI</span> <span class="op">-</span>Scope CurrentUser</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Set-ExecutionPolicy</span> RemoteSigned <span class="op">-</span>Scope CurrentUser</span></code></pre></div></li>
+<li><strong>Download ESXi-Customizer-PS</strong>: Download the latest
+script from the official GitHub repository for
+<code>ESXi-Customizer-PS</code>. This script automates the VMware Image
+Builder process.</li>
+<li><strong>Download the Custom Network Drivers</strong>: Download the
+required network driver offline bundle (a <code>.zip</code> file, not a
+<code>.vib</code> file). For consumer NICs (such as Realtek or Intel
+I219/I225), obtain the official VMware Community Networking Driver
+Offline Bundle from the VMware Flings repository. Place the downloaded
+<code>.zip</code> file into a local folder, such as
+<code>C:\drivers</code>.</li>
+</ol>
+<h3 id="step-2-generate-the-custom-esxi-iso">Step 2: Generate the Custom
+ESXi ISO</h3>
+<p>Use <code>ESXi-Customizer-PS</code> to pull the base ESXi image from
+the VMware Online Depot and inject your custom driver bundle.</p>
+<ol type="1">
+<li><p>Open PowerShell and navigate to the directory containing
+<code>ESXi-Customizer-PS.ps1</code>.</p></li>
+<li><p>Run the following command (replace the ESXi version and local
+path as necessary):</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\ESXi-Customizer-PS<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>esxiVersion <span class="dv">8.</span>0U2 <span class="op">-</span>pkgDir C<span class="op">:</span>\drivers</span></code></pre></div>
+<p><em>Note: If you have an existing official ESXi base ISO rather than
+pulling from the online repository, use
+<code>-baseIso &lt;path-to-iso&gt;</code> instead of
+<code>-esxiVersion</code>.</em></p></li>
+<li><p>The script will fetch the base depot, integrate the drivers
+located in <code>C:\drivers</code>, and generate a bootable ISO file
+(e.g., <code>ESXi-8.0U2-custom.iso</code>).</p></li>
+</ol>
+<h3 id="step-3-add-the-iso-to-ventoy">Step 3: Add the ISO to Ventoy</h3>
+<ol type="1">
+<li>Insert your prepared Ventoy USB drive into your system.</li>
+<li>Copy the newly generated custom ESXi ISO directly into the Ventoy
+partition.</li>
+<li>If you have an automated installation script (<code>KS.CFG</code>),
+you can also save it to the drive and configure Ventoy's
+<code>ventoy.json</code> plugin to auto-supply Kickstart parameters if
+required.</li>
+</ol>
+<h3 id="step-4-boot-and-install">Step 4: Boot and Install</h3>
+<ol type="1">
+<li>Plug the Ventoy drive into the target host machine and enter the
+BIOS/UEFI boot menu.</li>
+<li>Select your Ventoy USB drive in UEFI mode (ESXi 7.x and 8.x strongly
+favor or require UEFI).</li>
+<li>Select your custom ESXi ISO from the Ventoy menu.</li>
+<li>When the ESXi boot menu appears, proceed with the standard
+installation. The installer will load the integrated VIBs during initial
+boot, detect your network adapter, and allow you to proceed with disk
+configuration and setup.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

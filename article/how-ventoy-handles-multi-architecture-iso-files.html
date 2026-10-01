@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles Multi-Architecture ISO Files - ventoy</title>
+    <meta name="description" content="Ventoy streamlines booting multi-architecture ISO files by dynamically adapting to the host machine's hardware environment before launching the operating system. Rather than modifying or extracting the contents of an ISO, Ventoy detects the host firmware">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-multi-architecture-iso-files">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles Multi-Architecture ISO Files - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-multi-architecture-iso-files" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy streamlines booting multi-architecture ISO files by dynamically adapting to the host machine's hardware environment before launching the operating system. Rather than modifying or extracting the contents of an ISO, Ventoy detects the host firmware" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-multi-architecture-iso-files">How Ventoy
+Handles Multi-Architecture ISO Files</h1>
+<p>Ventoy streamlines booting multi-architecture ISO files by
+dynamically adapting to the host machine's hardware environment before
+launching the operating system. Rather than modifying or extracting the
+contents of an ISO, Ventoy detects the host firmware mode—whether it is
+Legacy BIOS, x86_64 UEFI, IA32 UEFI, or ARM64 UEFI—and chains execution
+directly to the corresponding bootloader embedded inside the ISO. This
+article explains the technical mechanics behind how Ventoy identifies,
+maps, and executes multi-architecture ISO images seamlessly.</p>
+<h3 id="host-side-firmware-detection">Host-Side Firmware Detection</h3>
+<p>When a computer boots into Ventoy, the process begins entirely
+outside of the ISO file. Ventoy installs a multi-partition layout on the
+USB drive containing distinct boot binaries tailored for different
+architectures (such as <code>bootx64.efi</code>,
+<code>bootia32.efi</code>, <code>bootaa64.efi</code>, and a standard MBR
+code for Legacy BIOS). The host motherboard automatically loads the
+Ventoy binary that corresponds to its native architecture and firmware
+mode. Consequently, Ventoy is already running in the correct
+architectural context before the user even selects an ISO from the
+menu.</p>
+<h3 id="dynamic-bootloader-chainloading">Dynamic Bootloader
+Chainloading</h3>
+<p>Multi-architecture ISO files, such as hybrid Linux distributions or
+multi-version Windows installers, contain multiple boot paths
+internally. They typically feature an El Torito boot catalog for Legacy
+BIOS alongside an EFI system partition containing bootloaders for
+various UEFI architectures (e.g., <code>/EFI/BOOT/BOOTX64.EFI</code>,
+<code>/EFI/BOOT/BOOTIA32.EFI</code>, or
+<code>/EFI/BOOT/BOOTAA64.EFI</code>).</p>
+<p>Once an ISO is selected, Ventoy handles the multi-architecture
+structure as follows:</p>
+<ul>
+<li><strong>Legacy BIOS Mode:</strong> Ventoy parses the ISO's El Torito
+specifications, extracts the BIOS boot image (often an isolinux or GRUB
+stage), and executes it using standard INT 13h disk emulation
+interrupts.</li>
+<li><strong>UEFI Modes (x86_64, IA32, ARM64):</strong> Ventoy inspects
+the embedded EFI system partition inside the ISO. It searches for the
+boot file that strictly matches the currently running UEFI environment.
+For example, on a 32-bit UEFI tablet, it locates and hands control over
+to <code>BOOTIA32.EFI</code>, while on a standard modern PC, it hands
+control to <code>BOOTX64.EFI</code>.</li>
+</ul>
+<h3 id="in-memory-virtualization-and-hooking">In-Memory Virtualization
+and Hooking</h3>
+<p>Ventoy avoids altering the ISO structure on disk. Instead, it creates
+a virtual disk in memory that maps the sectors of the selected ISO file
+back to the physical USB storage.</p>
+<p>During the handoff:</p>
+<ol type="1">
+<li>Ventoy hooks the firmware's storage protocols (such as
+<code>EFI_BLOCK_IO_PROTOCOL</code> in UEFI or BIOS interrupt
+vectors).</li>
+<li>When the ISO's architecture-specific bootloader queries the firmware
+for attached storage, Ventoy intercepts the request and presents the ISO
+image as a standard optical drive or physical block device.</li>
+<li>The selected architecture's bootloader executes normally, reading
+its respective kernel, drivers, and initial RAM disk (initrd) directly
+from the virtualized image.</li>
+</ol>
+<p>By letting the host firmware dictate the initial environment and then
+delegating execution to the corresponding architecture-specific file
+inside the ISO, Ventoy achieves full compatibility with
+multi-architecture images without requiring manual user configuration or
+file modification.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

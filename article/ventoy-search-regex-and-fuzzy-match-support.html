@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Search: Regex and Fuzzy Match Support - ventoy</title>
+    <meta name="description" content="Ventoy includes a convenient search mode to help users quickly locate specific ISO and image files within large storage drives, but its filtering mechanism is limited. Ventoy does not support regular expressions (regex) or fuzzy matching algorithms. Inst">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-search-regex-and-fuzzy-match-support">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Search: Regex and Fuzzy Match Support - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-search-regex-and-fuzzy-match-support" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy includes a convenient search mode to help users quickly locate specific ISO and image files within large storage drives, but its filtering mechanism is limited. Ventoy does not support regular expressions (regex) or fuzzy matching algorithms. Inst" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-search-regex-and-fuzzy-match-support">Ventoy Search:
+Regex and Fuzzy Match Support</h1>
+<p>Ventoy includes a convenient search mode to help users quickly locate
+specific ISO and image files within large storage drives, but its
+filtering mechanism is limited. Ventoy does not support regular
+expressions (regex) or fuzzy matching algorithms. Instead, the search
+function relies on standard, case-insensitive substring matching,
+requiring users to input exact sequences of characters found within file
+names or file paths.</p>
+<h3 id="how-the-ventoy-search-filter-operates">How the Ventoy Search
+Filter Operates</h3>
+<p>When accessing Ventoy's boot menu, pressing the <strong>F3</strong>
+key opens the search interface. As you type into the search box, Ventoy
+immediately filters the list of bootable images displayed on the
+screen.</p>
+<p>The filter checks whether the entered string exists as a contiguous
+block of text inside the file name or its directory path. The evaluation
+is strictly case-insensitive, meaning searching for "ubuntu", "Ubuntu",
+or "UBUNTU" will yield identical results.</p>
+<h3 id="regular-expression-regex-support">Regular Expression (Regex)
+Support</h3>
+<p>Ventoy does not support regular expressions. Metacharacters commonly
+used in regex syntax—such as <code>.*</code>, <code>^</code>,
+<code>$</code>, <code>[a-z]</code>, or <code>?</code>—are not parsed as
+pattern modifiers or wildcards.</p>
+<p>If you type any of these symbols into the Ventoy search prompt, the
+system treats them as literal characters. Consequently, an expression
+like <code>win.*iso</code> will fail to match a file named
+<code>windows11.iso</code>, as it will explicitly search for the literal
+string <code>.*</code> in the filename.</p>
+<h3 id="fuzzy-matching-support">Fuzzy Matching Support</h3>
+<p>Fuzzy matching—an algorithm that tolerates typos, misspellings, or
+non-consecutive character inputs (such as matching "ubntu" to
+"ubuntu")—is not supported in Ventoy.</p>
+<p>Because the search uses strict substring evaluation, the query string
+must precisely match a continuous sequence of characters in the target
+file. If a single letter is omitted, transposed, or misspelled, the
+matching file will not appear in the filtered results.</p>
+<h3 id="tips-for-efficient-searching-in-ventoy">Tips for Efficient
+Searching in Ventoy</h3>
+<p>Because Ventoy lacks advanced matching patterns, optimizing your
+storage layout and naming conventions ensures the best search
+experience:</p>
+<ul>
+<li><strong>Use Consistent Naming:</strong> Rename your ISO files
+systematically (e.g., <code>distro_version_arch.iso</code> such as
+<code>ubuntu-22.04-x64.iso</code>) to make searching predictable.</li>
+<li><strong>Keep Search Queries Short:</strong> Instead of typing full
+names, type unique short identifiers like <code>22.04</code>,
+<code>win11</code>, or <code>arch</code> to instantly narrow down your
+list.</li>
+<li><strong>Leverage Directory Paths:</strong> Ventoy's search scans the
+entire relative path. If you organize files into folders such as
+<code>/Linux/</code> or <code>/Rescue/</code>, searching for the folder
+name will filter files residing in that specific directory.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

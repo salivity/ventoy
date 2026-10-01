@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Boots ISO Files Without Extraction - ventoy</title>
+    <meta name="description" content="Ventoy allows users to boot multiple operating systems from a single USB drive simply by copying raw ISO files onto the storage partition. Instead of unpacking ISO contents or reformatting the drive for every new image, Ventoy dynamically hooks into the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-boots-iso-files-without-extraction">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Boots ISO Files Without Extraction - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-boots-iso-files-without-extraction" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy allows users to boot multiple operating systems from a single USB drive simply by copying raw ISO files onto the storage partition. Instead of unpacking ISO contents or reformatting the drive for every new image, Ventoy dynamically hooks into the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-boots-iso-files-without-extraction">How Ventoy Boots
+ISO Files Without Extraction</h1>
+<p>Ventoy allows users to boot multiple operating systems from a single
+USB drive simply by copying raw ISO files onto the storage partition.
+Instead of unpacking ISO contents or reformatting the drive for every
+new image, Ventoy dynamically hooks into the system's firmware and
+kernel boot stages. It maps the ISO’s storage sectors directly into
+system memory, creating a virtual optical drive that the operating
+system recognizes as real installation media.</p>
+<h2 id="the-dual-partition-architecture">The Dual-Partition
+Architecture</h2>
+<p>When prepared with Ventoy, a USB drive is divided into two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>The System Partition:</strong> A tiny, hidden partition
+(usually formatted as FAT) that contains the bootloader binaries for
+both legacy BIOS and modern UEFI architectures.</li>
+<li><strong>The Data Partition:</strong> A large partition (formatted as
+exFAT, NTFS, or ext4) where users simply drag and drop unaltered
+<code>.iso</code>, <code>.img</code>, or <code>.vhd</code> files.</li>
+</ol>
+<p>When the computer starts, the hardware executes the bootloader from
+the small system partition, running a customized build of GRUB2. This
+interface scans the data partition, reads its file system, and generates
+a boot menu listing every detected ISO.</p>
+<h2 id="firmware-level-hooking-bios-and-uefi">Firmware-Level Hooking
+(BIOS and UEFI)</h2>
+<p>Under traditional booting methods, tools like Rufus extract the ISO's
+file structure directly onto the USB file system or write the image raw
+(using <code>dd</code>), destroying any existing drive contents. Ventoy
+bypasses this using firmware-level emulation.</p>
+<ul>
+<li><strong>Legacy BIOS:</strong> Ventoy hooks the <code>INT 13h</code>
+interrupt vector in memory. <code>INT 13h</code> is the legacy BIOS
+service used for reading and writing to disk drives. Ventoy intercepts
+these read requests and redirects them to the exact physical sectors
+where the ISO resides on the USB drive.</li>
+<li><strong>Modern UEFI:</strong> Ventoy intercepts UEFI runtime
+services, specifically hooking into the
+<code>EFI_BLOCK_IO_PROTOCOL</code>. It creates a virtual handle for a
+CD-ROM device, feeding the firmware data directly from the ISO file
+stored on the data partition.</li>
+</ul>
+<p>At this initial stage, the firmware believes a physical CD/DVD drive
+is attached to the system and boots the bootloader embedded inside the
+ISO (such as ISOLINUX or GRUB).</p>
+<h2 id="transitioning-to-the-os-kernel">Transitioning to the OS
+Kernel</h2>
+<p>Emulating an optical drive at the firmware level is only half the
+battle. As soon as an operating system kernel (such as the Linux kernel
+or the Windows NT kernel) initializes, it discards BIOS interrupts and
+UEFI protocols, loading its own native hardware drivers. Ordinarily,
+this causes the boot process to fail because the OS loses sight of the
+virtual optical drive and searches for physical installation media.</p>
+<p>Ventoy solves this through runtime kernel interception:</p>
+<ul>
+<li><strong>Linux Bootstrapping:</strong> Ventoy hooks into the OS’s
+initial RAM disk (<code>initramfs</code> or <code>initrd</code>). When
+the Linux kernel boots, a lightweight Ventoy runtime hook executes
+before the root file system is mounted. This script locates the original
+ISO file on the USB drive, creates a loopback block device (using
+device-mapper), and mounts it to the location where the distribution's
+installer expects to find physical installation media.</li>
+<li><strong>Windows Bootstrapping:</strong> For Windows installations,
+Ventoy injects a custom runtime driver into the Windows Preinstallation
+Environment (WinPE) during memory initialization. This driver mounts the
+target ISO file as a virtual SCSI/SATA optical drive before the Windows
+setup process checks for installation files.</li>
+</ul>
+<h2 id="sector-mapping-over-memory-caching">Sector Mapping Over Memory
+Caching</h2>
+<p>A common misconception is that Ventoy copies the entire ISO file into
+system RAM to boot it. While Ventoy includes an optional "memdisk" mode
+for small diagnostic images, its standard operation uses sector mapping
+rather than RAM loading.</p>
+<p>Ventoy determines the physical sector addresses (LBAs) of the ISO
+file on the USB drive. It then presents these sectors to the operating
+system on demand. Because the file is read in real time directly from
+the storage flash, Ventoy can boot massive multi-gigabyte ISO files
+instantly on systems with minimal RAM.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

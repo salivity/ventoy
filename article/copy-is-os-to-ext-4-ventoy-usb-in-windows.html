@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy ISOs to ext4 Ventoy USB in Windows - ventoy</title>
+    <meta name="description" content="While Windows cannot natively write to Linux file systems, third-party software makes it possible to mount and transfer files to an ext4-formatted Ventoy drive. This guide covers the best tools available to bridge the compatibility gap between Windows an">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/copy-is-os-to-ext-4-ventoy-usb-in-windows">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Copy ISOs to ext4 Ventoy USB in Windows - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/copy-is-os-to-ext-4-ventoy-usb-in-windows" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="While Windows cannot natively write to Linux file systems, third-party software makes it possible to mount and transfer files to an ext4-formatted Ventoy drive. This guide covers the best tools available to bridge the compatibility gap between Windows an" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="copy-isos-to-ext4-ventoy-usb-in-windows">Copy ISOs to ext4
+Ventoy USB in Windows</h1>
+<p>While Windows cannot natively write to Linux file systems,
+third-party software makes it possible to mount and transfer files to an
+ext4-formatted Ventoy drive. This guide covers the best tools available
+to bridge the compatibility gap between Windows and ext4, allowing you
+to copy ISO images directly to your multiboot USB drive without needing
+to boot into a Linux environment.</p>
+<h3 id="paragon-linux-file-systems-for-windows">Paragon Linux File
+Systems for Windows</h3>
+<p>Paragon Linux File Systems for Windows is the most reliable and
+user-friendly third-party application for writing to ext4 drives. It
+installs dedicated file system drivers that allow Windows to treat ext4
+partitions like native NTFS or FAT drives.</p>
+<ul>
+<li><strong>Full Read/Write Access:</strong> Provides seamless write
+support, allowing you to drag and drop large ISO files directly via
+Windows File Explorer.</li>
+<li><strong>Auto-Mount Functionality:</strong> Automatically detects
+connected ext4 drives and assigns them a drive letter.</li>
+<li><strong>Integrity Protection:</strong> Supports ext4 journaling to
+prevent corruption during large transfers.</li>
+</ul>
+<p>To use it, install the software, connect your ext4 Ventoy USB drive,
+and it will mount automatically in File Explorer with an assigned drive
+letter. From there, open the drive and copy your ISO files into your
+Ventoy directory.</p>
+<h3 id="ext2fsd">Ext2Fsd</h3>
+<p>Ext2Fsd is an open-source Windows file system driver for Ext2, Ext3,
+and Ext4 partitions. While development has slowed, it remains a free
+alternative for users running older versions of Windows (such as Windows
+7 or early builds of Windows 10).</p>
+<ul>
+<li><strong>Open-Source and Free:</strong> No license required.</li>
+<li><strong>Drive Letter Mapping:</strong> Allows manual assignment of
+drive letters to Linux partitions.</li>
+<li><strong>Write Support Note:</strong> Write support for ext4 must be
+explicitly enabled in the settings, and features like 64-bit ext4
+journaling should be handled with caution to avoid file system
+corruption.</li>
+</ul>
+<p>To copy ISOs using Ext2Fsd, launch the Ext2 Volume Manager,
+right-click your Ventoy ext4 partition, assign a drive letter, ensure
+write access is enabled, and proceed to transfer your files.</p>
+<h3 id="windows-subsystem-for-linux-wsl-2-alternative">Windows Subsystem
+for Linux (WSL 2) Alternative</h3>
+<p>If third-party drivers are not an option, Microsoft’s native WSL 2
+provides a built-in method to mount and write to ext4 drives without
+commercial software.</p>
+<ol type="1">
+<li>Open PowerShell as an Administrator.</li>
+<li>Identify your USB drive index using:
+<code>GET-CimInstance -query "SELECT * from Win32_DiskDrive"</code></li>
+<li>Mount the physical disk to WSL using:
+<code>wsl --mount \\.\PHYSICALDRIVE[X] --bare</code> (replace
+<code>[X]</code> with your drive number).</li>
+<li>Inside your Linux distribution terminal, mount the partition to a
+directory.</li>
+<li>Access the files through Windows File Explorer by navigating to the
+network path <code>\\wsl$\</code>.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

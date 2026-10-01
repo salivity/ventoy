@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Distros That Copy to RAM via Ventoy - ventoy</title>
+    <meta name="description" content="Running a Linux live distribution entirely in RAM allows you to free up your USB port, prevent wear on the flash drive, and achieve faster operating speeds. While Ventoy makes multi-booting effortless, unplugging the drive during a live session usually c">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/linux-distros-that-copy-to-ram-via-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Linux Distros That Copy to RAM via Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/linux-distros-that-copy-to-ram-via-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Running a Linux live distribution entirely in RAM allows you to free up your USB port, prevent wear on the flash drive, and achieve faster operating speeds. While Ventoy makes multi-booting effortless, unplugging the drive during a live session usually c" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="linux-distros-that-copy-to-ram-via-ventoy">Linux Distros That
+Copy to RAM via Ventoy</h1>
+<p>Running a Linux live distribution entirely in RAM allows you to free
+up your USB port, prevent wear on the flash drive, and achieve faster
+operating speeds. While Ventoy makes multi-booting effortless,
+unplugging the drive during a live session usually crashes the system
+unless the OS is loaded completely into memory. This guide highlights
+the Linux distributions that support running entirely from RAM and
+explains how to safely remove your Ventoy drive after booting.</p>
+<h3
+id="distributions-with-native-copy-to-ram-boot-options">Distributions
+with Native "Copy to RAM" Boot Options</h3>
+<p>Several distributions provide an explicit option directly in their
+boot menu to copy the operating system into RAM, requiring no manual
+configuration.</p>
+<h4 id="1-porteus">1. Porteus</h4>
+<p>Porteus is a modular, ultra-fast distribution designed specifically
+to run from portable media.</p>
+<ul>
+<li><strong>How it works:</strong> Porteus includes a default boot menu
+entry titled <strong>Copy to RAM</strong> (using the
+<code>copy2ram</code> cheatcode).</li>
+<li><strong>RAM Requirement:</strong> Typically under 1 GB, depending on
+the chosen desktop environment (XFCE, KDE, Cinnamon, LXQt, or
+Openbox).</li>
+<li><strong>USB Removal:</strong> Once the desktop appears, the Ventoy
+drive can be safely unplugged.</li>
+</ul>
+<h4 id="2-puppy-linux">2. Puppy Linux</h4>
+<p>Puppy Linux is engineered from the ground up to operate inside system
+memory.</p>
+<ul>
+<li><strong>How it works:</strong> By default, if the system detects
+sufficient RAM, Puppy copies its core file system (<code>sfs</code>
+files) into memory automatically.</li>
+<li><strong>RAM Requirement:</strong> 512 MB to 2 GB depending on the
+modern variant (e.g., BookwormPup, FossaPup).</li>
+<li><strong>USB Removal:</strong> Safe to unplug as soon as the desktop
+initializes.</li>
+</ul>
+<h4 id="3-slax">3. Slax</h4>
+<p>Based on Debian (or Slackware, depending on version), Slax is a
+compact live system featuring a lightweight desktop.</p>
+<ul>
+<li><strong>How it works:</strong> The bootloader includes a dedicated
+<strong>Run from RAM</strong> menu option.</li>
+<li><strong>RAM Requirement:</strong> Approximately 512 MB to 1 GB.</li>
+<li><strong>USB Removal:</strong> Fully removable once loaded.</li>
+</ul>
+<h4 id="4-gparted-live-and-clonezilla">4. GParted Live and
+Clonezilla</h4>
+<p>Both maintenance distributions are Debian-based utilities designed
+for drive partitioning, cloning, and backup.</p>
+<ul>
+<li><strong>How it works:</strong> Their primary boot menus provide an
+explicit option: <strong>GParted Live (To RAM)</strong> or
+<strong>Clonezilla live (To RAM)</strong>.</li>
+<li><strong>RAM Requirement:</strong> Around 512 MB to 1 GB.</li>
+<li><strong>USB Removal:</strong> Unmounting the USB is especially
+useful here, as it frees the USB port and eliminates the Ventoy drive
+from the list of physical drives to avoid partitioning mistakes.</li>
+</ul>
+<h4 id="5-alpine-linux">5. Alpine Linux</h4>
+<p>Alpine uses a diskless mode by default, which loads an
+<code>initramfs</code> containing the base operating system entirely
+into memory.</p>
+<ul>
+<li><strong>How it works:</strong> In standard live mode, Alpine reads
+packages into RAM and runs without maintaining a constant mount to the
+installation medium.</li>
+<li><strong>RAM Requirement:</strong> Less than 256 MB.</li>
+</ul>
+<hr />
+<h3 id="mainstream-distros-using-kernel-parameters">Mainstream Distros
+Using Kernel Parameters</h3>
+<p>Most standard desktop distributions do not have an explicit "To RAM"
+option in their standard menu, but their live environments support this
+behavior using boot parameters. When booting the ISO through Ventoy,
+press <code>e</code> at the distribution's GRUB menu, append the
+appropriate parameter to the <code>linux</code> or <code>linuxefi</code>
+kernel line, and press <code>Ctrl+X</code> or <code>F10</code> to
+boot.</p>
+<ul>
+<li><strong>Ubuntu, Linux Mint, and Debian Live:</strong> Append
+<code>toram</code> to the boot line. The live image will be copied to
+RAM during the initramfs stage. This requires enough free RAM to hold
+the entire ISO (usually 3 GB to 6 GB).</li>
+<li><strong>Arch Linux (Archiso):</strong> Append
+<code>copytoram=y</code>. Archiso will fetch the entire squashfs image
+into RAM before mounting the root filesystem.</li>
+<li><strong>Fedora Live:</strong> Append <code>rd.live.ram=1</code>.
+This instructs the Dracut initramfs system to load the live image into
+memory.</li>
+</ul>
+<hr />
+<h3 id="important-considerations-for-ventoy-users">Important
+Considerations for Ventoy Users</h3>
+<ul>
+<li><strong>Sufficient Memory:</strong> Running an OS entirely from RAM
+requires enough capacity for both the uncompressed live squashfs image
+and the runtime memory needs of running applications. For small
+utilities like GParted or Puppy Linux, 2 GB of RAM is sufficient. For
+standard modern desktops like Ubuntu or Fedora, at least 8 GB of system
+RAM is recommended.</li>
+<li><strong>Data Persistence:</strong> Unplugging the drive means
+changes made during the session will disappear when the computer is
+turned off, unless persistent storage or network backup has been
+configured separately.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

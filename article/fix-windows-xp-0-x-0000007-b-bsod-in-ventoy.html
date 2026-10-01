@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Windows XP 0x0000007B BSOD in Ventoy - ventoy</title>
+    <meta name="description" content="Booting a Windows XP installation ISO through Ventoy frequently results in the infamous Blue Screen of Death (BSOD) with error code 0x0000007B (INACCESSIBLEBOOTDEVICE). This article breaks down the technical reasons behind this error—specifically the l">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/fix-windows-xp-0-x-0000007-b-bsod-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fix Windows XP 0x0000007B BSOD in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/fix-windows-xp-0-x-0000007-b-bsod-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Booting a Windows XP installation ISO through Ventoy frequently results in the infamous Blue Screen of Death (BSOD) with error code 0x0000007B (INACCESSIBLEBOOTDEVICE). This article breaks down the technical reasons behind this error—specifically the l" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="fix-windows-xp-0x0000007b-bsod-in-ventoy">Fix Windows XP
+0x0000007B BSOD in Ventoy</h1>
+<p>Booting a Windows XP installation ISO through Ventoy frequently
+results in the infamous Blue Screen of Death (BSOD) with error code
+<code>0x0000007B</code> (<code>INACCESSIBLE_BOOT_DEVICE</code>). This
+article breaks down the technical reasons behind this error—specifically
+the lack of modern storage drivers in Windows XP and the loss of virtual
+drive access during setup—and details the exact steps required to
+resolve the issue and complete installation.</p>
+<h3 id="1-missing-ahci-and-sata-drivers">1. Missing AHCI and SATA
+Drivers</h3>
+<p>The primary cause of error <code>0x0000007B</code> is Windows XP's
+age. When Windows XP was released in 2001, Parallel ATA (IDE) was the
+industry standard. Consequently, the standard Windows XP installation
+media does not include native drivers for modern Serial ATA (SATA)
+controllers operating in AHCI (Advanced Host Controller Interface) or
+RAID modes.</p>
+<p>When the text-mode phase of Windows XP setup initializes, it attempts
+to load drivers to communicate with the system's storage controllers.
+When it fails to find a compatible driver for the active SATA
+controller, it cannot access the drive and immediately triggers the
+<code>0x0000007B</code> stop error.</p>
+<h3 id="2-loss-of-the-virtual-cd-rom-emulation-hook-loss">2. Loss of the
+Virtual CD-ROM Emulation (Hook Loss)</h3>
+<p>Ventoy uses BIOS interrupt calls (such as INT 13h) to map the ISO
+file into system memory as a virtual CD-ROM drive. While this mechanism
+works seamlessly during the initial boot sequence in 16-bit Real
+Mode:</p>
+<ul>
+<li>Windows XP Setup transitions from 16-bit Real Mode to 32-bit
+Protected Mode early in the installation process.</li>
+<li>During this transition, setup stops using BIOS interrupts and
+switches exclusively to its internal 32-bit hardware drivers.</li>
+<li>Because Windows XP does not natively understand Ventoy’s virtual
+drive mapping, the installation media disappears from the operating
+system's perspective.</li>
+<li>Setup cannot locate the necessary source files to continue, which
+presents as an inaccessible boot device (<code>0x0000007B</code>).</li>
+</ul>
+<h3 id="how-to-fix-the-error">How to Fix the Error</h3>
+<h4 id="switch-sata-mode-to-ide-in-biosuefi">Switch SATA Mode to IDE in
+BIOS/UEFI</h4>
+<ol type="1">
+<li>Enter your computer's BIOS/UEFI firmware settings.</li>
+<li>Locate the <strong>SATA Configuration</strong>, <strong>SATA
+Mode</strong>, or <strong>Storage Configuration</strong> setting.</li>
+<li>Change the mode from <strong>AHCI</strong> or <strong>RAID</strong>
+to <strong>IDE</strong>, <strong>Compatible</strong>, or
+<strong>Legacy</strong>.</li>
+<li>Save changes and restart the setup via Ventoy.</li>
+</ol>
+<h4 id="slipstream-sataahci-drivers-into-the-iso">Slipstream SATA/AHCI
+Drivers into the ISO</h4>
+<p>If your motherboard lacks an IDE compatibility mode:</p>
+<ol type="1">
+<li>Obtain the specific SATA/AHCI drivers (F6 drivers) for your
+motherboard's chipset.</li>
+<li>Use an image customization tool such as nLite to slipstream these
+drivers directly into your Windows XP installation ISO.</li>
+<li>Replace the ISO on your Ventoy drive with the newly created,
+driver-integrated image.</li>
+</ol>
+<h4 id="use-driverpacks-and-virtual-disk-drivers">Use DriverPacks and
+Virtual Disk Drivers</h4>
+<p>To address the loss of Ventoy's virtual ISO mount in Protected
+Mode:</p>
+<ul>
+<li>Use a Windows XP image that includes Firadisk or WinVBlock drivers.
+These RAM-disk drivers preserve the ISO mapping throughout the Protected
+Mode transition.</li>
+<li>Alternatively, integrate the DriverPacks Mass Storage pack into your
+installation ISO, which provides broad compatibility with various
+storage controllers and virtual drives out of the box.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can You Format Ventoy Partition to NTFS? - ventoy</title>
+    <meta name="description" content="Yes, the main partition of a Ventoy USB drive can be formatted with NTFS. While Ventoy defaults to the exFAT file system during standard installation, its architecture is designed to support several alternative file systems for storing image files, inclu">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-you-format-ventoy-partition-to-ntfs">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can You Format Ventoy Partition to NTFS? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-you-format-ventoy-partition-to-ntfs" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, the main partition of a Ventoy USB drive can be formatted with NTFS. While Ventoy defaults to the exFAT file system during standard installation, its architecture is designed to support several alternative file systems for storing image files, inclu" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-you-format-ventoy-partition-to-ntfs">Can You Format Ventoy
+Partition to NTFS?</h1>
+<p>Yes, the main partition of a Ventoy USB drive can be formatted with
+NTFS. While Ventoy defaults to the exFAT file system during standard
+installation, its architecture is designed to support several
+alternative file systems for storing image files, including NTFS, FAT32,
+ext4, ext3, ext2, and XFS. This article covers why you might choose
+NTFS, how Ventoy handles partitions, and how to properly apply the NTFS
+file system to your drive without breaking its boot capabilities.</p>
+<p>Ventoy splits your USB drive into two distinct partitions upon
+installation:</p>
+<ol type="1">
+<li><strong>Partition 1 (Image Partition):</strong> This is the large,
+primary partition where you drag and drop your ISO, WIM, IMG, and VHD
+files.</li>
+<li><strong>Partition 2 (VTOY_EFI):</strong> This is a small, hidden
+system partition (typically around 32 MB) that houses the Ventoy core
+bootloader files and EFI binaries.</li>
+</ol>
+<p>Because the bootloader operates entirely from the second partition,
+the first partition can be formatted to NTFS without corrupting Ventoy's
+core boot mechanism. However, you must never modify, format, or delete
+the second partition.</p>
+<h3 id="why-choose-ntfs-for-ventoy">Why Choose NTFS for Ventoy?</h3>
+<p>Using NTFS on the main partition offers specific advantages depending
+on your operating environment:</p>
+<ul>
+<li><strong>Large File Support:</strong> Unlike FAT32, which caps
+individual file sizes at 4GB, NTFS allows you to store massive ISO
+files, such as customized Windows installation images or multi-gigabyte
+recovery suites.</li>
+<li><strong>Broad Windows Compatibility:</strong> NTFS is natively
+supported across all modern versions of Windows, ensuring reliable read
+and write operations without requiring third-party drivers.</li>
+<li><strong>Resilience:</strong> NTFS is a journaling file system,
+making it more resilient against file corruption compared to exFAT if
+the drive is accidentally unplugged during read operations.</li>
+</ul>
+<h3 id="how-to-format-the-ventoy-main-partition-to-ntfs">How to Format
+the Ventoy Main Partition to NTFS</h3>
+<p>There are two primary ways to set up NTFS on your Ventoy drive:</p>
+<p><strong>1. Before Installation (Ventoy GUI)</strong> Before
+installing Ventoy on your USB drive, open the Ventoy GUI tool:</p>
+<ul>
+<li>Click on <strong>Option</strong> in the top menu.</li>
+<li>Select <strong>Partition Configuration</strong>.</li>
+<li>In the configuration window, locate the <strong>File System</strong>
+setting for Part 1 and select <strong>NTFS</strong> from the dropdown
+menu.</li>
+<li>Click <strong>OK</strong>, then proceed to click
+<strong>Install</strong>.</li>
+</ul>
+<p><strong>2. After Installation (Manual Reformat)</strong> If Ventoy is
+already installed on your USB drive:</p>
+<ul>
+<li>Insert the drive into a Windows PC.</li>
+<li>Open <strong>File Explorer</strong> or <strong>Disk
+Management</strong>.</li>
+<li>Right-click the visible data partition (Partition 1) and select
+<strong>Format</strong>.</li>
+<li>Choose <strong>NTFS</strong> as the file system, set the allocation
+unit size to default, and perform a Quick Format.</li>
+<li>Once completed, simply copy your bootable ISO files back onto the
+partition.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

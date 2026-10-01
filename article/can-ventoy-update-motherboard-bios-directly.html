@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Update Motherboard BIOS Directly? - ventoy</title>
+    <meta name="description" content="Ventoy cannot natively flash raw motherboard BIOS files (such as .bin, .cap, or .rom) directly from its boot menu. Because Ventoy is a bootable image launcher rather than a flashing utility, it does not include the hardware-level tools required to write">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-update-motherboard-bios-directly">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Update Motherboard BIOS Directly? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-update-motherboard-bios-directly" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy cannot natively flash raw motherboard BIOS files (such as .bin, .cap, or .rom) directly from its boot menu. Because Ventoy is a bootable image launcher rather than a flashing utility, it does not include the hardware-level tools required to write" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-update-motherboard-bios-directly">Can Ventoy Update
+Motherboard BIOS Directly?</h1>
+<p>Ventoy cannot natively flash raw motherboard BIOS files (such as
+<code>.bin</code>, <code>.cap</code>, or <code>.rom</code>) directly
+from its boot menu. Because Ventoy is a bootable image launcher rather
+than a flashing utility, it does not include the hardware-level tools
+required to write firmware to your motherboard. However, Ventoy can
+facilitate the BIOS update process by booting bootable environments—such
+as FreeDOS, Linux Live environments, or UEFI shell utilities—that
+contain the necessary flashing software.</p>
+<h3 id="why-ventoy-cannot-flash-bios-files-directly">Why Ventoy Cannot
+Flash BIOS Files Directly</h3>
+<p>Motherboard firmware updates require dedicated flashing software that
+interacts directly with your system's EEPROM chip. Ventoy operates as a
+multi-boot loader designed to read and boot disk images (like ISO, IMG,
+or EFI files). Raw BIOS binaries are simply data files; without an
+executable updater designed for your specific motherboard chipset,
+Ventoy has no mechanism to execute the update.</p>
+<h3 id="methods-to-update-bios-using-ventoy">Methods to Update BIOS
+Using Ventoy</h3>
+<p>While Ventoy cannot flash files directly, you can use it to boot
+intermediate environments that perform the update:</p>
+<ul>
+<li><strong>FreeDOS Images:</strong> For older motherboards or specific
+enterprise hardware that uses DOS-based flashers, you can place a
+bootable FreeDOS ISO onto your Ventoy drive. After booting into FreeDOS
+via the Ventoy menu, you can run the manufacturer's executable (e.g.,
+<code>flash.bat</code> or <code>afudos.exe</code>) alongside the BIOS
+binary.</li>
+<li><strong>Manufacturer Bootable ISOs:</strong> Manufacturers like
+Lenovo, Dell, and HP often distribute BIOS updates as self-contained,
+bootable ISO files. Ventoy can launch these ISOs directly, allowing the
+vendor's internal Linux- or DOS-based updater to handle the process
+automatically.</li>
+<li><strong>UEFI Shell and <code>.efi</code> Updaters:</strong> Ventoy
+can launch standalone <code>.efi</code> executables. If your motherboard
+manufacturer provides an EFI-based flash tool, you can launch the UEFI
+environment through Ventoy and execute the update command.</li>
+</ul>
+<h3
+id="built-in-motherboard-flash-utilities-ez-flash-m-flash-q-flash">Built-in
+Motherboard Flash Utilities (EZ Flash, M-Flash, Q-Flash)</h3>
+<p>Modern motherboards from manufacturers like ASUS, MSI, Gigabyte, and
+ASRock feature proprietary flashing utilities integrated into the BIOS
+setup screen (such as ASUS EZ Flash or MSI M-Flash).</p>
+<p>These tools bypass the bootloader entirely:</p>
+<ol type="1">
+<li>You reboot your PC and enter the motherboard's BIOS setup utility
+(usually by pressing Delete or F2).</li>
+<li>The internal utility scans attached storage devices for the raw BIOS
+file.</li>
+<li>Because Ventoy creates a standard data partition (typically
+formatted in exFAT or FAT32) to hold your files, your motherboard’s
+built-in tool may still be able to read the raw BIOS file stored on the
+drive.</li>
+</ol>
+<p>In this scenario, Ventoy itself is not performing the update or even
+running; the USB drive is simply functioning as standard storage for the
+motherboard's internal updater.</p>
+<h3 id="best-practices-and-precautions">Best Practices and
+Precautions</h3>
+<p>Interrupting a BIOS flash can permanently damage your motherboard.
+While using Ventoy to host files or boot live operating systems is
+functional, the safest method for updating modern motherboards remains
+using a dedicated USB flash drive formatted in FAT32, running the update
+through the motherboard’s native BIOS utility rather than through any
+third-party bootloader.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

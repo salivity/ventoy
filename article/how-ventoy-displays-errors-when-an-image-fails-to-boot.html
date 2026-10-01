@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Displays Errors When an Image Fails to Boot - ventoy</title>
+    <meta name="description" content="When an ISO or image file fails to launch, Ventoy alerts the user through a combination of graphical dialog windows, text-based console messages, and return status prompts driven by its underlying GRUB2 core. This article breaks down the exact mechanisms">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-displays-errors-when-an-image-fails-to-boot">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Displays Errors When an Image Fails to Boot - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-displays-errors-when-an-image-fails-to-boot" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When an ISO or image file fails to launch, Ventoy alerts the user through a combination of graphical dialog windows, text-based console messages, and return status prompts driven by its underlying GRUB2 core. This article breaks down the exact mechanisms" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-displays-errors-when-an-image-fails-to-boot">How
+Ventoy Displays Errors When an Image Fails to Boot</h1>
+<p>When an ISO or image file fails to launch, Ventoy alerts the user
+through a combination of graphical dialog windows, text-based console
+messages, and return status prompts driven by its underlying GRUB2 core.
+This article breaks down the exact mechanisms Ventoy uses to present
+boot failure codes, how it visualizes system halts, and the difference
+between Ventoy-level initialization errors and operating system handoff
+failures.</p>
+<h3 id="graphical-and-terminal-dialog-boxes">Graphical and Terminal
+Dialog Boxes</h3>
+<p>Ventoy primarily operates within a GRUB-based environment. When an
+image fails before the operating system kernel can take over, Ventoy
+intercepts the error and presents a message box directly over the boot
+menu interface:</p>
+<ul>
+<li><strong>Text-Based Alert Windows:</strong> If an image format is
+unsupported, corrupted, or has an invalid structure, Ventoy triggers a
+bordered text dialog. This window explicitly describes the issue (such
+as "No bootfile found" or "File format error") and halts execution.</li>
+<li><strong>Return Prompts:</strong> Most failures pause the bootloader
+completely, appending a message such as
+<code>Press ENTER to return to the menu...</code> at the bottom of the
+screen. This prevents the machine from entering an infinite reboot
+loop.</li>
+</ul>
+<h3 id="common-on-screen-error-messages-and-codes">Common On-Screen
+Error Messages and Codes</h3>
+<p>Rather than relying on numeric hexadecimal codes alone, Ventoy
+displays descriptive string errors that indicate where the process
+failed:</p>
+<ul>
+<li><strong>Memory Allocation Errors:</strong> When attempting to boot
+using the <code>Memdisk</code> mode on systems without sufficient RAM,
+Ventoy displays an out-of-memory notification indicating that the system
+cannot allocate contiguous space for the target image.</li>
+<li><strong>Compatibility and Architecture Mismatches:</strong> If you
+attempt to boot a 32-bit UEFI image on a 64-bit-only UEFI motherboard,
+Ventoy prints a direct architecture mismatch warning immediately after
+selecting the file.</li>
+<li><strong>Cluster and Fragment Errors:</strong> If an ISO file is
+excessively fragmented or stored across bad sectors on the USB drive,
+Ventoy will output read failure notifications during the virtual disk
+mapping phase.</li>
+</ul>
+<h3 id="uefi-secure-boot-violations">UEFI Secure Boot Violations</h3>
+<p>If an image fails due to platform security policies, the error does
+not generate from the Ventoy script itself, but from the UEFI firmware
+layer:</p>
+<ul>
+<li><strong>Security Violation Screens:</strong> Systems with Secure
+Boot enabled will display blue or black firmware screens with messages
+such as
+<code>Verification failed: (0x1A) Security Violation</code>.</li>
+<li><strong>MokManager Prompts:</strong> When Ventoy's keys are not yet
+enrolled, the display will route to the "Enroll Key" (MokManager)
+interface instead of the standard operating system loading screen,
+signifying an authentication block.</li>
+</ul>
+<h3 id="ventoy-failure-vs-kernel-handoff-failure">Ventoy Failure vs.
+Kernel Handoff Failure</h3>
+<p>It is vital to distinguish where the error display originates:</p>
+<ol type="1">
+<li><strong>Ventoy-Level Errors:</strong> Displayed in the Ventoy native
+theme or simple monochrome text on the GRUB console. These represent
+issues where Ventoy cannot map, parse, or inject its runtime hooks into
+the image.</li>
+<li><strong>OS-Level Errors:</strong> Displayed via kernel panic text,
+an initramfs rescue shell, or a Dracut emergency prompt (e.g.,
+<code>dracut-initqueue timeout</code>). In this state, Ventoy has
+successfully executed the initial bootloader, but the operating system
+cannot locate its virtual CD/DVD block device to complete the boot
+process.</li>
+</ol>
+<h3 id="capturing-verbose-debug-output">Capturing Verbose Debug
+Output</h3>
+<p>When an image fails silently or drops back to the menu instantly,
+Ventoy includes a verbose debug option:</p>
+<ul>
+<li>Pressing the designated function key (typically <code>F5</code>
+Tools, or utilizing the text-mode menu) allows users to enable debug
+logging.</li>
+<li>In debug mode, Ventoy bypasses the graphical splash screen and
+prints step-by-step hook executions line-by-line across the console,
+making it possible to identify the exact shell function or sector call
+that triggered the failure.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

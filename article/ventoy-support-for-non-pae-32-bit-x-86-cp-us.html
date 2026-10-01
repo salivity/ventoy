@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Support for Non-PAE 32-Bit x86 CPUs - ventoy</title>
+    <meta name="description" content="Ventoy can technically initialize its primary boot environment on legacy 32-bit x86 computers without Physical Address Extension (PAE) under standard Legacy BIOS mode, but it does not provide practical, functional support for running modern payloads on s">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-support-for-non-pae-32-bit-x-86-cp-us">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Support for Non-PAE 32-Bit x86 CPUs - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-support-for-non-pae-32-bit-x-86-cp-us" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can technically initialize its primary boot environment on legacy 32-bit x86 computers without Physical Address Extension (PAE) under standard Legacy BIOS mode, but it does not provide practical, functional support for running modern payloads on s" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-support-for-non-pae-32-bit-x86-cpus">Ventoy Support for
+Non-PAE 32-Bit x86 CPUs</h1>
+<p>Ventoy can technically initialize its primary boot environment on
+legacy 32-bit x86 computers without Physical Address Extension (PAE)
+under standard Legacy BIOS mode, but it does not provide practical,
+functional support for running modern payloads on such hardware. While
+the underlying GRUB-based bootloader can display the menu on older x86
+processors, hardware constraints, low memory ceilings, and operating
+system kernel requirements prevent Ventoy from being a reliable boot
+solution for non-PAE machines.</p>
+<h3 id="the-bootloader-layer-vs-payload-layer">The Bootloader Layer vs.
+Payload Layer</h3>
+<p>Understanding Ventoy's compatibility requires separating the boot
+manager from the operating systems you intend to install:</p>
+<ul>
+<li><strong>Ventoy's Core Bootloader:</strong> For traditional BIOS
+systems, Ventoy utilizes a custom build of GRUB2 compiled for the
+standard <code>i386-pc</code> architecture. This environment runs in
+basic 16-bit real mode and 32-bit protected mode. Because standard
+32-bit protected mode does not require PAE just to execute instructions
+and draw an interface, the Ventoy boot menu can technically appear on
+legacy processors, such as the early Intel Pentium M (Banias core) or
+older Pentium-generation chips.</li>
+<li><strong>Payload Operating Systems:</strong> Almost all operating
+systems released in the past decade—including modern 32-bit Linux
+distributions—are compiled with mandatory PAE support
+(<code>CONFIG_HIGHMEM64G=y</code>). If you attempt to boot an ISO that
+requires PAE on a non-PAE CPU through Ventoy, the kernel will halt
+immediately with an error (such as "CPU lacks PAE support"). Ventoy
+cannot emulate PAE support or bypass this architectural
+requirement.</li>
+</ul>
+<h3 id="memory-and-emulation-constraints">Memory and Emulation
+Constraints</h3>
+<p>Ventoy functions by hooking BIOS interrupt calls (such as
+<code>INT 13h</code>) to redirect disk reads from an ISO file stored on
+the USB drive. This mechanism introduces overhead:</p>
+<ul>
+<li><strong>RAM Requirements:</strong> Non-PAE systems typically have
+512 MB to 1 GB of RAM or less. Ventoy's runtime drivers, virtual disk
+mappings, and file system parsers require sufficient free physical
+memory to operate. On deeply constrained vintage hardware, this overhead
+can trigger out-of-memory errors before the installer kernel even
+loads.</li>
+<li><strong>BIOS Limitations:</strong> Very old BIOS implementations
+found on non-PAE hardware often have buggy USB-HDD emulation routines or
+slow USB 1.1/2.0 controllers, which frequently cause Ventoy's initial
+ramdisk or ISO mapping hooks to hang.</li>
+</ul>
+<h3 id="summary-and-recommended-alternatives">Summary and Recommended
+Alternatives</h3>
+<p>While Ventoy's boot interface may load on a legacy non-PAE 32-bit
+CPU, it is not officially tailored for or practical on such systems. If
+you must boot an operating system on hardware lacking PAE:</p>
+<ul>
+<li>Use specialized non-PAE Linux distributions (such as older releases
+of antiX or Puppy Linux built specifically for non-PAE
+architectures).</li>
+<li>Write the ISO directly to physical media (CD/DVD) or use traditional
+raw-write USB utilities (such as Rufus in "DD" mode or native
+<code>dd</code>) rather than Ventoy's dynamic ISO-hooking method.</li>
+<li>Consider using Plop Boot Manager if the machine has difficulty
+booting USB devices natively.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

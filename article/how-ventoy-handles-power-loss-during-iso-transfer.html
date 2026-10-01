@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles Power Loss During ISO Transfer - ventoy</title>
+    <meta name="description" content="This article explains how a Ventoy USB drive behaves if your computer loses power during an ISO transfer, how the underlying file system responds, and the exact steps required to restore normal functionality. Because Ventoy separates its bootloader from">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-power-loss-during-iso-transfer">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles Power Loss During ISO Transfer - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-power-loss-during-iso-transfer" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how a Ventoy USB drive behaves if your computer loses power during an ISO transfer, how the underlying file system responds, and the exact steps required to restore normal functionality. Because Ventoy separates its bootloader from" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-power-loss-during-iso-transfer">How Ventoy
+Handles Power Loss During ISO Transfer</h1>
+<p>This article explains how a Ventoy USB drive behaves if your computer
+loses power during an ISO transfer, how the underlying file system
+responds, and the exact steps required to restore normal functionality.
+Because Ventoy separates its bootloader from the user data partition, a
+sudden power interruption will not destroy the Ventoy installation
+itself, but it will leave behind a corrupted or incomplete image file on
+the storage partition that requires manual cleanup and verification
+before it can be used.</p>
+<h3 id="ventoys-architecture-during-file-transfers">Ventoy's
+Architecture During File Transfers</h3>
+<p>When copying an operating system image to a Ventoy drive, Ventoy is
+not actively executing any code. The drive functions strictly as
+standard removable storage. Ventoy formats drives into two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 2 (VTOYBOOT):</strong> A small, protected FAT
+partition housing the GRUB core, EFI files, and the boot environment.
+This partition remains unmounted and untouched during ISO
+transfers.</li>
+<li><strong>Partition 1 (Ventoy):</strong> A large data partition
+(formatted by default as exFAT, though users can choose NTFS, ext4, or
+FAT32) where ISO, WIM, and IMG files are stored.</li>
+</ol>
+<p>Because writing an ISO only involves Partition 1, an unexpected power
+cut does not corrupt the Ventoy bootloader or core boot mechanics.</p>
+<h3 id="what-happens-when-power-is-lost">What Happens When Power Is
+Lost</h3>
+<p>When power cuts out mid-transfer, the operating system's write cache
+is immediately interrupted. This produces two main issues on Partition
+1:</p>
+<ul>
+<li><strong>Incomplete File Payloads:</strong> The ISO file on the drive
+will only contain the sectors committed to the NAND flash before power
+failed. The file size may appear complete in some file managers due to
+pre-allocation, but the internal binary data will be truncated.</li>
+<li><strong>Dirty Filesystem Flags:</strong> The file allocation table
+(such as exFAT metadata) will not close cleanly. The partition will be
+marked as "dirty" by the operating system, potentially leading to
+orphaned clusters or inaccurate free-space reporting.</li>
+</ul>
+<p>Ventoy cannot reconstruct missing data. When you boot the drive,
+Ventoy reads the disk directory dynamically. If the incomplete file
+appears in the directory structure, Ventoy will attempt to boot it.
+However, the boot process will fail with an error—such as a missing
+kernel, decompression failure, or a sudden halt—because critical sectors
+of the operating system image were never written.</p>
+<h3 id="how-to-recover-the-drive">How to Recover the Drive</h3>
+<p>Recovering from an interrupted transfer requires repairing the
+storage partition's file table and replacing the corrupt image. Follow
+these steps:</p>
+<h4 id="1-repair-file-system-metadata">1. Repair File System
+Metadata</h4>
+<p>Do not immediately boot the USB drive. Connect it to a running
+computer to resolve any file system discrepancies caused by the abrupt
+shutdown:</p>
+<ul>
+<li><strong>On Windows:</strong> Open Command Prompt as Administrator
+and run the disk checking utility against the Ventoy drive letter:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">chkdsk</span> X: <span class="at">/f</span></span></code></pre></div>
+<em>(Replace <code>X:</code> with the actual drive letter of your Ventoy
+storage partition).</em></li>
+<li><strong>On Linux:</strong> Unmount the partition if automatically
+mounted, and run the appropriate repair tool (for exFAT, ensure
+<code>exfatprogs</code> or <code>dosfstools</code> is installed):
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> fsck /dev/sdX1</span></code></pre></div>
+<em>(Replace <code>sdX1</code> with your Ventoy data
+partition).</em></li>
+</ul>
+<h4 id="2-delete-the-corrupt-iso">2. Delete the Corrupt ISO</h4>
+<p>Locate the partially transferred file in the drive's directory.
+Delete the file completely. If the file cannot be deleted normally due
+to corruption locks, the filesystem check in Step 1 will clear the stale
+lock.</p>
+<h4 id="3-re-transfer-and-verify-checksums">3. Re-transfer and Verify
+Checksums</h4>
+<p>Copy the ISO file back onto the Ventoy partition. Before
+ejecting:</p>
+<ol type="1">
+<li>Allow the operating system to finish writing completely. On Linux,
+run the <code>sync</code> command in your terminal before unplugging the
+drive. On Windows, use the "Safely Remove Hardware and Eject Media" tray
+icon.</li>
+<li>Verify the integrity of the copied file by comparing its SHA-256
+hash on the USB drive against the official checksum provided by the OS
+distributor.</li>
+</ol>
+<p>Once verified, the drive is ready for use without needing a full
+reinstallation of Ventoy.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

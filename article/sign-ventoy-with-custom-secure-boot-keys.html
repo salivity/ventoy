@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Ventoy with Custom Secure Boot Keys - ventoy</title>
+    <meta name="description" content="Users can sign Ventoy binaries using their own personal custom Secure Boot keys, allowing the bootable USB drive to run in strict UEFI environments where standard third-party keys are disabled or custom keys are enforced. This approach provides complete">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/sign-ventoy-with-custom-secure-boot-keys">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sign Ventoy with Custom Secure Boot Keys - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/sign-ventoy-with-custom-secure-boot-keys" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Users can sign Ventoy binaries using their own personal custom Secure Boot keys, allowing the bootable USB drive to run in strict UEFI environments where standard third-party keys are disabled or custom keys are enforced. This approach provides complete" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="sign-ventoy-with-custom-secure-boot-keys">Sign Ventoy with
+Custom Secure Boot Keys</h1>
+<p>Users can sign Ventoy binaries using their own personal custom Secure
+Boot keys, allowing the bootable USB drive to run in strict UEFI
+environments where standard third-party keys are disabled or custom keys
+are enforced. This approach provides complete control over the system's
+chain of trust, bypassing the default Ventoy MOK (Machine Owner Key)
+enrollment while maintaining full Secure Boot integrity.</p>
+<h2 id="feasibility-and-requirements">Feasibility and Requirements</h2>
+<p>Ventoy inherently supports Secure Boot through a signed shim loader
+and MOK manager, but it also allows manual signing of its core EFI
+executables. If your UEFI firmware runs in "User Mode" with custom
+Platform Keys (PK), Key Exchange Keys (KEK), and authorized Signature
+Databases (db), you can replace Ventoy's signatures with your private
+cryptographic keys.</p>
+<p>To complete this process, you need:</p>
+<ul>
+<li>A working installation of Ventoy on a USB flash drive.</li>
+<li>Your custom Secure Boot certificate (e.g., <code>db.crt</code>) and
+private key (e.g., <code>db.key</code>).</li>
+<li>A signing utility, such as <code>sbsigntool</code> on Linux or
+<code>SignTool</code> on Windows.</li>
+</ul>
+<h2 id="accessing-the-ventoy-efi-binaries">Accessing the Ventoy EFI
+Binaries</h2>
+<p>Ventoy partitions the USB flash drive into two sections: an
+exFAT/NTFS partition for storing ISO files and a hidden FAT16/FAT32 EFI
+System Partition (ESP) labeled <code>VTOYEFI</code>.</p>
+<ol type="1">
+<li>Mount the <code>VTOYEFI</code> partition to access the boot
+files.</li>
+<li>Navigate to the <code>EFI/BOOT/</code> directory inside the
+partition.</li>
+<li>Identify the primary boot files that require signing, primarily
+<code>BOOTX64.EFI</code> (for x86_64 systems) or the
+architecture-specific loader you intend to boot.</li>
+</ol>
+<h2 id="signing-the-binaries">Signing the Binaries</h2>
+<p>Using Linux and <code>sbsigntool</code>, you can remove the existing
+vendor signature (optional) and sign the binary with your custom
+key:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sbsign</span> <span class="at">--key</span> db.key <span class="at">--cert</span> db.crt <span class="at">--output</span> /path/to/VTOYEFI/EFI/BOOT/BOOTX64.EFI /path/to/VTOYEFI/EFI/BOOT/BOOTX64.EFI</span></code></pre></div>
+<p>If you plan to use Ventoy's internal GRUB loader directly, you must
+also inspect the <code>grub</code> directories on the ESP and sign any
+secondary <code>.efi</code> binaries that the primary loader
+chainloads.</p>
+<h2 id="maintenance-and-updates">Maintenance and Updates</h2>
+<p>Custom signatures are written directly to the binaries on the
+<code>VTOYEFI</code> partition. Whenever you upgrade Ventoy to a newer
+release using the official updater, the installer rewrites the EFI
+partition, replacing your signed binaries with standard Ventoy
+executables. Consequently, you must re-sign the binaries after every
+Ventoy version upgrade.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

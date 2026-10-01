@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boot Hiren's BootCD PE with Ventoy Directly - ventoy</title>
+    <meta name="description" content="Ventoy fully supports booting Hiren's BootCD PE without any modifications, special configurations, or file extractions. Because Hiren's BootCD PE is based on standard Windows Preinstallation Environment (WinPE) architecture, Ventoy can map and boot the I">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/boot-hiren-s-boot-cd-pe-with-ventoy-directly">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Boot Hiren's BootCD PE with Ventoy Directly - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/boot-hiren-s-boot-cd-pe-with-ventoy-directly" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports booting Hiren's BootCD PE without any modifications, special configurations, or file extractions. Because Hiren's BootCD PE is based on standard Windows Preinstallation Environment (WinPE) architecture, Ventoy can map and boot the I" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="boot-hirens-bootcd-pe-with-ventoy-directly">Boot Hiren's BootCD
+PE with Ventoy Directly</h1>
+<p>Ventoy fully supports booting Hiren's BootCD PE without any
+modifications, special configurations, or file extractions. Because
+Hiren's BootCD PE is based on standard Windows Preinstallation
+Environment (WinPE) architecture, Ventoy can map and boot the ISO
+directly from the USB drive. This guide covers how this native
+compatibility works, how to set it up, and what to expect when booting
+Hiren's BootCD PE through Ventoy.</p>
+<h3 id="native-compatibility-explained">Native Compatibility
+Explained</h3>
+<p>Ventoy is designed to boot ISO, WIM, IMG, VHD, and EFI files directly
+by loading them into memory or mounting them via internal drivers during
+startup. Because Hiren’s BootCD PE uses standard Windows PE bootloaders
+(<code>bootmgr</code> and <code>boot.sdi</code>), Ventoy injects its
+runtime drivers seamlessly during boot.</p>
+<p>There is no need to extract the ISO contents, alter the internal
+<code>boot.wim</code> file, or use Ventoy plugins. The ISO functions
+identically to a dedicated USB drive created with tools like Rufus.</p>
+<h3 id="steps-to-boot-hirens-bootcd-pe-on-ventoy">Steps to Boot Hiren's
+BootCD PE on Ventoy</h3>
+<ol type="1">
+<li><strong>Prepare the Ventoy Drive:</strong> Install Ventoy on your
+target USB flash drive using the official Ventoy installer.</li>
+<li><strong>Download the ISO:</strong> Obtain the official, unmodified
+<code>HBCD_PE_x64.iso</code> image from the official Hiren's BootCD PE
+release page.</li>
+<li><strong>Copy the File:</strong> Drag and drop the downloaded ISO
+directly onto the main partition of your Ventoy USB drive. Do not rename
+or extract the archive.</li>
+<li><strong>Boot from USB:</strong> Insert the USB drive into the target
+computer, enter the BIOS/UEFI boot menu, and select the USB drive.</li>
+<li><strong>Select the ISO:</strong> Choose Hiren's BootCD PE from the
+graphical Ventoy menu to launch directly into the desktop
+environment.</li>
+</ol>
+<h3 id="firmware-and-architecture-support">Firmware and Architecture
+Support</h3>
+<ul>
+<li><strong>UEFI and Legacy BIOS:</strong> Hiren's BootCD PE boots
+successfully on both modern UEFI-based systems and older Legacy BIOS
+hardware via Ventoy.</li>
+<li><strong>Secure Boot:</strong> If your target machine has Secure Boot
+enabled, Ventoy’s built-in key enrollment (via the "Enroll Key" prompt
+on first boot) allows Hiren's BootCD PE to load without disabling
+security settings in your BIOS.</li>
+<li><strong>Driver and Tool Loading:</strong> Once booted, the WinPE
+startup scripts will automatically detect the mounted virtual drive,
+load the network and storage drivers, and populate the Start Menu with
+all bundled diagnostic utilities.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

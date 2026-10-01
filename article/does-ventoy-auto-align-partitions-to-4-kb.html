@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Auto-Align Partitions to 4KB? - ventoy</title>
+    <meta name="description" content="Ventoy automatically creates a 4KB aligned partition table during installation. By utilizing the modern 1MB offset standard (starting at sector 2048) for its disk partitioning, Ventoy guarantees that partitions are naturally aligned with 4KB sector bound">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-auto-align-partitions-to-4-kb">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Auto-Align Partitions to 4KB? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-auto-align-partitions-to-4-kb" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy automatically creates a 4KB aligned partition table during installation. By utilizing the modern 1MB offset standard (starting at sector 2048) for its disk partitioning, Ventoy guarantees that partitions are naturally aligned with 4KB sector bound" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-auto-align-partitions-to-4kb">Does Ventoy Auto-Align
+Partitions to 4KB?</h1>
+<p>Ventoy automatically creates a 4KB aligned partition table during
+installation. By utilizing the modern 1MB offset standard (starting at
+sector 2048) for its disk partitioning, Ventoy guarantees that
+partitions are naturally aligned with 4KB sector boundaries without
+requiring manual configuration from the user. This article explains how
+Ventoy handles partition alignment, why this automated behavior matters
+for flash drive performance, and how you can verify the alignment on
+your drive.</p>
+<h3 id="automatic-4kb-alignment-in-ventoy">Automatic 4KB Alignment in
+Ventoy</h3>
+<p>When you install Ventoy to a USB drive using either the graphical
+Ventoy2Disk utility or the command-line interface, the tool writes a new
+partition table—either Master Boot Record (MBR) or GUID Partition Table
+(GPT).</p>
+<p>Ventoy sets the starting offset of the first partition (the
+exFAT/data partition where ISO files are placed) at sector 2048. In
+standard 512-byte logical sector systems, sector 2048 corresponds
+exactly to 1,048,576 bytes (1MB). Because 1,048,576 is evenly divisible
+by 4,096 bytes (4KB), the partition is automatically 4KB aligned. The
+secondary boot and EFI partition created at the end of the disk also
+adheres to aligned sector boundaries.</p>
+<h3 id="why-4kb-alignment-matters">Why 4KB Alignment Matters</h3>
+<p>Modern storage drives, including USB flash drives, external
+solid-state drives (SSDs), and Advanced Format hard disks, utilize
+physical sectors that are 4,096 bytes (4KB) in size, even if they
+emulate 512-byte sectors (512e) for legacy compatibility.</p>
+<p>When a partition is misaligned:</p>
+<ul>
+<li>A single 4KB operating system read or write request spans two
+physical sectors instead of one.</li>
+<li>The drive must execute a "read-modify-write" cycle for every write
+operation, significantly degrading write speeds.</li>
+<li>Flash memory wears out faster due to increased write
+amplification.</li>
+</ul>
+<p>By enforcing modern 1MB alignment automatically, Ventoy prevents
+these performance penalties and ensures maximum data transfer speeds and
+device longevity.</p>
+<h3 id="how-to-verify-ventoy-partition-alignment">How to Verify Ventoy
+Partition Alignment</h3>
+<p>You can confirm that your Ventoy drive is 4KB aligned using native
+tools in Windows or Linux.</p>
+<p><strong>Using Windows PowerShell:</strong></p>
+<ol type="1">
+<li>Open PowerShell as Administrator.</li>
+<li>Run <code>Get-Partition -DiskNumber X</code> (replace <code>X</code>
+with your USB drive's disk number).</li>
+<li>Check the <code>Offset</code> value. If the offset is 1048576 (or
+any number divisible by 4096), the drive is 4KB aligned.</li>
+</ol>
+<p><strong>Using Linux Terminal:</strong></p>
+<ol type="1">
+<li>Open a terminal.</li>
+<li>Run <code>sudo fdisk -l /dev/sdX</code> (replace
+<code>/dev/sdX</code> with your USB drive's identifier).</li>
+<li>Look at the <code>Start</code> column for partition 1. It will
+display <code>2048</code>.</li>
+<li>Multiply 2048 by the sector size (usually 512 bytes), which yields
+1,048,576 bytes, confirming proper 4KB alignment.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

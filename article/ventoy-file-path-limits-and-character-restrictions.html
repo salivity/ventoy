@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy File Path Limits and Character Restrictions - ventoy</title>
+    <meta name="description" content="Ventoy allows users to boot multiple operating systems from a single USB drive, but file path lengths and special characters can directly impact whether images boot successfully. While modern releases of Ventoy support broader naming conventions than ear">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-file-path-limits-and-character-restrictions">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy File Path Limits and Character Restrictions - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-file-path-limits-and-character-restrictions" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy allows users to boot multiple operating systems from a single USB drive, but file path lengths and special characters can directly impact whether images boot successfully. While modern releases of Ventoy support broader naming conventions than ear" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-file-path-limits-and-character-restrictions">Ventoy File
+Path Limits and Character Restrictions</h1>
+<p>Ventoy allows users to boot multiple operating systems from a single
+USB drive, but file path lengths and special characters can directly
+impact whether images boot successfully. While modern releases of Ventoy
+support broader naming conventions than earlier versions, strict
+adherence to specific character sets and path lengths remains necessary
+to prevent bootloader errors, kernel panic, and file discovery
+failures.</p>
+<h3 id="special-character-restrictions">Special Character
+Restrictions</h3>
+<p>Ventoy officially recommends using only standard ASCII alphanumeric
+characters for all directories and image file names (<code>.iso</code>,
+<code>.wim</code>, <code>.img</code>, <code>.vhd</code>).</p>
+<ul>
+<li><strong>Spaces:</strong> While recent Ventoy versions support spaces
+in directory and file names, spaces often break the boot scripts of
+Linux distributions. When an ISO is mounted into memory or passed as a
+kernel argument, spaces can cause command-line parameters to split,
+leading to boot failures. Replace spaces with underscores
+(<code>_</code>) or hyphens (<code>-</code>).</li>
+<li><strong>Non-ASCII and Unicode Characters:</strong> Characters
+outside the standard English alphabet (such as accented letters,
+Cyrillic, Chinese, Japanese, or Korean characters) should be avoided.
+The GRUB2 environment used by Ventoy may fail to parse Unicode strings
+correctly.</li>
+<li><strong>Reserved and Shell Metacharacters:</strong> Never use
+characters reserved by filesystems or command-line interpreters. Avoid
+characters such as:
+<pre class="text"><code>&quot; &#39; ` \ / : * ? &lt; &gt; | ; &amp; $ # ( ) [ ] { } ^ % +</code></pre>
+These characters can interfere with GRUB parsing, Windows PE startup
+sequences, or Linux initramfs scripts.</li>
+</ul>
+<h3 id="path-length-and-directory-depth-limits">Path Length and
+Directory Depth Limits</h3>
+<p>There is no arbitrary single-digit file path limit enforced by
+Ventoy, but restrictions arise from the underlying filesystem (typically
+exFAT or NTFS) and the bootloader environment.</p>
+<ul>
+<li><strong>Total Path Length:</strong> File paths should not exceed 256
+characters. Keeping full paths—including the mount point, directory
+names, and file name—well below 200 characters ensures compatibility
+across DOS, Windows, and Linux boot environments.</li>
+<li><strong>Search Depth Limit:</strong> Ventoy scans the USB drive
+recursively to locate bootable image files. By default, it searches up
+to a depth limit defined internally. Placing ISOs too deeply inside
+nested folders can cause Ventoy to ignore the file entirely. This depth
+behavior can be customized in the <code>ventoy.json</code> configuration
+file using the <code>VTOY_MAX_SEARCH_LEVEL</code> option.</li>
+</ul>
+<h3 id="recommended-naming-practices">Recommended Naming Practices</h3>
+<p>To ensure maximum compatibility across legacy BIOS, UEFI, and various
+operating system kernels:</p>
+<ol type="1">
+<li>Store images in the root directory or inside a single dedicated
+folder (e.g., <code>/ISO/</code>).</li>
+<li>Restrict all folder and file names to <code>[a-z]</code>,
+<code>[A-Z]</code>, <code>[0-9]</code>, <code>_</code>, <code>.</code>,
+and <code>-</code>.</li>
+<li>Keep file names concise and descriptive (e.g.,
+<code>ubuntu-24.04-desktop-amd64.iso</code> or
+<code>win11_23h2_english_x64.iso</code>).</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

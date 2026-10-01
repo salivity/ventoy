@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share ISO Storage Between iVentoy and Ventoy - ventoy</title>
+    <meta name="description" content="Yes, iVentoy can share the exact same ISO storage repository as a standard Ventoy drive. Because both systems read unmodified ISO images directly from standard filesystems, you can configure iVentoy to point directly to the partition or directory where y">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/share-iso-storage-between-i-ventoy-and-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Share ISO Storage Between iVentoy and Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/share-iso-storage-between-i-ventoy-and-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, iVentoy can share the exact same ISO storage repository as a standard Ventoy drive. Because both systems read unmodified ISO images directly from standard filesystems, you can configure iVentoy to point directly to the partition or directory where y" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="share-iso-storage-between-iventoy-and-ventoy">Share ISO Storage
+Between iVentoy and Ventoy</h1>
+<p>Yes, iVentoy can share the exact same ISO storage repository as a
+standard Ventoy drive. Because both systems read unmodified ISO images
+directly from standard filesystems, you can configure iVentoy to point
+directly to the partition or directory where your Ventoy files reside.
+This article explains how this shared setup works, how to configure it,
+and key considerations regarding file systems and system
+performance.</p>
+<h3 id="how-repository-sharing-works">How Repository Sharing Works</h3>
+<p>Standard Ventoy formats a flash drive into two partitions: a hidden
+EFI system partition for the bootloader and a primary partition
+formatted as exFAT, NTFS, or ext4 to hold your raw ISO files.</p>
+<p>iVentoy does not require a proprietary directory structure or special
+container format. It functions as a PXE network boot server that simply
+scans a designated folder on the host computer for bootable image files.
+As a result, iVentoy can read the primary data partition of a Ventoy
+drive directly without altering the files.</p>
+<h3 id="configuration-methods">Configuration Methods</h3>
+<p>There are two primary ways to share an ISO repository between the two
+platforms:</p>
+<h4 id="1-pointing-iventoy-to-a-physical-ventoy-usb-drive">1. Pointing
+iVentoy to a Physical Ventoy USB Drive</h4>
+<p>If you already maintain a Ventoy USB flash drive or portable SSD:</p>
+<ol type="1">
+<li>Connect the Ventoy drive to the computer running the iVentoy
+software.</li>
+<li>Identify the drive letter (Windows) or mount point (Linux) assigned
+to the Ventoy primary data partition.</li>
+<li>In the iVentoy web management console, set the image directory path
+to the root or subfolder of that mounted partition.</li>
+<li>Refresh the image list in the iVentoy console to load the detected
+ISOs.</li>
+</ol>
+<h4 id="2-using-a-shared-local-or-network-folder">2. Using a Shared
+Local or Network Folder</h4>
+<p>If you build a local ISO library on a PC or Network-Attached Storage
+(NAS):</p>
+<ol type="1">
+<li>Store all your operating system ISO files in a single local
+directory.</li>
+<li>Configure iVentoy's image location to point to this directory for
+PXE booting.</li>
+<li>When updating your physical Ventoy drive, use file synchronization
+tools (such as rsync, FreeFileSync, or Robocopy) to mirror the exact
+same folder directly to the Ventoy drive's data partition.</li>
+</ol>
+<h3 id="key-considerations">Key Considerations</h3>
+<ul>
+<li><strong>Filesystem Compatibility:</strong> If running iVentoy on a
+Linux host, ensure the host system has the necessary drivers installed
+(such as <code>exfat-fuse</code> or built-in kernel exFAT support) if
+your Ventoy drive uses the default exFAT format.</li>
+<li><strong>Drive Letter and Mount Stability:</strong> If using a
+removable Ventoy drive as the iVentoy source, assign a persistent drive
+letter in Windows Disk Management or create an entry in
+<code>/etc/fstab</code> on Linux to prevent broken directory paths upon
+reconnection.</li>
+<li><strong>USB Read Speeds:</strong> Running a multi-client network
+boot environment via iVentoy off a slow USB flash drive can cause severe
+throughput bottlenecks. If multiple machines will boot over the network
+simultaneously, use a high-speed USB 3.2 SSD or host the repository on
+internal NVMe/SATA storage.</li>
+<li><strong>Partition Selection:</strong> Always point iVentoy to the
+larger data partition (Partition 1) of the Ventoy drive, never the small
+VTOYEFI system partition (Partition 2).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

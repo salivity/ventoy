@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Compiles Specialized GRUB Binaries - ventoy</title>
+    <meta name="description" content="Ventoy relies on heavily customized GNU GRUB 2 implementations to achieve its multi-architecture, multiboot capabilities without unpacking ISO contents. Compiling these specialized binaries requires an automated toolchain pipeline that leverages isolated">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-compiles-specialized-grub-binaries">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Compiles Specialized GRUB Binaries - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-compiles-specialized-grub-binaries" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy relies on heavily customized GNU GRUB 2 implementations to achieve its multi-architecture, multiboot capabilities without unpacking ISO contents. Compiling these specialized binaries requires an automated toolchain pipeline that leverages isolated" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-compiles-specialized-grub-binaries">How Ventoy
+Compiles Specialized GRUB Binaries</h1>
+<p>Ventoy relies on heavily customized GNU GRUB 2 implementations to
+achieve its multi-architecture, multiboot capabilities without unpacking
+ISO contents. Compiling these specialized binaries requires an automated
+toolchain pipeline that leverages isolated container environments,
+custom source patches, cross-platform configuration switches, and
+dynamic image packaging. This article details each stage of that
+compilation process, explaining how vanilla GRUB source code is
+transformed into the specialized bootloaders used on Ventoy storage
+drives.</p>
+<h3 id="containerized-build-environment">Containerized Build
+Environment</h3>
+<p>To ensure reproducibility across diverse host systems, the Ventoy
+build system coordinates compilation inside a standardized Docker
+container (predominantly based on legacy CentOS or Debian environments).
+This container houses the exact toolchains required for target
+platforms: standard GNU Compiler Collection (GCC) suites,
+cross-compilers targeting x86, x86_64, ARM64, and MIPS64EL, and
+requisite build dependencies such as Automake, Autoconf, Bison, and
+Flex. Executing the build scripts inside the container prevents host
+system library drift from corrupting low-level boot code.</p>
+<h3 id="applying-ventoy-custom-patches">Applying Ventoy Custom
+Patches</h3>
+<p>The compilation routine initiates via automated shell scripts (such
+as <code>buildgrub.sh</code> in the source repository). Before invoking
+the GNU build system, the scripts apply a comprehensive set of custom C
+code modifications and patches over vanilla GRUB 2 source trees. These
+modifications include:</p>
+<ul>
+<li><strong>Virtual Disk Drivers:</strong> Custom block-device
+implementations (such as Ventoy's virtual disk device,
+<code>vtoy</code>) that permit loop-mounting disk images directly from
+host filesystems into memory or mapped blocks.</li>
+<li><strong>Enhanced Filesystem Support:</strong> Custom and extended
+filesystem drivers capable of traversing exFAT, NTFS, ext4, UDF, and
+ISO9660 partitions reliably in pre-boot environments.</li>
+<li><strong>Hook Handlers:</strong> Runtime interception routines that
+monitor memory regions and patch OS boot parameters on the fly, enabling
+Windows and Linux kernel loaders to recognize Ventoy's mapped virtual
+media.</li>
+</ul>
+<h3 id="multi-architecture-autotools-configuration">Multi-Architecture
+Autotools Configuration</h3>
+<p>Once the source tree is patched, the build scripts loop through every
+supported target platform. For each architecture, the script runs the
+GNU Autotools <code>./configure</code> script with specialized platform
+flags:</p>
+<ul>
+<li><code>i386-pc</code> for legacy BIOS</li>
+<li><code>i386-efi</code> for 32-bit UEFI</li>
+<li><code>x86_64-efi</code> for standard 64-bit UEFI</li>
+<li><code>arm64-efi</code> (AArch64) for 64-bit ARM UEFI</li>
+<li><code>mips64el-efi</code> for Loongson/MIPS-based systems</li>
+</ul>
+<p>During this stage, compiler optimization flags (<code>-Os</code> or
+<code>-O2</code>) are applied alongside strict freestanding C options
+(<code>-ffreestanding</code>, <code>-fno-builtin</code>) to ensure the
+compiled modules omit standard C runtime library calls that do not exist
+during the pre-boot phase.</p>
+<h3 id="compiling-modules-and-utilities">Compiling Modules and
+Utilities</h3>
+<p>Following configuration, standard <code>make</code> routines compile
+the core GRUB kernel (<code>kernel.exec</code>) and dynamic module
+objects (<code>.mod</code> files) for the designated platform. Because
+Ventoy operates across multiple storage buses, modules handling USB,
+AHCI, NVMe, partition tables (GPT and MBR), and crypto signatures are
+built systematically for each distinct target architecture.</p>
+<h3 id="packing-monolithic-core-images">Packing Monolithic Core
+Images</h3>
+<p>The final step uses GRUB's native utility, <code>grub-mkimage</code>,
+to assemble standalone executable binaries from the compiled modules.
+Instead of relying on an external filesystem to load modules
+sequentially, Ventoy bundles essential runtime drivers directly into
+monolithic executables (<code>core.img</code> for BIOS,
+<code>bootx64.efi</code> / <code>bootia32.efi</code> /
+<code>bootaa64.efi</code> for UEFI variants).</p>
+<p>During this image creation step, the build scripts embed an early
+runtime configuration file directly into the image's memory space. This
+early configuration initializes the display, scans connected block
+devices for the Ventoy partition signature, loads secondary dynamic
+drivers, and passes control to the main Ventoy runtime menu. Completed
+binaries and accompanying runtime modules are compressed and placed into
+Ventoy’s installation directory structure for deployment to target USB
+media.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

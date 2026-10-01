@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe to Eject Ventoy Virtual CD-ROM in Windows? - ventoy</title>
+    <meta name="description" content="When booting an ISO through Ventoy, Windows often displays a virtual CD-ROM drive in File Explorer containing the installation media or boot environment files. While Windows allows you to right-click and eject this drive, doing so during an active setup">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/safe-to-eject-ventoy-virtual-cd-rom-in-windows">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Safe to Eject Ventoy Virtual CD-ROM in Windows? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/safe-to-eject-ventoy-virtual-cd-rom-in-windows" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When booting an ISO through Ventoy, Windows often displays a virtual CD-ROM drive in File Explorer containing the installation media or boot environment files. While Windows allows you to right-click and eject this drive, doing so during an active setup" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="safe-to-eject-ventoy-virtual-cd-rom-in-windows">Safe to Eject
+Ventoy Virtual CD-ROM in Windows?</h1>
+<p>When booting an ISO through Ventoy, Windows often displays a virtual
+CD-ROM drive in File Explorer containing the installation media or boot
+environment files. While Windows allows you to right-click and eject
+this drive, doing so during an active setup or live session will disrupt
+running processes and cause system errors. This guide explains whether
+it is safe to unmount or eject the Ventoy virtual drive, what happens if
+you do, and when it is appropriate to remove it.</p>
+<h3 id="how-the-ventoy-virtual-drive-works">How the Ventoy Virtual Drive
+Works</h3>
+<p>Ventoy functions by hooking into the boot process and creating an
+emulated CD/DVD-ROM or mass storage device. When Windows boots from a
+Ventoy USB—such as during Windows Setup or inside a Windows PE
+(Preinstallation Environment)—the operating system detects this emulated
+layer as a physical or virtual optical drive. This drive exposes the
+underlying ISO contents directly to Windows so it can read necessary
+files without requiring you to manually extract or burn the ISO
+image.</p>
+<h3 id="can-you-eject-it-during-windows-setup">Can You Eject It During
+Windows Setup?</h3>
+<p>No, you should not eject or unmount the virtual CD-ROM during Windows
+Setup.</p>
+<p>During the installation process, the Windows installer continuously
+reads core system components from the ISO image, particularly the
+<code>install.wim</code> or <code>install.esd</code> file. If you eject
+the virtual drive:</p>
+<ul>
+<li>The installation process will halt immediately.</li>
+<li>Setup will return errors stating that required files cannot be found
+or that installation media is missing.</li>
+<li>You will likely need to restart the entire installation from the
+beginning.</li>
+</ul>
+<h3 id="can-you-eject-it-in-a-live-windows-or-winpe-environment">Can You
+Eject It in a Live Windows or WinPE Environment?</h3>
+<p>If you are running a live Windows session (such as a portable Windows
+To Go environment or a WinPE recovery disk) loaded through Ventoy,
+ejecting the drive is also unsafe.</p>
+<p>Live environments frequently access dynamic-link libraries (DLLs),
+drivers, and diagnostic tools stored on the mounted media. Ejecting or
+dismounting the virtual drive will cause running programs to crash,
+generate input/output (I/O) errors, and typically lead to a Blue Screen
+of Death (BSOD) or a total system freeze.</p>
+<h3 id="is-there-any-risk-of-hardware-damage">Is There Any Risk of
+Hardware Damage?</h3>
+<p>Ejecting the virtual drive does not cause any physical damage to your
+hardware or corrupt the files on your physical Ventoy USB drive. The
+action merely terminates the virtual link between the operating system's
+software layer and the ISO file stored on the USB drive. Any negative
+side effects are strictly confined to the active software session.</p>
+<h3 id="when-is-it-safe-to-remove">When Is It Safe to Remove?</h3>
+<p>You do not need to manually eject the virtual CD-ROM drive at any
+point:</p>
+<ul>
+<li><strong>After Windows Installation:</strong> Once the Windows Setup
+finishes copying files and prompts you to restart the computer, you can
+remove the physical USB flash drive. Upon rebooting into your local
+storage drive, the virtual CD-ROM will naturally be gone.</li>
+<li><strong>Standard OS Usage:</strong> If you have booted your primary,
+permanently installed Windows OS and an ISO happens to remain mounted
+via a secondary tool or leftover process, unmounting it is completely
+safe as long as no open programs are actively reading files from that
+drive.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

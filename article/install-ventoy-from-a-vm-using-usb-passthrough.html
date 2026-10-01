@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Ventoy from a VM Using USB Passthrough - ventoy</title>
+    <meta name="description" content="Yes, you can install Ventoy onto a physical USB flash drive from within a virtual machine by passing the drive through to the guest operating system. Because Ventoy alters the drive's partition tables and creates custom boot partitions, the virtual machi">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/install-ventoy-from-a-vm-using-usb-passthrough">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Install Ventoy from a VM Using USB Passthrough - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/install-ventoy-from-a-vm-using-usb-passthrough" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, you can install Ventoy onto a physical USB flash drive from within a virtual machine by passing the drive through to the guest operating system. Because Ventoy alters the drive's partition tables and creates custom boot partitions, the virtual machi" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="install-ventoy-from-a-vm-using-usb-passthrough">Install Ventoy
+from a VM Using USB Passthrough</h1>
+<p>Yes, you can install Ventoy onto a physical USB flash drive from
+within a virtual machine by passing the drive through to the guest
+operating system. Because Ventoy alters the drive's partition tables and
+creates custom boot partitions, the virtual machine must be granted
+exclusive, direct hardware-level access to the USB device. Once passed
+through properly, the guest OS detects the drive as native physical
+storage, allowing the Ventoy installer to format and configure it
+normally.</p>
+<h3 id="why-direct-usb-passthrough-is-required">Why Direct USB
+Passthrough Is Required</h3>
+<p>Ventoy is not a simple file-copy utility; it rewrites the drive's
+Master Boot Record (MBR) or GUID Partition Table (GPT) to create two
+distinct partitions: an EFI/boot partition and an exFAT data partition.
+Shared folders, network shares, or emulated virtual disks cannot provide
+the low-level block storage access required for this operation. The
+hypervisor must unmount the device from the host system and attach the
+physical controller or port directly to the virtual guest.</p>
+<h3 id="setting-up-usb-passthrough-by-hypervisor">Setting Up USB
+Passthrough by Hypervisor</h3>
+<p>The method for passing the physical USB drive depends on the
+virtualization software you are using:</p>
+<ul>
+<li><p><strong>VirtualBox:</strong></p>
+<ol type="1">
+<li>Insert the USB drive into your host machine.</li>
+<li>Open your VM settings and navigate to the <strong>Ports</strong>
+&gt; <strong>USB</strong> section.</li>
+<li>Enable the USB Controller (select USB 3.0 xHCI for modern
+drives).</li>
+<li>Click the <strong>Add USB Filter</strong> icon (the USB plug with a
+plus sign) and select your flash drive from the list.</li>
+<li>Start the virtual machine. The host will release the drive, and the
+guest OS will capture it.</li>
+</ol></li>
+<li><p><strong>VMware Workstation / Player:</strong></p>
+<ol type="1">
+<li>Start your virtual machine and insert the USB drive.</li>
+<li>In the top menu, go to <strong>VM</strong> &gt; <strong>Removable
+Devices</strong>.</li>
+<li>Locate your USB drive name and select <strong>Connect (Disconnect
+from Host)</strong>.</li>
+<li>Verify that the guest operating system plays the device connection
+chime or detects the drive.</li>
+</ol></li>
+<li><p><strong>KVM / QEMU (virt-manager):</strong></p>
+<ol type="1">
+<li>Open the virtual machine details in <code>virt-manager</code>.</li>
+<li>Click <strong>Add Hardware</strong> and select <strong>USB Host
+Device</strong>.</li>
+<li>Choose your physical flash drive from the list of host USB devices
+and click <strong>Finish</strong>.</li>
+<li>The device will dynamically attach to the running guest.</li>
+</ol></li>
+</ul>
+<h3 id="executing-the-ventoy-installation">Executing the Ventoy
+Installation</h3>
+<p>Once the USB drive is visible inside the guest operating system,
+complete the installation using the standard Ventoy setup process:</p>
+<ol type="1">
+<li>Download and extract the official Ventoy package inside the guest OS
+(available for Windows and Linux).</li>
+<li>Launch the installer (<code>Ventoy2Disk.exe</code> on Windows or
+<code>VentoyGUI</code> / <code>Ventoy2Disk.sh</code> on Linux).</li>
+<li>Check the device selection dropdown. Ensure the detected drive size
+and label match your physical USB drive, not a virtual disk
+partition.</li>
+<li>Click <strong>Install</strong>. Ventoy will format the drive, write
+the bootloader, and establish the required partitions.</li>
+</ol>
+<h3 id="troubleshooting-passthrough-issues">Troubleshooting Passthrough
+Issues</h3>
+<ul>
+<li><strong>Host Lock:</strong> If the installation fails with an
+"Access Denied" or "Write Error," the host operating system might still
+hold an active handle on the drive. Ensure the drive is unmounted or
+safely removed from host file explorers before attaching it to the
+VM.</li>
+<li><strong>USB 3.0 Driver Issues:</strong> If the guest OS does not
+detect the drive, ensure the virtual machine has the appropriate USB
+controller drivers installed (particularly for Windows 7 or older Linux
+guest systems requiring xHCI drivers).</li>
+<li><strong>Disconnection During Partitioning:</strong> Some hypervisors
+drop the USB connection when a device momentarily resets its partition
+table during a format. If this occurs, re-attach the device through the
+hypervisor menu and retry the installation.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

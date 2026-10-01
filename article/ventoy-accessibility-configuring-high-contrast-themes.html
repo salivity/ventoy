@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Accessibility: Configuring High-Contrast Themes - ventoy</title>
+    <meta name="description" content="Ventoy can be fully configured for accessibility, allowing users to implement high-contrast color schemes, enlarge menu fonts, and switch to simplified text modes. Because Ventoy uses GRUB2 as its underlying interface engine, the boot menu can be styled">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-accessibility-configuring-high-contrast-themes">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Accessibility: Configuring High-Contrast Themes - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-accessibility-configuring-high-contrast-themes" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can be fully configured for accessibility, allowing users to implement high-contrast color schemes, enlarge menu fonts, and switch to simplified text modes. Because Ventoy uses GRUB2 as its underlying interface engine, the boot menu can be styled" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-accessibility-configuring-high-contrast-themes">Ventoy
+Accessibility: Configuring High-Contrast Themes</h1>
+<p>Ventoy can be fully configured for accessibility, allowing users to
+implement high-contrast color schemes, enlarge menu fonts, and switch to
+simplified text modes. Because Ventoy uses GRUB2 as its underlying
+interface engine, the boot menu can be styled via custom
+<code>theme.txt</code> files and managed through the
+<code>ventoy.json</code> configuration file. This guide explains how to
+optimize Ventoy's boot environment for users with visual impairments or
+specific readability needs.</p>
+<h2 id="understanding-ventoys-theming-engine">Understanding Ventoy's
+Theming Engine</h2>
+<p>Ventoy relies on GRUB2 graphical themes to render its menu interface.
+By default, Ventoy displays a standard graphical menu, but this
+interface can be altered by overriding theme components. Accessibility
+modifications primarily involve:</p>
+<ol type="1">
+<li>Modifying the <code>theme.txt</code> file to define high-contrast
+colors (such as bright yellow or white on a pure black background).</li>
+<li>Supplying larger bitmap fonts (<code>.pf2</code> format) to enhance
+text readability.</li>
+<li>Enabling Text Mode (CLI mode) to strip away graphical elements
+entirely.</li>
+</ol>
+<h2 id="creating-a-high-contrast-grub-theme">Creating a High-Contrast
+GRUB Theme</h2>
+<p>To apply a high-contrast theme, create a custom theme directory
+inside the <code>ventoy</code> folder on your Ventoy USB drive (e.g.,
+<code>ventoy/themes/high-contrast/</code>).</p>
+<p>Inside this directory, create a <code>theme.txt</code> file
+containing high-contrast properties:</p>
+<pre class="text"><code># General settings
+title-text: &quot;&quot;
+desktop-image: &quot;&quot;
+desktop-color: &quot;#000000&quot;
+
+# Boot menu properties
++ boot_menu {
+    left = 15%
+    top = 20%
+    width = 70%
+    height = 60%
+    item_font = &quot;DejaVuSans-Bold-24&quot;
+    item_color = &quot;#FFFFFF&quot;
+    selected_item_color = &quot;#000000&quot;
+    item_height = 40
+    item_spacing = 15
+    selected_item_pixmap_style = &quot;select_*.png&quot;
+}</code></pre>
+<p>Key accessibility settings in this configuration include:</p>
+<ul>
+<li><strong><code>desktop-color: "#000000"</code></strong>: Enforces a
+solid, glare-free black background without distracting background
+graphics.</li>
+<li><strong><code>item_color: "#FFFFFF"</code></strong>: Ensures
+non-selected items display in pure white for maximum contrast against
+the black background.</li>
+<li><strong><code>item_spacing</code> and
+<code>item_height</code></strong>: Expanded values make distinct menu
+items easier to differentiate.</li>
+</ul>
+<h2 id="using-larger-fonts-for-readability">Using Larger Fonts for
+Readability</h2>
+<p>GRUB2 cannot render standard TrueType (<code>.ttf</code>) fonts
+directly; it requires <code>.pf2</code> font files. To generate a large,
+readable font:</p>
+<ol type="1">
+<li>On a Linux system, use the <code>grub-mkfont</code> utility:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">grub-mkfont</span> <span class="at">-s</span> 32 <span class="at">-o</span> DejaVuSans-32.pf2 /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf</span></code></pre></div></li>
+<li>Copy the resulting <code>DejaVuSans-32.pf2</code> file into your
+theme directory.</li>
+<li>Reference the font in your <code>theme.txt</code>:
+<pre class="text"><code>item_font = &quot;DejaVuSans-32&quot;</code></pre></li>
+</ol>
+<h2 id="activating-the-theme-in-ventoyjson">Activating the Theme in
+<code>ventoy.json</code></h2>
+<p>To make Ventoy load your custom theme, create or edit the
+<code>ventoy.json</code> file in the <code>ventoy</code> directory on
+your USB drive:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;theme&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;file&quot;</span><span class="fu">:</span> <span class="st">&quot;/ventoy/themes/high-contrast/theme.txt&quot;</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;gfxmode&quot;</span><span class="fu">:</span> <span class="st">&quot;1920x1080&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>The <code>gfxmode</code> parameter can be lowered (for example, to
+<code>1024x768</code> or <code>800x600</code>) to naturally scale up all
+visual elements on high-DPI displays.</p>
+<h2 id="switching-to-cli-text-only-mode">Switching to CLI (Text Only)
+Mode</h2>
+<p>For environments where graphical themes remain difficult to read or
+fail to scale properly, Ventoy includes a native text-mode
+interface.</p>
+<p>Text mode can be engaged in two ways:</p>
+<ul>
+<li><strong>On demand:</strong> Press the <strong>F7</strong> key at the
+main Ventoy menu to toggle between graphical mode and text mode.</li>
+<li><strong>By default:</strong> Add the <code>display_mode</code>
+directive to <code>ventoy.json</code>:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;display_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;cli&quot;</span> <span class="fu">}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>CLI mode eliminates custom styling, background images, and scaling
+issues, rendering standard BIOS/UEFI monochrome terminal text for
+optimal clarity and high contrast.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

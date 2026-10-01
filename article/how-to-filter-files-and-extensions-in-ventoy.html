@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Filter Files and Extensions in Ventoy - ventoy</title>
+    <meta name="description" content="This article explains how to filter out specific file extensions and naming patterns in Ventoy using the ventoy.json configuration file. It details the primary imageblacklist plugin used to match wildcards and extensions, highlights the specialized VTOYF">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-filter-files-and-extensions-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Filter Files and Extensions in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-filter-files-and-extensions-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how to filter out specific file extensions and naming patterns in Ventoy using the ventoy.json configuration file. It details the primary imageblacklist plugin used to match wildcards and extensions, highlights the specialized VTOYF" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-filter-files-and-extensions-in-ventoy">How to Filter
+Files and Extensions in Ventoy</h1>
+<p>This article explains how to filter out specific file extensions and
+naming patterns in Ventoy using the <code>ventoy.json</code>
+configuration file. It details the primary <code>image_blacklist</code>
+plugin used to match wildcards and extensions, highlights the
+specialized <code>VTOY_FILE_FLT_EFI</code> global control option, and
+provides configuration examples to help you customize which bootable
+files appear in your Ventoy menu.</p>
+<h2 id="the-image_blacklist-setting">The <code>image_blacklist</code>
+Setting</h2>
+<p>The primary setting in <code>ventoy.json</code> for filtering out
+specific file extensions, directories, or naming patterns is the
+<strong><code>image_blacklist</code></strong> plugin.</p>
+<p>By default, Ventoy recursively scans your drive and lists every
+compatible image file it discovers (such as <code>.iso</code>,
+<code>.wim</code>, <code>.img</code>, <code>.vhd</code>,
+<code>.vhdx</code>, and <code>.efi</code>). Adding paths or wildcard
+strings to the <code>image_blacklist</code> array instructs Ventoy to
+ignore any matching files during boot menu generation.</p>
+<h3 id="syntax-and-wildcards">Syntax and Wildcards</h3>
+<p>The <code>image_blacklist</code> setting accepts an array of strings.
+You can use standard wildcard characters:</p>
+<ul>
+<li>An asterisk (<code>*</code>) matches zero or more characters,
+allowing you to filter out specific file extensions (e.g.,
+<code>*.wim</code>) or naming patterns (e.g.,
+<code>*backup*</code>).</li>
+<li>Absolute paths can be used to target specific directories or single
+files.</li>
+</ul>
+<h3 id="configuration-example">Configuration Example</h3>
+<p>Create or edit the <code>ventoy.json</code> file inside the
+<code>ventoy</code> directory on your Ventoy drive's first partition
+(e.g., <code>/ventoy/ventoy.json</code>):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;image_blacklist&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;*.wim&quot;</span><span class="ot">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;*.vhd&quot;</span><span class="ot">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;*test*&quot;</span><span class="ot">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;/ISO/Private/*&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>In this example:</p>
+<ul>
+<li>All files ending in <code>.wim</code> or <code>.vhd</code> are
+hidden from the menu.</li>
+<li>Any image file containing the word <code>test</code> anywhere in its
+filename or path is ignored.</li>
+<li>All image files located in the <code>/ISO/Private/</code> directory
+are excluded.</li>
+</ul>
+<hr />
+<h2 id="filtering-efi-files-with-vtoy_file_flt_efi">Filtering
+<code>.efi</code> Files with <code>VTOY_FILE_FLT_EFI</code></h2>
+<p>If your goal is specifically to filter out standalone
+<code>.efi</code> files without writing wildcard patterns, Ventoy
+provides a dedicated setting in the
+<strong><code>control</code></strong> section called
+<strong><code>VTOY_FILE_FLT_EFI</code></strong>.</p>
+<p>By default, Ventoy lists valid <code>.efi</code> files found on the
+partition. Setting <code>VTOY_FILE_FLT_EFI</code> to <code>1</code>
+hides all <code>.efi</code> files automatically.</p>
+<h3 id="configuration-example-1">Configuration Example</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;VTOY_FILE_FLT_EFI&quot;</span><span class="fu">:</span> <span class="dv">1</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<ul>
+<li>Value <code>1</code>: Filter out and hide all <code>.efi</code> boot
+files.</li>
+<li>Value <code>0</code>: Allow <code>.efi</code> files to appear in the
+menu (default behavior).</li>
+</ul>
+<hr />
+<h2 id="using-image_list-for-whitelisting">Using <code>image_list</code>
+for Whitelisting</h2>
+<p>If you prefer to define strictly which files are permitted rather
+than filtering out unwanted ones, use the
+<strong><code>image_list</code></strong> setting. When
+<code>image_list</code> is defined, Ventoy only displays the exact files
+or matching patterns declared in the list, hiding everything else:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;image_list&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;/ISO/Ubuntu-22.04.iso&quot;</span><span class="ot">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;/ISO/Windows-11.iso&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<hr />
+<h2 id="configuration-best-practices">Configuration Best Practices</h2>
+<ol type="1">
+<li><strong>JSON Formatting:</strong> Ensure <code>ventoy.json</code>
+uses valid JSON syntax. Trailing commas after the last array item will
+cause parsing errors.</li>
+<li><strong>File Location:</strong> The file must reside at
+<code>/ventoy/ventoy.json</code> on the main data partition (Ventoy
+partition 1).</li>
+<li><strong>Case Sensitivity:</strong> Wildcard matches within
+<code>image_blacklist</code> are generally case-insensitive, but
+maintaining exact casing matching your actual filesystem names ensures
+consistent behavior across different hardware platforms.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

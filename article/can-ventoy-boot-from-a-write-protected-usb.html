@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Boot From a Write-Protected USB? - ventoy</title>
+    <meta name="description" content="This article explains whether a Ventoy USB drive can boot operating systems when hardware write-protection is engaged. While the initial Ventoy boot menu may load into memory from a read-only drive, launching an ISO or image will generally fail. Below is">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-boot-from-a-write-protected-usb">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Boot From a Write-Protected USB? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-boot-from-a-write-protected-usb" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains whether a Ventoy USB drive can boot operating systems when hardware write-protection is engaged. While the initial Ventoy boot menu may load into memory from a read-only drive, launching an ISO or image will generally fail. Below is" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-boot-from-a-write-protected-usb">Can Ventoy Boot From
+a Write-Protected USB?</h1>
+<p>This article explains whether a Ventoy USB drive can boot operating
+systems when hardware write-protection is engaged. While the initial
+Ventoy boot menu may load into memory from a read-only drive, launching
+an ISO or image will generally fail. Below is a breakdown of why Ventoy
+requires write access, what happens when hardware write-protection is
+active, and potential alternatives.</p>
+<h3 id="why-standard-ventoy-requires-write-access">Why Standard Ventoy
+Requires Write Access</h3>
+<p>Unlike traditional bootable drives that only read files sequentially
+during boot, Ventoy relies on dynamic write operations. When you select
+an ISO, IMG, or VHD file from the Ventoy menu, Ventoy performs several
+low-level operations:</p>
+<ol type="1">
+<li><strong>Runtime Data Generation:</strong> Ventoy writes dynamic
+runtime data to the USB drive to bridge the ISO file and the boot
+environment.</li>
+<li><strong>Disk Hooking and Emulation:</strong> To trick the target
+operating system into seeing the ISO file as a contiguous physical
+drive, Ventoy updates sector tables and internal configurations on the
+USB media itself.</li>
+<li><strong>Environment Tracking:</strong> Ventoy logs runtime events
+and updates temporary boot parameters directly on the partition
+structure.</li>
+</ol>
+<h3 id="what-happens-on-a-hardware-write-protected-usb">What Happens on
+a Hardware Write-Protected USB</h3>
+<p>When a physical write-protect switch is toggled on a USB flash drive
+or SD card adapter:</p>
+<ul>
+<li><strong>Menu Phase:</strong> The computer's firmware (BIOS or UEFI)
+can read the boot partition. The Ventoy graphical menu will typically
+load without issue because reading data is fully permitted.</li>
+<li><strong>Launch Phase:</strong> The moment an ISO is selected, Ventoy
+attempts to write runtime instructions and virtual drive mappings to the
+USB drive. Because the hardware blocks all write commands at the
+controller level, the drive returns an I/O error.</li>
+<li><strong>The Result:</strong> The boot process halts, displaying disk
+write errors, file-creation errors, or a black screen.</li>
+</ul>
+<p>Because this write restriction is enforced by the hardware controller
+of the USB drive, no software bypass or configuration setting inside
+Ventoy can override it.</p>
+<h3 id="exceptions-and-limitations">Exceptions and Limitations</h3>
+<ul>
+<li><strong>Memdisk Mode:</strong> Ventoy features a "Memdisk" mode
+(<code>Ctrl+W</code> or using the <code>F1</code> memdisk toggle) that
+loads the entire ISO into RAM before executing. In some edge cases with
+very small ISOs (such as WinPE or lightweight Linux utility images),
+this may bypass disk-writing requirements. However, it requires enough
+system RAM to hold the entire image and is not compatible with all
+operating systems.</li>
+<li><strong>Ventoy LiveCD:</strong> Ventoy offers a LiveCD system image
+intended for read-only environments (such as burning to optical discs),
+but this operates differently than standard multi-ISO USB
+deployments.</li>
+</ul>
+<h3 id="conclusion">Conclusion</h3>
+<p>A standard Ventoy setup cannot reliably boot operating system images
+if hardware write-protection is turned on. The hardware switch must be
+set to read/write mode to allow Ventoy to configure the necessary boot
+parameters and hooks. If write-protection is strictly required for
+security, you must either turn off write-protection temporarily during
+the boot selection phase or use traditional read-only boot methods such
+as optical media or standard GRUB loopback configurations.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

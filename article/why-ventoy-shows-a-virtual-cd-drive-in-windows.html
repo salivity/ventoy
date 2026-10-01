@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Shows a Virtual CD Drive in Windows - ventoy</title>
+    <meta name="description" content="When you boot into Windows or the Windows installer using a Ventoy USB drive, you will often notice a virtual CD-ROM or DVD-ROM drive mounted in File Explorer. This article explains why this virtual drive appears, the mechanism Ventoy uses to present the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-shows-a-virtual-cd-drive-in-windows">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Shows a Virtual CD Drive in Windows - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-shows-a-virtual-cd-drive-in-windows" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When you boot into Windows or the Windows installer using a Ventoy USB drive, you will often notice a virtual CD-ROM or DVD-ROM drive mounted in File Explorer. This article explains why this virtual drive appears, the mechanism Ventoy uses to present the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-shows-a-virtual-cd-drive-in-windows">Why Ventoy Shows
+a Virtual CD Drive in Windows</h1>
+<p>When you boot into Windows or the Windows installer using a Ventoy
+USB drive, you will often notice a virtual CD-ROM or DVD-ROM drive
+mounted in File Explorer. This article explains why this virtual drive
+appears, the mechanism Ventoy uses to present the ISO file to the
+operating system, and why this process is essential for Windows to
+function properly without encountering setup errors.</p>
+<h3 id="the-role-of-ventoys-iso-emulation">The Role of Ventoy's ISO
+Emulation</h3>
+<p>Unlike traditional USB creation tools that extract files from an ISO
+directly onto a flash drive partition, Ventoy stores ISO files intact.
+When your computer boots, Ventoy uses UEFI or BIOS memory hooks to
+simulate an optical drive so the initial bootloader can start.</p>
+<p>However, once Windows begins loading its kernel and drivers, it
+switches to protected mode and stops relying on the BIOS or UEFI memory
+environment. At this transition point, Windows can no longer see the
+emulated ISO in memory and natively looks for a physical CD, DVD, or
+extracted USB partition to read installation files, such as
+<code>install.wim</code>.</p>
+<h3 id="why-the-virtual-drive-appears-in-file-explorer">Why the Virtual
+Drive Appears in File Explorer</h3>
+<p>To prevent the Windows setup from failing with a "media driver
+missing" error, Ventoy bridges this transition using an injected helper
+driver.</p>
+<ol type="1">
+<li><strong>Driver Injection:</strong> During the boot handover, Ventoy
+injects a lightweight virtual disk driver into the Windows
+Preinstallation Environment (WinPE) or operating system.</li>
+<li><strong>Loopback Mounting:</strong> This driver locates the original
+ISO file stored on your Ventoy partition and mounts it as a virtual
+optical disc device directly inside Windows.</li>
+<li><strong>Drive Letter Assignment:</strong> Windows treats this
+virtual device exactly like a physical SATA or USB CD/DVD drive. As a
+result, Windows automatically assigns it an available drive letter and
+displays it in File Explorer with an optical media icon.</li>
+</ol>
+<h3 id="is-this-behavior-normal">Is This Behavior Normal?</h3>
+<p>Yes, seeing a virtual CD-ROM drive is completely standard behavior
+when using Ventoy. The virtual drive provides read-only access to the
+files inside the booted image, allowing setup routines, diagnostic
+tools, and system installers to locate their necessary components.</p>
+<p>The virtual drive exists only within the running session. It does not
+alter your physical drives, write permanent data to your system, or
+remain present once you reboot into a standard, installed Windows
+environment without the Ventoy drive attached.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

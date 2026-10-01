@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Work Without Legacy USB Emulation? - ventoy</title>
+    <meta name="description" content="Whether Ventoy works when legacy USB emulation is disabled in the BIOS depends entirely on whether the target machine boots in UEFI or Legacy BIOS mode. In standard UEFI mode, Ventoy functions normally without legacy USB emulation because modern UEFI fir">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-work-without-legacy-usb-emulation">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Work Without Legacy USB Emulation? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-work-without-legacy-usb-emulation" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Whether Ventoy works when legacy USB emulation is disabled in the BIOS depends entirely on whether the target machine boots in UEFI or Legacy BIOS mode. In standard UEFI mode, Ventoy functions normally without legacy USB emulation because modern UEFI fir" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-work-without-legacy-usb-emulation">Does Ventoy Work
+Without Legacy USB Emulation?</h1>
+<p>Whether Ventoy works when legacy USB emulation is disabled in the
+BIOS depends entirely on whether the target machine boots in UEFI or
+Legacy BIOS mode. In standard UEFI mode, Ventoy functions normally
+without legacy USB emulation because modern UEFI firmware features
+native USB architecture. However, if the computer relies on Legacy BIOS
+or Compatibility Support Module (CSM) mode, disabling legacy USB
+emulation prevents the motherboard from recognizing the USB drive,
+rendering Ventoy unable to boot.</p>
+<h3 id="uefi-boot-mode">UEFI Boot Mode</h3>
+<p>When booting under standard UEFI mode, legacy USB emulation is
+unnecessary. Modern UEFI implementations include built-in drivers for
+USB controllers (such as xHCI and EHCI). The UEFI environment directly
+initializes the USB bus, discovers the Ventoy boot partitions, and
+executes the EFI bootloader (<code>BOOTX64.EFI</code>). Consequently,
+turning off legacy USB support has no negative impact on Ventoy’s
+functionality on modern UEFI-based systems.</p>
+<h3 id="legacy-bios--csm-mode">Legacy BIOS / CSM Mode</h3>
+<p>In pure Legacy BIOS mode or when using CSM, the motherboard relies on
+firmware-level interrupts (INT 13h) to detect storage devices and load
+boot sectors. Legacy USB emulation translates modern USB hardware
+signals into standard IDE/floppy disk commands that the vintage BIOS
+architecture can understand. If you disable this setting in a legacy
+environment:</p>
+<ul>
+<li>The BIOS will fail to register the Ventoy USB drive as a valid boot
+device.</li>
+<li>The system will bypass the USB entirely during the Power-On
+Self-Test (POST) and move to the next boot target in priority.</li>
+<li>USB keyboards may fail to function in boot menus prior to an
+operating system loading.</li>
+</ul>
+<h3 id="summary">Summary</h3>
+<p>To use Ventoy on a system where legacy USB emulation is turned off,
+the computer must be configured to boot in native UEFI mode. If you must
+boot in Legacy BIOS mode, legacy USB emulation must remain enabled in
+the firmware settings for the hardware to detect and load the Ventoy
+drive.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

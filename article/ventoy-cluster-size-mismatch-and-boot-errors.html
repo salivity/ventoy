@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Cluster Size Mismatch and Boot Errors - ventoy</title>
+    <meta name="description" content="A cluster size mismatch or the use of an improper allocation unit size can indeed cause boot errors in Ventoy. While Ventoy supports various file systems such as exFAT, NTFS, and FAT32 for storing disk images, non-standard cluster sizes can prevent UEFI">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-cluster-size-mismatch-and-boot-errors">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Cluster Size Mismatch and Boot Errors - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-cluster-size-mismatch-and-boot-errors" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="A cluster size mismatch or the use of an improper allocation unit size can indeed cause boot errors in Ventoy. While Ventoy supports various file systems such as exFAT, NTFS, and FAT32 for storing disk images, non-standard cluster sizes can prevent UEFI" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-cluster-size-mismatch-and-boot-errors">Ventoy Cluster
+Size Mismatch and Boot Errors</h1>
+<p>A cluster size mismatch or the use of an improper allocation unit
+size can indeed cause boot errors in Ventoy. While Ventoy supports
+various file systems such as exFAT, NTFS, and FAT32 for storing disk
+images, non-standard cluster sizes can prevent UEFI firmware, legacy
+BIOS, or the underlying Ventoy GRUB loader from properly reading files.
+This article explains how cluster size issues trigger boot failures,
+which partitions are affected, and how to resolve these configuration
+errors.</p>
+<h2 id="how-ventoy-uses-disk-partitions">How Ventoy Uses Disk
+Partitions</h2>
+<p>When Ventoy is installed on a USB drive, it creates two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Image Partition):</strong> By default formatted
+as exFAT (though customizable to NTFS, EXT4, FAT32, or Btrfs), this
+partition occupies most of the drive and stores ISO, WIM, IMG, and VHD
+files.</li>
+<li><strong>Partition 2 (VTOY_EFI):</strong> A small, hidden
+FAT-formatted system partition that contains the bootloader code, EFI
+drivers, and core software required to load Ventoy's user
+interface.</li>
+</ol>
+<h2 id="why-cluster-size-mismatches-cause-boot-failures">Why Cluster
+Size Mismatches Cause Boot Failures</h2>
+<p>Booting an operating system requires a chain of low-level software
+handoffs, moving from system firmware (BIOS/UEFI) to the Ventoy
+bootloader, and finally to the operating system kernel. Cluster size
+mismatches introduce failures at multiple points in this chain:</p>
+<h3 id="1-uefi-and-bios-driver-limitations">1. UEFI and BIOS Driver
+Limitations</h3>
+<p>System firmware contains basic file system drivers with limited
+capabilities. Many UEFI implementations have rigid constraints regarding
+file allocation table structures. If the data partition is formatted
+with an excessively large allocation unit size (such as 128KB, 256KB, or
+higher), the firmware or Ventoy’s embedded GRUB2 modules may fail to
+traverse the file table. This leads to missing image errors or a failure
+to hand off execution to the kernel.</p>
+<h3 id="2-manual-reformatting-of-partition-2">2. Manual Reformatting of
+Partition 2</h3>
+<p>Users sometimes attempt to reformat the second partition
+(<code>VTOY_EFI</code>) to adjust cluster sizes or change file systems.
+Doing so almost always breaks Ventoy entirely. The partition expects a
+strict FAT16/FAT32 layout with default cluster sizing. Deviating from
+this causes immediate failures such as
+<code>Selected boot device failed</code> or black screens upon
+power-on.</p>
+<h3 id="3-file-fragmentation-and-mapping-failures">3. File Fragmentation
+and Mapping Failures</h3>
+<p>Ventoy relies on reading ISO files directly from storage blocks.
+Non-standard cluster sizes—especially when combined with fragmented
+large ISO files—can break the block-mapping routines that Ventoy uses to
+emulate virtual optical drives. This typically manifests as a freeze
+during the loading screen or an error stating that the virtual disk
+could not be mounted.</p>
+<h2 id="common-symptoms-of-a-cluster-size-error">Common Symptoms of a
+Cluster Size Error</h2>
+<ul>
+<li>The USB drive is not recognized as a bootable device by UEFI boot
+menus.</li>
+<li>The system boots to a <code>grub&gt;</code> command prompt instead
+of the Ventoy menu.</li>
+<li>The Ventoy menu appears, but selecting an ISO produces an error:
+<code>No such device</code> or <code>Cannot find disk</code>.</li>
+<li>The loading process hangs indefinitely at a blank screen after
+selecting an image.</li>
+</ul>
+<h2 id="recommended-cluster-sizes-for-ventoy">Recommended Cluster Sizes
+for Ventoy</h2>
+<p>To ensure compatibility across the widest range of hardware:</p>
+<ul>
+<li><strong>Partition 1 (Storage):</strong>
+<ul>
+<li><strong>exFAT:</strong> Default allocation unit size (typically 16KB
+to 128KB depending on disk capacity; 128KB is standard for modern large
+drives, but 32KB or 64KB offers the highest compatibility with older
+UEFI systems).</li>
+<li><strong>NTFS:</strong> 4096 bytes (4KB) default. Avoid formatting
+NTFS with cluster sizes larger than 4KB, as many bootloaders cannot
+handle large cluster NTFS volumes.</li>
+<li><strong>FAT32:</strong> 4KB to 32KB default, depending on volume
+size.</li>
+</ul></li>
+<li><strong>Partition 2 (Boot):</strong>
+<ul>
+<li>Never format or alter this partition manually.</li>
+</ul></li>
+</ul>
+<h2 id="how-to-fix-cluster-size-boot-errors">How to Fix Cluster Size
+Boot Errors</h2>
+<ol type="1">
+<li><strong>Reinstall Ventoy Cleanly:</strong> Open the official Ventoy
+installation tool, click <strong>Option</strong>, verify your settings,
+and perform a fresh install. This resets both partitions and applies the
+standard cluster sizes automatically.</li>
+<li><strong>Reformat Only Partition 1:</strong> If you must use a custom
+file system (like NTFS for specific environment compatibility), format
+only the first partition using standard parameters:
+<ul>
+<li>On Windows: Open Disk Management, right-click the large Ventoy
+partition, select <strong>Format</strong>, and choose <strong>Default
+allocation size</strong>.</li>
+<li>On Linux: Use standard <code>mkfs</code> defaults without manually
+passing extreme cluster size (<code>-s</code> or <code>-c</code>)
+flags.</li>
+</ul></li>
+<li><strong>Verify Sector Sizing:</strong> If you are using advanced
+external drives (such as native 4Kn drives), ensure the drive is
+operating in 512e emulation mode if your computer's BIOS does not
+support native 4K sector booting.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

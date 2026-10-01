@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Warn If an ISO Is Fragmented? - ventoy</title>
+    <meta name="description" content="Ventoy is designed to boot operating system images directly from USB storage, but file fragmentation can interfere with this process. When an ISO file is split into too many non-contiguous clusters across the drive, Ventoy detects this condition and disp">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-warn-if-an-iso-is-fragmented">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Warn If an ISO Is Fragmented? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-warn-if-an-iso-is-fragmented" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is designed to boot operating system images directly from USB storage, but file fragmentation can interfere with this process. When an ISO file is split into too many non-contiguous clusters across the drive, Ventoy detects this condition and disp" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-warn-if-an-iso-is-fragmented">Does Ventoy Warn If an
+ISO Is Fragmented?</h1>
+<p>Ventoy is designed to boot operating system images directly from USB
+storage, but file fragmentation can interfere with this process. When an
+ISO file is split into too many non-contiguous clusters across the
+drive, Ventoy detects this condition and displays an internal error
+message on screen. Understanding how Ventoy detects fragmentation, what
+the warning looks like, and how to fix the issue ensures a reliable
+multiboot USB setup.</p>
+<h2 id="ventoys-fragmentation-warning">Ventoy’s Fragmentation
+Warning</h2>
+<p>Yes, Ventoy provides an internal warning message when an ISO file is
+excessively fragmented. Because Ventoy operates at the bootloader level
+prior to the operating system loading, it relies on reading disk sectors
+directly. If an image is broken into an excessive number of fragments,
+Ventoy cannot allocate enough memory or table space to map all the file
+clusters.</p>
+<p>When this threshold is crossed, Ventoy halts the boot attempt and
+presents an on-screen prompt stating:</p>
+<blockquote>
+<p><code>File is fragmented, please defrag it.</code></p>
+</blockquote>
+<p>In some versions or depending on the specific file system
+implementation, the prompt may also state that there are not enough
+clusters available to map the file, or indicate that the file layout is
+non-contiguous.</p>
+<h2 id="why-fragmentation-causes-boot-failures-in-ventoy">Why
+Fragmentation Causes Boot Failures in Ventoy</h2>
+<p>Ventoy functions by hooking standard BIOS or UEFI disk interrupt
+routines and mapping the ISO's raw sectors so the booted operating
+system thinks it is reading from a physical optical drive.</p>
+<ul>
+<li><strong>Small fragments exhaust limits:</strong> A moderately
+fragmented file may still load if the number of disjointed cluster
+extents fits within Ventoy's internal tracking tables.</li>
+<li><strong>Excessive fragments trigger protection:</strong> When a file
+has hundreds or thousands of fragments, the bootloader's sector map
+overflows. To prevent hard crashes, kernel panics, or incomplete OS
+loading midway through boot, Ventoy intentionally halts execution and
+triggers the warning.</li>
+</ul>
+<h2 id="how-to-resolve-fragmented-isos-in-ventoy">How to Resolve
+Fragmented ISOs in Ventoy</h2>
+<p>If Ventoy displays a fragmentation error, the issue must be resolved
+from within an operating system before attempting to boot again:</p>
+<ol type="1">
+<li><strong>Run a Defragmentation Tool:</strong> Use a dedicated file
+defragmenter (such as Microsoft Defrag, Defraggler, or Contig on
+Windows) targeting the specific fragmented ISO file on the USB
+drive.</li>
+<li><strong>Re-copy the ISO:</strong> Delete the fragmented ISO from the
+USB drive. If the drive has free contiguous space, copying the ISO back
+onto the flash drive will often write it sequentially without
+fragmentation.</li>
+<li><strong>Optimize Free Space:</strong> If the drive is nearly full,
+delete unnecessary files to create a large block of free space,
+defragment the drive's free space, and then copy the image file
+over.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

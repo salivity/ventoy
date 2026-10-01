@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Hooks into Linux Initramfs - ventoy</title>
+    <meta name="description" content="Ventoy enables direct ISO booting by injecting a custom secondary initramfs image into memory alongside the operating system's native initramfs during the bootloader stage. Because Linux drops BIOS/UEFI disk abstractions once the kernel loads, standard d">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-hooks-into-linux-initramfs">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Hooks into Linux Initramfs - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-hooks-into-linux-initramfs" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy enables direct ISO booting by injecting a custom secondary initramfs image into memory alongside the operating system's native initramfs during the bootloader stage. Because Linux drops BIOS/UEFI disk abstractions once the kernel loads, standard d" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-hooks-into-linux-initramfs">How Ventoy Hooks into
+Linux Initramfs</h1>
+<p>Ventoy enables direct ISO booting by injecting a custom secondary
+initramfs image into memory alongside the operating system's native
+initramfs during the bootloader stage. Because Linux drops BIOS/UEFI
+disk abstractions once the kernel loads, standard distribution scripts
+fail to locate the installation media stored inside an unmounted ISO
+file. Ventoy overcomes this by concatenating its own archive
+(<code>ventoy.cpio</code>) to the boot pipeline, executing specialized
+scripts that mount the physical storage partition, map the ISO to a loop
+device, and spoof the underlying distribution's volume identifiers
+before the root filesystem switch occurs.</p>
+<h3 id="the-problem-of-direct-iso-booting">The Problem of Direct ISO
+Booting</h3>
+<p>When a Linux distribution boots from standard media, the BIOS or UEFI
+loads a bootloader, which in turn loads the Linux kernel and an initial
+RAM disk (initramfs). The native initramfs contains minimal drivers and
+scripts designed to scan physical storage controllers (like USB or SATA)
+for a disk partition matching a hardcoded volume label or UUID.</p>
+<p>When booting an ISO file directly from an existing filesystem (such
+as exFAT or NTFS), the kernel boots, but its native initramfs scripts do
+not know that the installation data is trapped inside an ISO container.
+Because Linux switches to native hardware drivers, any temporary disk
+emulation provided by UEFI firmware disappears, causing standard
+distributions to crash with "root device not found" errors.</p>
+<h3 id="cpio-concatenation-at-the-bootloader-level">CPIO Concatenation
+at the Bootloader Level</h3>
+<p>Ventoy solves this in the GRUB bootloader phase without modifying the
+ISO file on disk. The Linux kernel has native support for multiple,
+concatenated initramfs archives passed through the bootloader:</p>
+<pre class="text"><code>initrd /path/to/distro-initrd.img /ventoy/ventoy.cpio</code></pre>
+<p>When the kernel initializes, it extracts these CPIO archives
+sequentially into <code>rootfs</code> (tmpfs). Ventoy loads its own
+small CPIO archive on top of the original initramfs. Any files in
+Ventoy’s archive will sit alongside, or overwrite, the distribution’s
+existing scripts in the virtual root filesystem before user space
+initializes.</p>
+<h3 id="hooking-the-early-user-space">Hooking the Early User Space</h3>
+<p>Once the kernel completes hardware enumeration, it hands control to
+<code>/init</code> inside the initramfs. Ventoy’s payload hooks into
+this environment using different strategies depending on the
+distribution's init framework:</p>
+<ul>
+<li><strong>Hooking Native Init Frameworks:</strong> Ventoy injects
+hooks directly into common framework directories, such as Dracut
+(<code>/usr/lib/dracut/modules.d/</code>), Casper (Ubuntu), Live-boot
+(Debian), and Mkinitcpio (Arch Linux).</li>
+<li><strong>Replacing or Wrapping <code>/init</code>:</strong> If the
+distribution uses a generic or non-modular init system, Ventoy renames
+the distribution's original <code>/init</code> script and substitutes
+its own wrapper script. The wrapper executes Ventoy's setup routines
+first and then calls the original entry point.</li>
+</ul>
+<h3 id="the-ventoy-loopback-and-spoofing-sequence">The Ventoy Loopback
+and Spoofing Sequence</h3>
+<p>Once Ventoy's injected script gains execution within the initramfs,
+it performs the following steps:</p>
+<ol type="1">
+<li><strong>Reading Boot Parameters:</strong> Ventoy retrieves the exact
+physical partition and file path of the ISO, which the GRUB stage passed
+down via kernel command-line arguments or dedicated runtime memory
+configurations.</li>
+<li><strong>Polling and Mounting the Host Partition:</strong> The script
+waits for the kernel to initialize the host USB controller and disk
+devices. Once the physical device is online, Ventoy mounts the
+underlying partition (exFAT, NTFS, ext4, etc.) containing the ISO
+file.</li>
+<li><strong>Creating the Loop Device:</strong> The script runs
+<code>losetup</code> to bind the ISO file to a virtual loop device
+(e.g., <code>/dev/loop0</code>).</li>
+<li><strong>Emulating Device Signatures:</strong> Modern distribution
+scripts look for specific devices, such as
+<code>/dev/disk/by-label/DISTRO_LABEL</code> or
+<code>/dev/disk/by-uuid/XXXX-XXXX</code>. Ventoy's hooks create matching
+symbolic links pointing directly to the newly generated loop device or
+inject udev rules to populate these nodes automatically.</li>
+</ol>
+<h3 id="clean-hand-off-to-the-target-system">Clean Hand-Off to the
+Target System</h3>
+<p>With the ISO loop-mounted and device nodes linked to mimic native
+physical media, Ventoy allows the distribution's original boot logic to
+resume. When the native initramfs scripts scan the system for
+installation media or the live squashfs image, they detect the loop
+device as if it were a physical CD-ROM or burned USB drive.</p>
+<p>The distribution successfully mounts the live root filesystem, and
+the native initramfs completes its execution by pivoting to the real
+root directory (<code>switch_root</code>), transitioning smoothly into
+the fully initialized Linux operating system.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

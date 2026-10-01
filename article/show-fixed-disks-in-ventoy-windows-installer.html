@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Fixed Disks in Ventoy Windows Installer - ventoy</title>
+    <meta name="description" content="When booting a Windows installation ISO through a Ventoy USB drive, the setup wizard may fail to detect your internal, non-removable fixed disks (NVMe SSDs or SATA drives) on the partition selection screen. This issue typically stems from missing storage">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/show-fixed-disks-in-ventoy-windows-installer">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Show Fixed Disks in Ventoy Windows Installer - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/show-fixed-disks-in-ventoy-windows-installer" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When booting a Windows installation ISO through a Ventoy USB drive, the setup wizard may fail to detect your internal, non-removable fixed disks (NVMe SSDs or SATA drives) on the partition selection screen. This issue typically stems from missing storage" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="show-fixed-disks-in-ventoy-windows-installer">Show Fixed Disks
+in Ventoy Windows Installer</h1>
+<p>When booting a Windows installation ISO through a Ventoy USB drive,
+the setup wizard may fail to detect your internal, non-removable fixed
+disks (NVMe SSDs or SATA drives) on the partition selection screen. This
+issue typically stems from missing storage controller drivers, active
+Intel VMD/RST configurations in your firmware, or virtual drive
+emulation conflicts. The following steps provide direct solutions to
+force the Windows installer to recognize and display your internal
+drives.</p>
+<h3 id="1-disable-intel-vmd-or-raid-in-biosuefi">1. Disable Intel VMD or
+RAID in BIOS/UEFI</h3>
+<p>Most modern laptops and desktops (especially Intel 11th Gen and
+newer) have Intel Volume Management Device (VMD) or Intel RST (RAID)
+enabled by default. The standard Windows installer lacks these drivers,
+causing internal fixed disks to disappear.</p>
+<ol type="1">
+<li>Restart your computer and press the BIOS/UEFI key (typically
+<strong>F2</strong>, <strong>F12</strong>, or
+<strong>Delete</strong>).</li>
+<li>Navigate to <strong>System Configuration</strong>,
+<strong>Storage</strong>, or <strong>Advanced Settings</strong>.</li>
+<li>Locate <strong>Intel VMD Technology</strong>, <strong>Intel
+RST</strong>, or <strong>SATA Operation</strong>.</li>
+<li>Change the setting from <strong>RAID/VMD</strong> to
+<strong>AHCI</strong> or <strong>Disabled</strong>.</li>
+<li>Save changes, exit BIOS, and reboot into your Ventoy drive.</li>
+</ol>
+<h3 id="2-manually-load-storage-drivers-during-setup">2. Manually Load
+Storage Drivers During Setup</h3>
+<p>If you cannot or do not want to disable Intel VMD/RST, you must
+supply the storage controller drivers during the installation
+process.</p>
+<ol type="1">
+<li>Download the appropriate <strong>Intel Rapid Storage Technology
+(IRST)</strong> or motherboard storage driver package from your hardware
+manufacturer's support page.</li>
+<li>Extract the driver archive so the raw driver files
+(<code>.inf</code>, <code>.sys</code>, <code>.cat</code>) are
+accessible.</li>
+<li>Copy the extracted driver folder directly onto the storage partition
+of your Ventoy USB drive.</li>
+<li>Boot the Windows installer via Ventoy and proceed to the disk
+selection screen ("Where do you want to install Windows?").</li>
+<li>Click <strong>Load driver</strong> in the lower-left corner.</li>
+<li>Click <strong>Browse</strong>, navigate to the driver folder on your
+Ventoy drive, select the compatible controller driver, and click
+<strong>Next</strong>. The internal disks will appear once the driver
+loads.</li>
+</ol>
+<h3 id="3-launch-the-iso-using-ventoy-wimboot-mode">3. Launch the ISO
+Using Ventoy WIMboot Mode</h3>
+<p>Standard ISO loopback mounting can sometimes conflict with Windows
+Setup disk discovery routines. Ventoy includes a dedicated WIMboot mode
+that bypasses traditional virtual disk mounting.</p>
+<ol type="1">
+<li>Boot your computer into the Ventoy boot menu.</li>
+<li>Highlight your Windows ISO file.</li>
+<li>Press <strong>Ctrl + W</strong> on your keyboard (or press
+<strong>Enter</strong> and select <strong>Boot in wimboot mode</strong>
+if prompted).</li>
+<li>Proceed through the Windows Setup wizard normally to check if your
+fixed disks appear.</li>
+</ol>
+<h3 id="4-bring-disks-online-using-diskpart">4. Bring Disks Online Using
+Diskpart</h3>
+<p>A non-removable disk might be detected by Windows Setup hardware
+detection but hidden from the installer interface because it is marked
+offline or has an incompatible partition table.</p>
+<ol type="1">
+<li>On the Windows Setup screen, press <strong>Shift + F10</strong> to
+open the Command Prompt.</li>
+<li>Type <code>diskpart</code> and press <strong>Enter</strong>.</li>
+<li>Type <code>list disk</code> and press <strong>Enter</strong>.</li>
+<li>If your internal disk is visible in the list:
+<ul>
+<li>Type <code>select disk X</code> (replace <code>X</code> with the
+number of your internal disk) and press <strong>Enter</strong>.</li>
+<li>Type <code>online disk</code> and press <strong>Enter</strong> to
+ensure the disk is active.</li>
+<li>If the drive is entirely blank or can be wiped, type
+<code>clean</code> followed by <code>convert gpt</code> to create a
+fresh partition structure.</li>
+</ul></li>
+<li>Type <code>exit</code>, press <strong>Enter</strong>, and close the
+Command Prompt.</li>
+<li>Click <strong>Refresh</strong> on the Windows installation drive
+selection screen.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

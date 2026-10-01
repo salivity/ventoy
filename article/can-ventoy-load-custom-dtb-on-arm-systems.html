@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Load Custom DTB on ARM Systems? - ventoy</title>
+    <meta name="description" content="Ventoy does not natively support loading or swapping custom Device Tree Blobs (DTBs) through its boot menu or configuration files on ARM systems. While Ventoy provides official support for the ARM64 (aarch64) architecture, it depends on standard UEFI env">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-load-custom-dtb-on-arm-systems">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Load Custom DTB on ARM Systems? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-load-custom-dtb-on-arm-systems" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not natively support loading or swapping custom Device Tree Blobs (DTBs) through its boot menu or configuration files on ARM systems. While Ventoy provides official support for the ARM64 (aarch64) architecture, it depends on standard UEFI env" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-load-custom-dtb-on-arm-systems">Can Ventoy Load
+Custom DTB on ARM Systems?</h1>
+<p>Ventoy does not natively support loading or swapping custom Device
+Tree Blobs (DTBs) through its boot menu or configuration files on ARM
+systems. While Ventoy provides official support for the ARM64 (aarch64)
+architecture, it depends on standard UEFI environments to initialize
+hardware rather than handling board-specific device tree injection. This
+article breaks down how Ventoy handles ARM booting, why custom DTB
+loading is absent, and the practical workarounds available for ARM
+single-board computers.</p>
+<h3 id="why-ventoy-lacks-native-dtb-management">Why Ventoy Lacks Native
+DTB Management</h3>
+<p>Ventoy is designed around the standard PC boot model, which it
+extends to ARM via the UEFI standard. On typical x86 systems, hardware
+configuration is exposed automatically through ACPI tables. On ARM
+platforms, non-standardized hardware requires a Device Tree Blob
+(<code>.dtb</code>) to inform the Linux kernel about the board's
+peripheral addresses, GPIO pins, clocks, and memory layout.</p>
+<p>Ventoy relies on GRUB2 and UEFI to launch boot images. Because Ventoy
+assumes an established UEFI layer is already running on the target
+device, it delegates hardware discovery to that underlying firmware.
+Ventoy's core image parser does not provide a native menu option, global
+plugin, or user interface to specify an external DTB file to pass to an
+ISO's kernel.</p>
+<h3 id="the-role-of-uefi-firmware-on-arm">The Role of UEFI Firmware on
+ARM</h3>
+<p>To run Ventoy on an ARM system—such as a Raspberry Pi or a
+Rockchip-based device—the board must first boot a UEFI implementation
+(such as EDK2 or Tianocore) from its initial storage.</p>
+<p>When UEFI initializes on an ARM board, it generally accomplishes one
+of two things:</p>
+<ol type="1">
+<li>It provides ACPI tables to the operating system.</li>
+<li>It loads the board's designated DTB into memory and exposes it via
+the UEFI configuration table.</li>
+</ol>
+<p>Because the underlying UEFI firmware typically registers the device
+tree before Ventoy even executes, Ventoy simply passes whatever hardware
+description table the firmware has already loaded directly to the target
+operating system.</p>
+<h3 id="workarounds-for-booting-custom-dtbs">Workarounds for Booting
+Custom DTBs</h3>
+<p>If an operating system or hypervisor requires a specific or modified
+DTB that is not supplied by the firmware or the ISO itself, you cannot
+rely on Ventoy's automated loader. Instead, you must use one of the
+following methods:</p>
+<ul>
+<li><strong>Configure the Underlying UEFI Layer:</strong> Ensure the
+EDK2/UEFI image flashed to your board's SPI flash or primary storage
+contains the updated DTB. Most ARM UEFI implementations allow you to
+point the firmware directly to an updated DTB stored in the firmware
+partition.</li>
+<li><strong>Use Ventoy's Custom GRUB Extension:</strong> Ventoy supports
+extending its menu via a user-created <code>ventoy_grub.cfg</code> file
+located in the <code>ventoy</code> directory of the USB drive. Within
+this script, you can write custom GRUB menu entries utilizing GRUB’s
+native <code>devicetree</code> command (for example:
+<code>devicetree /path/to/custom.dtb</code>) to manually load a kernel,
+initramfs, and DTB. This bypasses Ventoy's automated ISO loop-mounting
+mechanism.</li>
+<li><strong>Modify the Target OS Image:</strong> For Linux distributions
+distributed as raw disk images (<code>.img</code>), mount the image
+prior to placing it on the Ventoy drive and replace the default
+<code>.dtb</code> file inside the image's boot partition with your
+custom version.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

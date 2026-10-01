@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Persistence Works for Live Linux - ventoy</title>
+    <meta name="description" content="The Ventoy persistence plugin allows users to run live Linux distributions from a USB drive while retaining system settings, installed software, and personal files across reboots. Standard live Linux media typically operates entirely in temporary system">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-persistence-works-for-live-linux">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Persistence Works for Live Linux - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-persistence-works-for-live-linux" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Ventoy persistence plugin allows users to run live Linux distributions from a USB drive while retaining system settings, installed software, and personal files across reboots. Standard live Linux media typically operates entirely in temporary system" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-persistence-works-for-live-linux">How Ventoy
+Persistence Works for Live Linux</h1>
+<p>The Ventoy persistence plugin allows users to run live Linux
+distributions from a USB drive while retaining system settings,
+installed software, and personal files across reboots. Standard live
+Linux media typically operates entirely in temporary system memory
+(RAM), discarding all changes when powered down. Ventoy solves this
+limitation by pairing unmodified ISO files with dedicated virtual disk
+images and injecting native persistence boot parameters during the
+bootloader stage, seamlessly bridging the gap between a portable live
+environment and a fully installed operating system.</p>
+<h2 id="the-problem-with-traditional-live-systems">The Problem with
+Traditional Live Systems</h2>
+<p>When a standard live Linux distribution boots from an ISO, the
+bootloader mounts a compressed, read-only filesystem (typically a
+SquashFS image). Any changes made during the session—such as creating
+documents, configuring Wi-Fi, or installing software—are written to a
+temporary RAM-based filesystem (such as <code>tmpfs</code>). Because RAM
+is volatile, shutting down or restarting the machine clears these memory
+buffers, returning the system to its original state upon the next
+boot.</p>
+<h2 id="how-ventoy-achieves-persistence">How Ventoy Achieves
+Persistence</h2>
+<p>Ventoy implements persistence without extracting or modifying the
+underlying distribution ISOs. It accomplishes this through three core
+components: a virtual storage container, configuration mapping, and boot
+parameter injection.</p>
+<h3 id="1-the-persistence-image-file">1. The Persistence Image File</h3>
+<p>Instead of creating dedicated disk partitions on the USB drive,
+Ventoy relies on pre-allocated image files (typically with a
+<code>.dat</code> or <code>.img</code> extension). These files are
+virtual hard disks formatted with a standard Linux filesystem, such as
+ext4.</p>
+<p>Within this virtual disk, the operating system stores directory
+structures and files that differ from the read-only base image. Because
+the container is simply a file on the USB's standard exFAT or NTFS
+storage partition, users can easily back it up, resize it, or replace it
+from any host OS.</p>
+<h3 id="2-configuration-via-ventoyjson">2. Configuration via
+<code>ventoy.json</code></h3>
+<p>Ventoy uses a structured configuration file named
+<code>ventoy.json</code>, located in the <code>ventoy</code> directory
+on the drive. This file defines which ISO image pairs with which
+persistence file. A standard mapping entry links the target ISO path to
+the corresponding <code>.dat</code> file path.</p>
+<p>This approach allows different Linux distributions on the same USB
+drive to maintain their own separate, isolated persistent environments,
+or even allow a single ISO to alternate between multiple distinct
+persistence states.</p>
+<h3 id="3-kernel-parameter-hooking-and-overlayfs">3. Kernel Parameter
+Hooking and OverlayFS</h3>
+<p>Different Linux distributions implement persistence through different
+live-boot scripts (such as Debian's <code>live-boot</code>, Ubuntu's
+<code>casper</code>, or Fedora's <code>dracut</code>). When a user
+selects an ISO with an assigned persistence image:</p>
+<ol type="1">
+<li><strong>Parameter Detection:</strong> Ventoy identifies the
+distribution and automatically appends the correct boot parameters to
+the Linux kernel command line (for example, adding
+<code>persistence</code> for Debian or <code>persistent</code> for
+Ubuntu).</li>
+<li><strong>Device Loop Mounting:</strong> During early boot
+(initramfs), the live system looks for persistence media. Ventoy's
+background hooks expose the <code>.dat</code> file as a virtual loopback
+block device labeled appropriately (such as <code>casper-rw</code> or
+<code>persistence</code>).</li>
+<li><strong>Union Mounting:</strong> The kernel uses an overlay
+filesystem (such as OverlayFS). It mounts the read-only SquashFS from
+the ISO as the base layer (<code>lowerdir</code>) and the mounted
+persistence image as the writable layer (<code>upperdir</code>).</li>
+</ol>
+<p>When an application reads a file, the system checks the writable
+layer first; if the file has not been modified, it reads the original
+version from the base ISO. When any file is written, modified, or
+deleted, the changes are committed exclusively to the writable
+persistence image.</p>
+<h2 id="advantages-of-the-plugin-approach">Advantages of the Plugin
+Approach</h2>
+<ul>
+<li><strong>Isolation:</strong> The original ISO files remain
+bit-for-bit identical to the official releases, preventing
+corruption.</li>
+<li><strong>Portability and Backup:</strong> Entire persistent
+environments can be backed up or restored simply by copying a single
+<code>.dat</code> file.</li>
+<li><strong>Multi-Boot Compatibility:</strong> Multiple persistent Linux
+installations can coexist on a single drive alongside normal,
+non-persistent ISOs and standard storage files.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

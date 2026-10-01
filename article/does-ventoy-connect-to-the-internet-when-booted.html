@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Connect to the Internet When Booted? - ventoy</title>
+    <meta name="description" content="Ventoy does not make any outgoing internet connections when booted locally on a computer from a USB drive. As an offline, open-source bootloader, its primary function is to read ISO, WIM, IMG, and VHD files directly from local storage without communicati">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-connect-to-the-internet-when-booted">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Connect to the Internet When Booted? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-connect-to-the-internet-when-booted" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not make any outgoing internet connections when booted locally on a computer from a USB drive. As an offline, open-source bootloader, its primary function is to read ISO, WIM, IMG, and VHD files directly from local storage without communicati" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-connect-to-the-internet-when-booted">Does Ventoy
+Connect to the Internet When Booted?</h1>
+<p>Ventoy does not make any outgoing internet connections when booted
+locally on a computer from a USB drive. As an offline, open-source
+bootloader, its primary function is to read ISO, WIM, IMG, and VHD files
+directly from local storage without communicating with remote servers.
+While the utility operates entirely offline during standard use, network
+activity can only occur if you specifically utilize Ventoy’s
+network-booting features or once the guest operating system loaded via
+Ventoy initializes its own network stack.</p>
+<h3 id="how-ventoy-operates-during-boot">How Ventoy Operates During
+Boot</h3>
+<p>When a computer boots from a Ventoy USB drive, the system executes a
+customized GRUB bootloader environment stored locally on the drive's EFI
+System Partition. This bootloader accesses the hardware at the firmware
+level (BIOS or UEFI) and directly reads the file system of the storage
+device.</p>
+<p>In a standard boot scenario:</p>
+<ul>
+<li><strong>No Network Initialization:</strong> Ventoy does not
+initialize UEFI or BIOS network drivers to query remote endpoints.</li>
+<li><strong>No Telemetry or Tracking:</strong> The open-source codebase
+contains no background telemetry, phone-home features, or usage
+reporting mechanisms during the boot phase.</li>
+<li><strong>Local Image Resolution:</strong> Ventoy hooks directly into
+memory to simulate a virtual optical drive or hard disk, presenting the
+selected ISO to the hardware entirely via local memory and bus
+interfaces.</li>
+</ul>
+<h3 id="common-sources-of-confusion-regarding-network-activity">Common
+Sources of Confusion Regarding Network Activity</h3>
+<p>Users observing network traffic during or immediately after the boot
+process often attribute this activity to Ventoy, but it typically stems
+from other sources:</p>
+<ol type="1">
+<li><p><strong>The Booted Operating System:</strong> The moment you
+select an ISO from the Ventoy menu and the OS kernel loads, control of
+the machine transfers entirely to that operating system. Most modern
+live distributions (such as Ubuntu, Fedora, or Windows PE/Installer
+environments) automatically initialize network adapters, request local
+IP addresses via DHCP, and contact network time protocol (NTP) servers
+or software repositories immediately upon startup.</p></li>
+<li><p><strong>Ventoy's PXE / iPXE Features:</strong> Ventoy includes
+optional network-booting tools, such as Ventoy Server (iPXE). If an
+administrator intentionally configures Ventoy to boot over a local area
+network or retrieve remote boot files, network connections will occur.
+However, this is an opt-in network architecture, not the default USB
+boot behavior.</p></li>
+<li><p><strong>Desktop Installation Tools:</strong> The Ventoy
+installation utility that runs inside Windows or Linux to format and
+prepare the USB drive may check the internet to verify the latest
+release version. This is separate from the boot environment
+itself.</p></li>
+</ol>
+<p>When booting a computer directly from a standard Ventoy USB drive,
+the bootloader remains completely offline and transmits no outbound
+data.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Define Custom Localized Strings in Ventoy - ventoy</title>
+    <meta name="description" content="Yes, you can define and display custom localized strings in your personal Ventoy boot menu. Ventoy relies on standard GRUB2 underpinnings and a flexible JSON configuration architecture, allowing you to override default interface text, rename boot entries">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-define-custom-localized-strings-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Define Custom Localized Strings in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-define-custom-localized-strings-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, you can define and display custom localized strings in your personal Ventoy boot menu. Ventoy relies on standard GRUB2 underpinnings and a flexible JSON configuration architecture, allowing you to override default interface text, rename boot entries" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-define-custom-localized-strings-in-ventoy">How to Define
+Custom Localized Strings in Ventoy</h1>
+<p>Yes, you can define and display custom localized strings in your
+personal Ventoy boot menu. Ventoy relies on standard GRUB2 underpinnings
+and a flexible JSON configuration architecture, allowing you to override
+default interface text, rename boot entries into your preferred
+language, and map customized language files. This guide details how
+Ventoy handles localization and the exact steps to implement custom
+strings in your setup.</p>
+<h3 id="1-creating-the-configuration-directory">1. Creating the
+Configuration Directory</h3>
+<p>All customizations in Ventoy reside inside a dedicated configuration
+folder on the first partition (the partition where you store ISO
+files).</p>
+<p>Create a folder named <code>ventoy</code> at the root of the USB
+drive, and place a file named <code>ventoy.json</code> inside it:</p>
+<pre class="text"><code>/ventoy/ventoy.json</code></pre>
+<h3 id="2-customizing-menu-titles-with-menu_alias">2. Customizing Menu
+Titles with <code>menu_alias</code></h3>
+<p>If your goal is to present localized names for your ISO and WIM files
+instead of raw filenames, use the <code>menu_alias</code> plugin. This
+allows you to define localized, human-readable labels for specific boot
+images:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;menu_alias&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/ubuntu-22.04-desktop-amd64.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Ubuntu 22.04 LTS (Système d&#39;exploitation)&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Win11_English_x64.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Windows 11 (Installation Principale)&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="3-setting-a-default-localized-language">3. Setting a Default
+Localized Language</h3>
+<p>Ventoy includes built-in translations for its core interface (such as
+footer hints, key combinations, and system menus). You can force a
+specific language string set directly via the <code>control</code>
+plugin in <code>ventoy.json</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;VTOY_DEFAULT_SEARCH_ROOT&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;VTOY_MENU_LANGUAGE&quot;</span><span class="fu">:</span> <span class="st">&quot;fr_FR&quot;</span> <span class="fu">}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Setting <code>VTOY_MENU_LANGUAGE</code> automatically pulls the
+corresponding localized strings from Ventoy's internal translation
+table.</p>
+<h3 id="4-overriding-core-system-strings-via-custom-themes">4.
+Overriding Core System Strings via Custom Themes</h3>
+<p>For deeper interface customization—such as custom prompt strings,
+labels, and status messages—Ventoy relies on GRUB2 themes. You can
+supply a custom theme package that includes its own localized font sets
+and <code>theme.txt</code> configurations:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;theme&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;file&quot;</span><span class="fu">:</span> <span class="st">&quot;/ventoy/theme/mytheme/theme.txt&quot;</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;ventoy_left&quot;</span><span class="fu">:</span> <span class="st">&quot;5%&quot;</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;ventoy_top&quot;</span><span class="fu">:</span> <span class="st">&quot;80%&quot;</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;ventoy_color&quot;</span><span class="fu">:</span> <span class="st">&quot;#ffffff&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Within your custom <code>theme.txt</code>, you can replace default
+English UI text with hardcoded strings in your chosen language or target
+specific text components.</p>
+<h3 id="5-advanced-dynamic-strings-with-ventoy_grubcfg">5. Advanced
+Dynamic Strings with <code>ventoy_grub.cfg</code></h3>
+<p>For completely custom, script-driven localized strings, create a file
+named <code>ventoy_grub.cfg</code> inside the <code>/ventoy/</code>
+directory. Ventoy will execute this file, allowing standard GRUB2
+scripting:</p>
+<ul>
+<li>You can define environment variables containing your localized
+strings.</li>
+<li>You can read the current <code>$lang</code> variable set by
+Ventoy.</li>
+<li>You can write conditional logic (<code>if/then/else</code>) to
+display different text options depending on the selected interface
+language.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

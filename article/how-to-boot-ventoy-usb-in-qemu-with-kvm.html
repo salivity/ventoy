@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Boot Ventoy USB in QEMU with KVM - ventoy</title>
+    <meta name="description" content="Testing a bootable Ventoy USB drive inside a virtual machine allows you to verify ISO configurations and boot options without rebooting your physical machine. This guide provides the exact QEMU command-line string needed to test a physical Ventoy USB fla">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-boot-ventoy-usb-in-qemu-with-kvm">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Boot Ventoy USB in QEMU with KVM - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-boot-ventoy-usb-in-qemu-with-kvm" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Testing a bootable Ventoy USB drive inside a virtual machine allows you to verify ISO configurations and boot options without rebooting your physical machine. This guide provides the exact QEMU command-line string needed to test a physical Ventoy USB fla" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-boot-ventoy-usb-in-qemu-with-kvm">How to Boot Ventoy USB
+in QEMU with KVM</h1>
+<p>Testing a bootable Ventoy USB drive inside a virtual machine allows
+you to verify ISO configurations and boot options without rebooting your
+physical machine. This guide provides the exact QEMU command-line string
+needed to test a physical Ventoy USB flash drive using hardware
+acceleration via Kernel-based Virtual Machine (KVM) on Linux.</p>
+<h3 id="the-qemu-command-string">The QEMU Command String</h3>
+<p>To launch your Ventoy USB drive in QEMU with KVM, run the following
+command in your terminal, replacing <code>/dev/sdX</code> with the
+actual device identifier of your USB drive (for example,
+<code>/dev/sdb</code>):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> qemu-system-x86_64 <span class="at">-enable-kvm</span> <span class="at">-m</span> 2048 <span class="at">-smp</span> 2 <span class="at">-drive</span> file=/dev/sdX,format=raw</span></code></pre></div>
+<h3 id="parameter-breakdown">Parameter Breakdown</h3>
+<ul>
+<li><strong><code>sudo</code></strong>: Required to grant QEMU direct
+read access to the raw storage device.</li>
+<li><strong><code>qemu-system-x86_64</code></strong>: The QEMU binary
+targeting 64-bit x86 hardware.</li>
+<li><strong><code>-enable-kvm</code></strong>: Enables KVM hardware
+acceleration, allowing the virtual machine to run at near-native
+speeds.</li>
+<li><strong><code>-m 2048</code></strong>: Allocates 2048 MB (2 GB) of
+RAM to the virtual machine, which is sufficient for loading Ventoy and
+testing lightweight boot environments.</li>
+<li><strong><code>-smp 2</code></strong>: Allocates 2 virtual CPU cores
+to ensure responsive performance.</li>
+<li><strong><code>-drive file=/dev/sdX,format=raw</code></strong>:
+Mounts the entire physical disk as a raw image directly into the virtual
+machine.</li>
+</ul>
+<h3 id="testing-with-uefi-support">Testing with UEFI Support</h3>
+<p>By default, the standard command boots into legacy BIOS mode. If your
+Ventoy setup or the target ISOs rely on UEFI, add the OVMF firmware path
+to the command:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> qemu-system-x86_64 <span class="at">-enable-kvm</span> <span class="at">-m</span> 2048 <span class="at">-smp</span> 2 <span class="at">-bios</span> /usr/share/ovmf/OVMF.fd <span class="at">-drive</span> file=/dev/sdX,format=raw</span></code></pre></div>
+<p>Ensure the specified path to <code>OVMF.fd</code> matches the
+location of the package installed on your Linux distribution (commonly
+found in <code>/usr/share/ovmf/</code> or
+<code>/usr/share/edk2-ovmf/</code>).</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

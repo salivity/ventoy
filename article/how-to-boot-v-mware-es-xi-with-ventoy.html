@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Boot VMware ESXi with Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source utility that allows users to boot multiple operating systems from a single USB drive simply by copying ISO files to the storage volume. This article explains Ventoy's compatibility with VMware ESXi installation images, covers sup">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-boot-v-mware-es-xi-with-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Boot VMware ESXi with Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-boot-v-mware-es-xi-with-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source utility that allows users to boot multiple operating systems from a single USB drive simply by copying ISO files to the storage volume. This article explains Ventoy's compatibility with VMware ESXi installation images, covers sup" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-boot-vmware-esxi-with-ventoy">How to Boot VMware ESXi
+with Ventoy</h1>
+<p>Ventoy is an open-source utility that allows users to boot multiple
+operating systems from a single USB drive simply by copying ISO files to
+the storage volume. This article explains Ventoy's compatibility with
+VMware ESXi installation images, covers supported versions, and provides
+clear guidance on resolving common installation issues encountered
+during the boot process.</p>
+<h2 id="esxi-compatibility-in-ventoy">ESXi Compatibility in Ventoy</h2>
+<p>Ventoy officially supports VMware ESXi installation images. You can
+boot and install various releases, including ESXi 6.5, 6.7, 7.0, and
+8.0, directly from a standard Ventoy USB drive. Both Legacy BIOS and
+UEFI boot modes are supported, allowing deployment across diverse server
+hardware configurations.</p>
+<p>To use ESXi with Ventoy, download the standard ESXi installer ISO
+from VMware (Broadcom) and copy it directly to your Ventoy USB drive.
+When the server boots to the Ventoy menu, select the ESXi ISO from the
+list to launch the installer.</p>
+<h2 id="handling-known-installation-issues">Handling Known Installation
+Issues</h2>
+<p>While Ventoy supports ESXi, ESXi's unique two-stage bootloader can
+occasionally present challenges during deployment.</p>
+<h3 id="missing-installation-media-errors">Missing Installation Media
+Errors</h3>
+<p>The most common issue occurs when the ESXi kernel loads successfully
+into memory, but the installer subsequently fails to locate the
+underlying installation files (such as <code>BOOT.CFG</code> or system
+packages like <code>m.v00</code>). This happens because ESXi expects a
+dedicated, standard CD-ROM or USB layout, whereas Ventoy virtualizes the
+ISO image in memory.</p>
+<p>To resolve this issue:</p>
+<ul>
+<li><strong>Update Ventoy:</strong> Ensure you are running the latest
+version of Ventoy. Compatibility patches for ESXi are regularly added to
+address installation media mapping errors.</li>
+<li><strong>Boot Options:</strong> During the initial ESXi boot
+countdown, press <code>Shift + O</code> to inspect the boot options.
+Depending on the release and hardware, appending <code>cdromBoot</code>
+or verifying that the boot media path points correctly allows the
+installer to recognize the virtual drive.</li>
+</ul>
+<h3 id="boot-mode-selection">Boot Mode Selection</h3>
+<p>If an ESXi ISO fails to initialize properly, you can change how
+Ventoy loads the image:</p>
+<ul>
+<li>Press <code>Ctrl + R</code> at the Ventoy main menu to launch the
+ISO in <strong>GRUB2 Mode</strong>.</li>
+<li>Alternatively, use <strong>Memdisk Mode</strong> (available via
+hotkey in the Ventoy menu for smaller images, though generally standard
+mode is preferred for ESXi).</li>
+</ul>
+<p>ESXi installation images function reliably on modern Ventoy versions
+without requiring extraction, custom scripts, or dedicated
+single-purpose USB drives.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

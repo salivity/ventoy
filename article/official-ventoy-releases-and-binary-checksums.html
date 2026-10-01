@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Ventoy Releases and Binary Checksums - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source tool used to create bootable USB drives for ISO, WIM, IMG, VHD(x), and EFI files. To ensure system security and avoid compromised binaries, users must download the software and its corresponding verification hashes exclusively fr">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/official-ventoy-releases-and-binary-checksums">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Official Ventoy Releases and Binary Checksums - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/official-ventoy-releases-and-binary-checksums" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source tool used to create bootable USB drives for ISO, WIM, IMG, VHD(x), and EFI files. To ensure system security and avoid compromised binaries, users must download the software and its corresponding verification hashes exclusively fr" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="official-ventoy-releases-and-binary-checksums">Official Ventoy
+Releases and Binary Checksums</h1>
+<p>Ventoy is an open-source tool used to create bootable USB drives for
+ISO, WIM, IMG, VHD(x), and EFI files. To ensure system security and
+avoid compromised binaries, users must download the software and its
+corresponding verification hashes exclusively from official project
+distribution channels. This guide outlines exactly where official Ventoy
+installation files and their binary checksums are published and how to
+locate them.</p>
+<h3 id="the-official-github-repository">The Official GitHub
+Repository</h3>
+<p>The primary and canonical host for Ventoy releases is the project's
+official GitHub repository under the user account
+<code>ventoy/Ventoy</code>.</p>
+<ul>
+<li><strong>Releases URL:</strong> The dedicated release page is located
+at <code>https://github.com/ventoy/Ventoy/releases</code>.</li>
+<li><strong>Available Files:</strong> Each release tag includes
+pre-compiled archives for Windows
+(<code>ventoy-x.x.xx-windows.zip</code>), Linux
+(<code>ventoy-x.x.xx-linux.tar.gz</code>), and a bootable LiveCD image
+(<code>ventoy-x.x.xx-livecd.iso</code>), alongside the source code.</li>
+<li><strong>Binary Checksums:</strong> Ventoy publishes SHA-256
+checksums directly within the release notes of each version on GitHub. A
+dedicated text file containing the SHA-256 hashes (such as
+<code>sha256.txt</code>) is also frequently attached to the release
+assets list.</li>
+</ul>
+<h3 id="the-official-ventoy-website">The Official Ventoy Website</h3>
+<p>The creator maintains the official project domain at
+<code>https://www.ventoy.net</code>.</p>
+<ul>
+<li><strong>Download Section:</strong> Located under the main navigation
+at <code>https://www.ventoy.net/en/download.html</code>.</li>
+<li><strong>Mirror Redirection:</strong> The official website does not
+host the heavy installer binaries directly on its web server. Instead,
+it provides verified direct links to the official GitHub releases and a
+verified SourceForge mirror.</li>
+<li><strong>Checksum Display:</strong> The download page lists the exact
+file names along with their official SHA-256 hash values, allowing users
+to verify their downloads immediately without navigating the GitHub
+repository tree.</li>
+</ul>
+<h3 id="how-to-verify-the-binary-integrity">How to Verify the Binary
+Integrity</h3>
+<p>After downloading a release archive, compare its cryptographic hash
+against the published string before extraction:</p>
+<ul>
+<li><strong>On Windows (PowerShell):</strong>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Get-FileHash <span class="op">.</span>\ventoy-x<span class="op">.</span><span class="fu">x</span><span class="op">.</span><span class="fu">xx</span><span class="op">-</span>windows<span class="op">.</span><span class="fu">zip</span> <span class="op">-</span>Algorithm SHA256</span></code></pre></div></li>
+<li><strong>On Linux (Terminal):</strong>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sha256sum</span> ventoy-x.x.xx-linux.tar.gz</span></code></pre></div></li>
+</ul>
+<p>If the generated output matches the SHA-256 string published on the
+official GitHub release page or the Ventoy website, the archive is
+authentic and safe to deploy.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

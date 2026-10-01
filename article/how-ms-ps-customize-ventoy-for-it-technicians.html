@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How MSPs Customize Ventoy for IT Technicians - ventoy</title>
+    <meta name="description" content="Managed service providers (MSPs) frequently deploy Ventoy on technician USB drives to streamline hardware diagnostics, operating system deployments, and disaster recovery tasks. Customizing the Ventoy interface allows MSPs to establish a consistent workf">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ms-ps-customize-ventoy-for-it-technicians">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How MSPs Customize Ventoy for IT Technicians - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ms-ps-customize-ventoy-for-it-technicians" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managed service providers (MSPs) frequently deploy Ventoy on technician USB drives to streamline hardware diagnostics, operating system deployments, and disaster recovery tasks. Customizing the Ventoy interface allows MSPs to establish a consistent workf" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-msps-customize-ventoy-for-it-technicians">How MSPs Customize
+Ventoy for IT Technicians</h1>
+<p>Managed service providers (MSPs) frequently deploy Ventoy on
+technician USB drives to streamline hardware diagnostics, operating
+system deployments, and disaster recovery tasks. Customizing the Ventoy
+interface allows MSPs to establish a consistent workflow, apply internal
+branding, restrict unauthorized access, and automate system
+provisioning. This guide details how MSPs configure Ventoy’s directory
+structure, theme files, and central <code>ventoy.json</code> file to
+create an efficient, specialized bootable environment for internal
+technical staff.</p>
+<h3 id="the-foundation-the-ventoyjson-configuration-file">The
+Foundation: The <code>ventoy.json</code> Configuration File</h3>
+<p>All native customizations in Ventoy stem from a single configuration
+file named <code>ventoy.json</code>. MSPs place this file inside a
+folder named <code>ventoy</code> located in the root partition of the
+USB drive.</p>
+<p>A standard structure appears as follows:</p>
+<pre class="text"><code>USB_ROOT/
+├── ventoy/
+│   ├── ventoy.json
+│   ├── theme/
+│   │   └── msp-theme/
+│   └── script/
+└── ISO/
+    ├── Diagnostics/
+    ├── Windows/
+    └── Recovery/</code></pre>
+<p>This JSON file controls visual themes, menu aliases, auto-install
+scripts, and security controls across all devices using the drive.</p>
+<h3 id="applying-corporate-branding-and-custom-themes">Applying
+Corporate Branding and Custom Themes</h3>
+<p>To maintain a uniform look and feel across field support tools, MSPs
+implement custom GRUB themes:</p>
+<ol type="1">
+<li><strong>Theme Selection:</strong> MSPs create or download a standard
+GRUB2 theme containing internal branding, high-contrast text for
+low-resolution displays, and corporate color palettes.</li>
+<li><strong>Directory Placement:</strong> The theme assets (including
+<code>theme.txt</code>, background images, and fonts) are placed in the
+<code>/ventoy/theme/</code> directory.</li>
+<li><strong>Configuration:</strong> The theme is enabled via the
+<code>theme</code> key in <code>ventoy.json</code>:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;theme&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;file&quot;</span><span class="fu">:</span> <span class="st">&quot;/ventoy/theme/msp-theme/theme.txt&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;gfxmode&quot;</span><span class="fu">:</span> <span class="st">&quot;1920x1080&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
+</ol>
+<p>Using standard resolutions like <code>1920x1080</code> with automatic
+fallback ensures the interface displays correctly across modern laptops,
+legacy servers, and headless diagnostic monitors.</p>
+<h3 id="menu-organization-and-friendly-aliases">Menu Organization and
+Friendly Aliases</h3>
+<p>Raw ISO file names are often cryptic and prone to version mismatches.
+MSPs make these boot options intuitive for tier-1 and tier-2 technicians
+by renaming display items and assigning relevant icons.</p>
+<ul>
+<li><strong>Menu Aliasing:</strong> The <code>menu_alias</code> plugin
+translates raw filenames into recognizable descriptions without
+requiring technicians to rename the underlying ISOs:
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;menu_alias&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Windows/Win11_23H2_English_x64v2.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Standard Windows 11 Field Deployment&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Diagnostics/memtest86-usb.img&quot;</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Hardware Diagnostics: MemTest86+&quot;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
+<li><strong>Menu Classes and Icons:</strong> MSPs map specific icons
+(such as Windows, Linux, or generic wrench icons) to menu options via
+the <code>menu_class</code> plugin to speed up navigation.</li>
+</ul>
+<h3 id="automating-installs-with-injection-and-answer-files">Automating
+Installs with Injection and Answer Files</h3>
+<p>To reduce deployment time on client hardware, MSPs link answer files
+directly to ISOs through Ventoy's <code>auto_install</code> plugin:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;auto_install&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Windows/Win11_23H2_English_x64v2.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;template&quot;</span><span class="fu">:</span> <span class="st">&quot;/ventoy/script/unattend_client_setup.xml&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>This setup enables technicians to boot a clean operating system image
+while automatically applying local administrator accounts, standard
+partition schemes, and initial network configurations.</p>
+<h3 id="restricting-access-and-securing-diagnostic-tools">Restricting
+Access and Securing Diagnostic Tools</h3>
+<p>Field drives are vulnerable to loss or theft, creating a potential
+security risk if proprietary rescue environments or pre-configured admin
+images are exposed. MSPs secure these boot environments using Ventoy’s
+built-in access controls:</p>
+<ul>
+<li><strong>Global Passwords:</strong> Setting a global password
+prevents the drive from showing any boot items until unlocked by a
+technician.</li>
+<li><strong>Image-Specific Passwords:</strong> Locking specific
+directories or administrative ISOs while leaving general hardware
+diagnostic tools accessible without authentication.</li>
+<li><strong>Password Hashing:</strong> Ventoy supports SHA-256 and
+SHA-512 password hashes inside <code>ventoy.json</code> to prevent
+cleartext exposure of internal credentials:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Recovery/AdminTools.iso&quot;</span><span class="fu">,</span> <span class="dt">&quot;pwdhash&quot;</span><span class="fu">:</span> <span class="st">&quot;your_sha256_hash_here&quot;</span> <span class="fu">}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
+</ul>
+<h3 id="standardizing-rollouts-across-the-team">Standardizing Rollouts
+Across the Team</h3>
+<p>Rather than configuring drives manually, MSPs maintain their custom
+Ventoy configurations in a centralized Git repository. When a technician
+receives a new drive, a deployment script runs Ventoy’s command-line
+installer, clones the repository containing the <code>ventoy</code>
+folder structure, and pulls the latest approved ISO images from an
+internal network share. This ensures every technician carries an
+identical, up-to-date toolkit.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

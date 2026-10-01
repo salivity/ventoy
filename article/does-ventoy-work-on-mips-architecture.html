@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Work on MIPS Architecture? - ventoy</title>
+    <meta name="description" content="Ventoy offers compatibility with MIPS-based hardware, but this support is strictly limited to 64-bit Little-Endian systems (mips64el) utilizing UEFI firmware. While Ventoy is renowned for multi-architecture versatility, it does not support legacy MIPS bo">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-work-on-mips-architecture">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Work on MIPS Architecture? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-work-on-mips-architecture" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy offers compatibility with MIPS-based hardware, but this support is strictly limited to 64-bit Little-Endian systems (mips64el) utilizing UEFI firmware. While Ventoy is renowned for multi-architecture versatility, it does not support legacy MIPS bo" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-work-on-mips-architecture">Does Ventoy Work on MIPS
+Architecture?</h1>
+<p>Ventoy offers compatibility with MIPS-based hardware, but this
+support is strictly limited to 64-bit Little-Endian systems (mips64el)
+utilizing UEFI firmware. While Ventoy is renowned for multi-architecture
+versatility, it does not support legacy MIPS boot environments, 32-bit
+MIPS variants, or Big-Endian hardware. Users targeting modern MIPS-based
+machines—primarily Chinese Loongson platforms—can successfully use
+Ventoy to boot supported operating systems, provided specific firmware
+and image criteria are met.</p>
+<h3 id="supported-mips-architecture-in-ventoy">Supported MIPS
+Architecture in Ventoy</h3>
+<p>Ventoy introduced official support for the <code>mips64el</code>
+architecture to cater to modern computing platforms built on 64-bit
+Little-Endian MIPS processors. The tool provides specialized boot files
+alongside its traditional x86 and ARM binaries to initialize bootloaders
+on these platforms.</p>
+<p>However, support is narrow:</p>
+<ul>
+<li><strong>Supported:</strong> 64-bit MIPS Little-Endian
+(<code>mips64el</code>) running under UEFI.</li>
+<li><strong>Unsupported:</strong> 32-bit MIPS (<code>mips</code> /
+<code>mipsel</code>), 64-bit MIPS Big-Endian (<code>mips64</code>), and
+older MIPS hardware relying on traditional PMON or proprietary non-UEFI
+firmware.</li>
+</ul>
+<h3 id="firmware-and-hardware-requirements">Firmware and Hardware
+Requirements</h3>
+<p>To successfully use Ventoy on a MIPS machine, the target system must
+adhere to modern UEFI specifications.</p>
+<ol type="1">
+<li><strong>UEFI Firmware Implementation:</strong> Older MIPS embedded
+devices, routers, and legacy development boards typically use
+bootloaders such as U-Boot or PMON. Ventoy cannot function on these
+devices because its core architecture relies on UEFI execution
+environments to chainload images.</li>
+<li><strong>Loongson Platforms:</strong> Most real-world deployments of
+Ventoy on MIPS target Loongson-3 series processors (such as the Loongson
+3A3000 and 3A4000) that implement standard UEFI firmware. Note that
+newer Loongson processors based on the proprietary LoongArch ISA are
+distinct from the classic MIPS ISA and require separate architectural
+support.</li>
+</ol>
+<h3 id="operating-system-and-iso-compatibility">Operating System and ISO
+Compatibility</h3>
+<p>Having a functional Ventoy drive on MIPS hardware does not enable
+cross-architecture execution. Ventoy functions as a boot manager; it
+does not emulate or translate code.</p>
+<p>Consequently:</p>
+<ul>
+<li>ISO images placed on the drive must be compiled specifically for the
+<code>mips64el</code> target architecture.</li>
+<li>Standard x86, x86-64, or ARM64 installer ISOs will fail to run on
+MIPS hardware.</li>
+<li>Distributions that offer compatible MIPS64EL installation media
+include Debian, Loongnix, UnionTech OS (UOS), and select community ports
+of Linux distributions.</li>
+</ul>
+<p>Ventoy is fully capable of booting on MIPS-based hardware, provided
+the machine is built on the 64-bit Little-Endian (<code>mips64el</code>)
+architecture, runs standard UEFI firmware, and is paired with
+architecture-compatible operating system images.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

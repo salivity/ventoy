@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Detects MemTest86 UEFI vs Legacy - ventoy</title>
+    <meta name="description" content="This article explains how the multiboot tool Ventoy distinguishes between UEFI and Legacy BIOS versions of MemTest86. Because PassMark MemTest86 transitioned from a Legacy-only architecture (version 4.x and earlier) to a strictly UEFI-based architecture">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-detects-mem-test-86-uefi-vs-legacy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Detects MemTest86 UEFI vs Legacy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-detects-mem-test-86-uefi-vs-legacy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how the multiboot tool Ventoy distinguishes between UEFI and Legacy BIOS versions of MemTest86. Because PassMark MemTest86 transitioned from a Legacy-only architecture (version 4.x and earlier) to a strictly UEFI-based architecture" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-detects-memtest86-uefi-vs-legacy">How Ventoy Detects
+MemTest86 UEFI vs Legacy</h1>
+<p>This article explains how the multiboot tool Ventoy distinguishes
+between UEFI and Legacy BIOS versions of MemTest86. Because PassMark
+MemTest86 transitioned from a Legacy-only architecture (version 4.x and
+earlier) to a strictly UEFI-based architecture (version 5.0 and later),
+Ventoy must dynamically inspect both the current host firmware state and
+the internal boot structures of the image file to properly launch the
+memory diagnostic tool.</p>
+<h3 id="firmware-environment-detection">Firmware Environment
+Detection</h3>
+<p>Ventoy operates using a customized GRUB2 core that detects the host
+machine's active boot mode upon initialization. If the physical machine
+boots Ventoy in Legacy BIOS mode, Ventoy operates entirely within an x86
+real-mode/protected-mode context. If booted under modern hardware with
+UEFI enabled, Ventoy runs as a native EFI application. This initial
+check establishes which execution paths are physically possible on the
+system; Legacy payloads cannot be executed directly from a UEFI session
+without a Compatibility Support Module (CSM), and UEFI applications
+cannot run under a Legacy BIOS.</p>
+<h3 id="image-structure-analysis">Image Structure Analysis</h3>
+<p>When an administrator places a MemTest86 image (typically distributed
+as a <code>.iso</code> or raw <code>.img</code> file) on the Ventoy
+storage partition, Ventoy inspects the image contents rather than
+relying solely on file extensions:</p>
+<ol type="1">
+<li><strong>UEFI MemTest86 Images (v5+):</strong> Modern versions use a
+GPT or hybrid partition layout containing a FAT-formatted EFI System
+Partition (ESP). Ventoy checks for the existence of standard UEFI
+execution binaries, specifically paths such as
+<code>/EFI/BOOT/BOOTX64.EFI</code> or
+<code>/EFI/BOOT/BOOTIA32.EFI</code>.</li>
+<li><strong>Legacy MemTest86 Images (v4.x and Memtest86+):</strong>
+Older images rely on an MBR boot sector or an El Torito boot record
+without an EFI directory. Ventoy scans the boot sector signatures and
+identifies the presence of 16-bit real-mode or 32-bit protected-mode
+bootstrap code designed to hook BIOS interrupts (such as
+<code>INT 13h</code>).</li>
+</ol>
+<h3 id="boot-execution-routing">Boot Execution Routing</h3>
+<p>Once the format is recognized and compared against the current host
+environment, Ventoy routes the execution path accordingly:</p>
+<ul>
+<li><strong>In UEFI Mode:</strong> If a modern MemTest86 image is
+selected, Ventoy's virtual disk driver maps the image in system memory
+and directly chainloads the internal <code>.efi</code> application using
+UEFI standard boot services. If a Legacy-only MemTest86 image is
+selected while running in UEFI mode, Ventoy identifies the lack of an
+EFI bootloader and warns the user that the image is incompatible with
+the current UEFI environment.</li>
+<li><strong>In Legacy Mode:</strong> When launching Legacy-compatible
+MemTest86, Ventoy utilizes memory-mapping routines (similar to Memdisk
+emulation) to load the raw sectors and pass control to the 16-bit MBR
+boot code. If a UEFI-only MemTest86 image is selected while running in
+Legacy mode, Ventoy detects the missing BIOS boot code and prompts the
+user to reboot the system into native UEFI mode to run the image.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

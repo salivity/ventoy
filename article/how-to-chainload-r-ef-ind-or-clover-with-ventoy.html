@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Chainload rEFInd or Clover with Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy can successfully chainload alternative UEFI bootloaders such as rEFInd and Clover. Because Ventoy operates primarily as an advanced GRUB2-based environment, it provides multiple mechanisms to hand off system control to other EFI executables or boo">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-chainload-r-ef-ind-or-clover-with-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Chainload rEFInd or Clover with Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-chainload-r-ef-ind-or-clover-with-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can successfully chainload alternative UEFI bootloaders such as rEFInd and Clover. Because Ventoy operates primarily as an advanced GRUB2-based environment, it provides multiple mechanisms to hand off system control to other EFI executables or boo" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-chainload-refind-or-clover-with-ventoy">How to Chainload
+rEFInd or Clover with Ventoy</h1>
+<p>Ventoy can successfully chainload alternative UEFI bootloaders such
+as rEFInd and Clover. Because Ventoy operates primarily as an advanced
+GRUB2-based environment, it provides multiple mechanisms to hand off
+system control to other EFI executables or bootable disk images. This
+guide explains whether chainloading is possible, how the process works,
+and the most effective methods to configure rEFInd or Clover alongside
+Ventoy.</p>
+<h3 id="how-chainloading-works-in-ventoy">How Chainloading Works in
+Ventoy</h3>
+<p>When your computer starts in UEFI mode, the motherboard firmware
+executes Ventoy’s primary EFI binary. From this environment, Ventoy can
+launch other <code>.efi</code> applications directly from the storage
+drive, pass control via custom GRUB configuration scripts, or boot
+pre-packaged raw disk images containing rEFInd or Clover.</p>
+<h3 id="method-1-direct-efi-launching">Method 1: Direct EFI
+Launching</h3>
+<p>The simplest way to chainload another bootloader is by running its
+executable directly:</p>
+<ol type="1">
+<li>Download the standalone EFI binary for rEFInd
+(<code>refind_x64.efi</code>) or Clover (<code>BOOTX64.EFI</code>).</li>
+<li>Copy the file into your Ventoy data partition (the partition where
+you store ISOs). You can place it in a dedicated directory, such as
+<code>/EFI/refind/</code>.</li>
+<li>Boot your machine using the Ventoy USB drive.</li>
+<li>Press <code>F6</code> to enter Ventoy’s file browser mode.</li>
+<li>Navigate to the folder containing the <code>.efi</code> file and
+select it. Ventoy will execute the binary and launch the selected
+bootloader interface.</li>
+</ol>
+<h3 id="method-2-bootable-iso-or-img-container">Method 2: Bootable ISO
+or IMG Container</h3>
+<p>Both rEFInd and Clover distribute pre-built bootable image files
+(such as <code>.iso</code> or <code>.img</code> files).</p>
+<ol type="1">
+<li>Download the official USB image or ISO file for rEFInd or
+Clover.</li>
+<li>Place the image file directly on the Ventoy partition alongside your
+other operating system ISOs.</li>
+<li>Boot the computer using the Ventoy drive and select the rEFInd or
+Clover image from the main list.</li>
+<li>Ventoy will map the virtual drive and boot straight into the target
+environment.</li>
+</ol>
+<h3 id="method-3-custom-grub-menu-integration">Method 3: Custom GRUB
+Menu Integration</h3>
+<p>To automate the chainloading process without manually browsing files
+on each boot, use Ventoy's custom menu extension:</p>
+<ol type="1">
+<li>Inside the Ventoy partition, create a directory named
+<code>ventoy</code>.</li>
+<li>Inside the <code>ventoy</code> folder, create a plain text file
+named <code>ventoy_grub.cfg</code>.</li>
+<li>Add a GRUB chainloader entry pointing to your bootloader's EFI
+file:</li>
+</ol>
+<pre class="text"><code>menuentry &quot;Chainload rEFInd&quot; {
+    insmod chain
+    search --no-floppy --set=root --file /EFI/refind/refind_x64.efi
+    chainloader /EFI/refind/refind_x64.efi
+}</code></pre>
+<p>When you boot into Ventoy, press <code>F6</code> to open the custom
+menu and select your chainloader entry.</p>
+<h3 id="important-configuration-requirements">Important Configuration
+Requirements</h3>
+<ul>
+<li><strong>UEFI Mode Only:</strong> Both rEFInd and modern Clover
+builds are designed for UEFI systems. Ensure your machine is set to UEFI
+boot mode rather than Legacy BIOS.</li>
+<li><strong>Secure Boot:</strong> If Secure Boot is enabled, the
+secondary bootloader must be signed with a trusted key, or you must
+enroll its hash using Ventoy's built-in MOK (Machine Owner Key) manager.
+Alternatively, disable Secure Boot in your motherboard's firmware
+settings.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

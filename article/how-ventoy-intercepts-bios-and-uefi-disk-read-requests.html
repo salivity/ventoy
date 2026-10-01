@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Intercepts BIOS and UEFI Disk Read Requests - ventoy</title>
+    <meta name="description" content="Ventoy boots operating systems directly from ISO, WIM, and IMG files without extraction by establishing an in-memory virtualization layer at the firmware level. To trick operating system bootloaders into believing an unextracted disk image is a physical">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-intercepts-bios-and-uefi-disk-read-requests">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Intercepts BIOS and UEFI Disk Read Requests - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-intercepts-bios-and-uefi-disk-read-requests" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy boots operating systems directly from ISO, WIM, and IMG files without extraction by establishing an in-memory virtualization layer at the firmware level. To trick operating system bootloaders into believing an unextracted disk image is a physical" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-intercepts-bios-and-uefi-disk-read-requests">How
+Ventoy Intercepts BIOS and UEFI Disk Read Requests</h1>
+<p>Ventoy boots operating systems directly from ISO, WIM, and IMG files
+without extraction by establishing an in-memory virtualization layer at
+the firmware level. To trick operating system bootloaders into believing
+an unextracted disk image is a physical optical disc or drive, Ventoy
+intercepts disk read requests before the kernel initializes. It
+accomplishes this by hooking the legacy BIOS Interrupt 13h (INT 13h)
+handler and overriding the UEFI <code>EFI_BLOCK_IO_PROTOCOL</code>. By
+actively translating virtual sector addresses into the real physical
+sector locations of the container file, Ventoy supplies requested data
+seamlessly without relying on pre-extracted media.</p>
+<h3 id="the-virtual-mapping-foundation">The Virtual Mapping
+Foundation</h3>
+<p>Before intercepting I/O requests, Ventoy builds a sector-mapping
+table. When an ISO file is selected from the Ventoy boot menu, the
+Ventoy core parses the underlying file system (typically exFAT or NTFS)
+on the physical USB drive. Because files can be fragmented, Ventoy
+identifies every physical cluster where the target ISO resides and
+constructs an in-memory lookup table that pairs the ISO's internal
+logical block addresses (LBAs) with the USB drive's physical LBAs.</p>
+<h3 id="intercepting-legacy-bios-requests-via-int-13h">Intercepting
+Legacy BIOS Requests via INT 13h</h3>
+<p>In legacy BIOS environments, operating system bootloaders access
+storage hardware through software interrupts using the Interrupt Vector
+Table (IVT), located in the lowest memory segment
+(<code>0x0000:0x0000</code> to <code>0x0000:0x03FF</code>). Disk
+operations are routed through vector <code>0x13</code>.</p>
+<ol type="1">
+<li><strong>Vector Swapping:</strong> Ventoy allocates a reserved memory
+region in low conventional memory (often using a TSR-like method or
+reserving memory below the Extended BIOS Data Area) to house its custom
+INT 13h handler. It saves the pointer to the original BIOS ROM disk
+handler and rewrites the INT 13h vector in the IVT to point to its own
+hook.</li>
+<li><strong>Drive Emulation:</strong> Ventoy registers a virtual drive
+number (typically <code>0x80</code> for an emulated hard drive or
+<code>0x9F</code>/<code>0xE0</code> for an emulated optical drive).</li>
+<li><strong>Request Filtering:</strong> When a bootloader executes an
+INT 13h call (such as Function <code>AH=02h</code> for standard reads or
+<code>AH=42h</code> for extended LBA reads), Ventoy's hooked handler
+inspects the registers.</li>
+<li><strong>LBA Translation:</strong> If the requested drive matches the
+virtual drive ID, Ventoy intercepts the request. It takes the requested
+virtual sector offset, cross-references it with the pre-calculated
+sector map, and converts it into the exact physical sector location of
+the ISO file on the USB drive.</li>
+<li><strong>Execution and Return:</strong> Ventoy modifies the register
+parameters to target the physical drive ID and the translated physical
+LBA, forwards the read call to the original BIOS INT 13h handler, and
+returns the retrieved data to the bootloader buffer, clearing error
+flags to simulate native read success.</li>
+</ol>
+<h3 id="intercepting-modern-uefi-requests-via-block-io">Intercepting
+Modern UEFI Requests via Block I/O</h3>
+<p>UEFI firmware does not use CPU interrupts or real-mode memory
+vectors. Instead, it relies on modular protocols published in a
+centralized system database. Storage devices expose their read and write
+capabilities primarily through the <code>EFI_BLOCK_IO_PROTOCOL</code>
+and <code>EFI_BLOCK_IO2_PROTOCOL</code>.</p>
+<ol type="1">
+<li><strong>Protocol Implementation:</strong> Ventoy instantiates a
+synthetic UEFI device handle representing the virtual disk. It installs
+an instance of <code>EFI_BLOCK_IO_PROTOCOL</code> on this handle,
+configuring the <code>EFI_BLOCK_IO_MEDIA</code> structure to advertise
+the properties of the ISO (such as read-only status, total sector count,
+and sector size).</li>
+<li><strong>Function Pointer Hooking:</strong> In scenarios where
+existing firmware drivers must be redirected, Ventoy replaces the
+original <code>ReadBlocks</code> function pointer inside the target
+protocol interface table with its own wrapper function.</li>
+<li><strong>Intercepting <code>ReadBlocks</code>:</strong> When an EFI
+bootloader (such as <code>bootx64.efi</code>) issues a
+<code>BlockIo-&gt;ReadBlocks()</code> call against the virtual handle,
+execution directs to Ventoy's wrapper.</li>
+<li><strong>Physical Delegation:</strong> Ventoy accepts the
+<code>LBA</code>, <code>BufferSize</code>, and destination
+<code>Buffer</code> parameters from the caller. It looks up the physical
+sector distribution of the ISO file on the host storage and invokes the
+native, unmodified <code>EFI_BLOCK_IO_PROTOCOL</code> of the physical
+USB drive to pull the raw sectors into the caller's target buffer.</li>
+</ol>
+<h3 id="handover-to-the-operating-system-kernel">Handover to the
+Operating System Kernel</h3>
+<p>Both BIOS INT 13h and UEFI Block I/O hooks only persist while
+firmware services remain active. Once an operating system kernel loads
+its own hardware drivers and calls <code>ExitBootServices()</code> under
+UEFI or enters Protected/Long Mode under BIOS, firmware-level hooks are
+bypassed.</p>
+<p>To bridge this gap, Ventoy patches the boot sequence (such as
+injecting hook scripts into a Linux <code>initramfs</code> or utilizing
+runtime drivers in Windows) to locate the ISO file on the physical
+partition and remount it as a loopback block device inside the running
+operating system before root file system mounting occurs.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

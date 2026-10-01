@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Write Persistent Logs to USB? - ventoy</title>
+    <meta name="description" content="This article explores whether Ventoy writes persistent log files to a USB drive during the system boot process. It examines the default logging behavior of the Ventoy bootloader, the technical reasons behind how it handles runtime data, how debugging is">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-write-persistent-logs-to-usb">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Write Persistent Logs to USB? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-write-persistent-logs-to-usb" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores whether Ventoy writes persistent log files to a USB drive during the system boot process. It examines the default logging behavior of the Ventoy bootloader, the technical reasons behind how it handles runtime data, how debugging is" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-write-persistent-logs-to-usb">Does Ventoy Write
+Persistent Logs to USB?</h1>
+<p>This article explores whether Ventoy writes persistent log files to a
+USB drive during the system boot process. It examines the default
+logging behavior of the Ventoy bootloader, the technical reasons behind
+how it handles runtime data, how debugging is handled without disk
+writes, and the distinction between installer logs and boot logs.</p>
+<h2 id="default-boot-behavior-no-persistent-logs">Default Boot Behavior:
+No Persistent Logs</h2>
+<p>Ventoy does not write persistent log files to the USB drive during
+the boot process. When you power on a computer and boot from a Ventoy
+USB drive, the bootloader operates in a read-only manner regarding the
+physical storage medium.</p>
+<p>The Ventoy environment loads directly into system memory (RAM). From
+that point, it reads the partition table, scans the storage partitions
+for compatible ISO, WIM, IMG, or VHD files, and generates the dynamic
+boot menu entirely in memory. Any status updates, hardware detection
+steps, or configuration reads remain in volatile memory and are
+discarded once the computer reboots or turns off.</p>
+<h2 id="technical-reasons-for-read-only-operation">Technical Reasons for
+Read-Only Operation</h2>
+<p>Ventoy avoids writing boot logs back to the flash drive for several
+practical and architectural reasons:</p>
+<ul>
+<li><strong>Filesystem Integrity:</strong> Writing to a USB drive during
+early pre-boot stages increases the risk of filesystem corruption,
+particularly if a user forces a shutdown or pulls the drive while
+booting.</li>
+<li><strong>Flash Drive Wear:</strong> Flash memory has limited write
+cycles. Preventing constant log writes during every boot attempt helps
+preserve the operational lifespan of the drive.</li>
+<li><strong>Compatibility:</strong> Ventoy supports multiple filesystems
+for its data partition, including exFAT, NTFS, FAT32, ext4, and Btrfs.
+Maintaining write support across all these filesystems within the
+minimal pre-boot execution environment (UEFI/BIOS) would significantly
+complicate the code and increase the bootloader's footprint.</li>
+</ul>
+<h2 id="error-handling-and-debug-logs">Error Handling and Debug
+Logs</h2>
+<p>Because Ventoy does not save boot logs to a file on the disk, it
+relies on real-time screen output for diagnostics:</p>
+<ol type="1">
+<li><strong>On-Screen Messages:</strong> If an error occurs—such as a
+missing file, an unsupported image format, or an allocation
+failure—Ventoy prints the error text directly to the display
+console.</li>
+<li><strong>Text Mode and Debug Screens:</strong> Ventoy includes
+hotkeys (such as <code>F5</code> for tools and debugging options) that
+allow users to view hardware information, resolution modes, and
+low-level GRUB environments directly on the monitor.</li>
+<li><strong>No Automatic Log Dumps:</strong> None of the diagnostic
+information displayed on the screen is dumped to a <code>.txt</code> or
+<code>.log</code> file on the USB drive. If troubleshooting is required,
+you must record or photograph the on-screen error codes manually.</li>
+</ol>
+<h2 id="distinguishing-boot-logs-from-other-ventoy-files">Distinguishing
+Boot Logs from Other Ventoy Files</h2>
+<p>To avoid confusion, it is important to distinguish boot-time logging
+from other file-writing operations associated with Ventoy:</p>
+<ul>
+<li><strong>Installer Logs on the Host PC:</strong> When you create or
+update a Ventoy USB drive using the Windows or Linux GUI/CLI tool, that
+installation application <em>does</em> generate log files (such as
+<code>log.txt</code>). However, these logs are stored locally on the
+host operating system performing the installation, not continuously
+generated by the USB during boot.</li>
+<li><strong>Persistence Plugins:</strong> Ventoy supports persistence
+images for select Linux distributions, which allow the guest operating
+system to save changes, files, and system logs. In this scenario, it is
+the booted operating system writing logs into its dedicated persistence
+image file, not the Ventoy bootloader itself writing boot logs to the
+drive.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

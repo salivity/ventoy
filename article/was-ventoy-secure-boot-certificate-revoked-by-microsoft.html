@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Was Ventoy Secure Boot Certificate Revoked by Microsoft? - ventoy</title>
+    <meta name="description" content="The UEFI Secure Boot binaries utilized by Ventoy have indeed been revoked by Microsoft through Secure Boot Forbidden Signature Database (DBX) updates. Because Ventoy originally bundled older versions of signed shim bootloaders that contained unpatched se">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/was-ventoy-secure-boot-certificate-revoked-by-microsoft">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Was Ventoy Secure Boot Certificate Revoked by Microsoft? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/was-ventoy-secure-boot-certificate-revoked-by-microsoft" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The UEFI Secure Boot binaries utilized by Ventoy have indeed been revoked by Microsoft through Secure Boot Forbidden Signature Database (DBX) updates. Because Ventoy originally bundled older versions of signed shim bootloaders that contained unpatched se" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="was-ventoy-secure-boot-certificate-revoked-by-microsoft">Was
+Ventoy Secure Boot Certificate Revoked by Microsoft?</h1>
+<p>The UEFI Secure Boot binaries utilized by Ventoy have indeed been
+revoked by Microsoft through Secure Boot Forbidden Signature Database
+(DBX) updates. Because Ventoy originally bundled older versions of
+signed shim bootloaders that contained unpatched security
+vulnerabilities, modern Windows updates targeted those components for
+revocation. Consequently, users attempting to launch Ventoy on modern
+systems with updated revocation lists frequently encounter Secure Boot
+validation failures.</p>
+<p>Ventoy relies on the official Microsoft 3rd Party UEFI Certificate
+Authority (CA) to run while Secure Boot is active. Rather than holding a
+proprietary certificate uniquely issued to the Ventoy project, Ventoy
+uses a pre-signed <code>shim</code> binary—traditionally derived from
+Linux distributions such as Fedora or Canonical—which was signed by
+Microsoft. This shim acts as a trusted first-stage loader capable of
+executing Ventoy's secondary boot components.</p>
+<p>The revocation of these components stemmed from critical security
+vulnerabilities discovered in the GRUB bootloader and the shim
+infrastructure, such as "BootHole" and subsequent privilege-escalation
+flaws. In August 2022, Microsoft published security update KB5012170,
+followed by subsequent DBX updates through Windows Update and UEFI
+firmware patches. These updates pushed blacklisted hashes directly to
+the motherboard's non-volatile RAM, explicitly barring the older boot
+files packaged inside earlier releases of Ventoy from executing.</p>
+<p>When users boot an affected Ventoy drive on a PC with an updated DBX,
+the system halts with messages such as "Security Violation" or
+"Verification Failed." While Microsoft did not specifically target
+Ventoy out of hostility, the broad revocation of the vulnerable upstream
+shim files directly neutralized Ventoy's out-of-the-box Secure Boot
+capability on those machines.</p>
+<p>To resolve this issue, newer versions of Ventoy implemented updated
+bootloaders and alternate validation strategies. Ventoy integrates the
+Machine Owner Key (MOK) protocol, allowing users to manually enroll
+Ventoy's internal key (<code>ENROLL_THIS_KEY_IN_MOKMANAGER.cer</code>)
+directly into their motherboard's firmware. Once enrolled, the system
+bypasses the DBX block, enabling Ventoy to boot successfully even with
+Secure Boot enabled. Alternatively, users must temporarily disable
+Secure Boot in the UEFI BIOS setup to boot without certificate
+verification.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Boots New Windows Releases on Day One - ventoy</title>
+    <meta name="description" content="Ventoy delivers day-one support for major annual Windows updates through an innovative runtime hooking architecture rather than traditional file-extraction methods. Instead of repacking files or altering the original image, Ventoy dynamically presents th">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-boots-new-windows-releases-on-day-one">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Boots New Windows Releases on Day One - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-boots-new-windows-releases-on-day-one" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy delivers day-one support for major annual Windows updates through an innovative runtime hooking architecture rather than traditional file-extraction methods. Instead of repacking files or altering the original image, Ventoy dynamically presents th" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-boots-new-windows-releases-on-day-one">How Ventoy
+Boots New Windows Releases on Day One</h1>
+<p>Ventoy delivers day-one support for major annual Windows updates
+through an innovative runtime hooking architecture rather than
+traditional file-extraction methods. Instead of repacking files or
+altering the original image, Ventoy dynamically presents the ISO file to
+the operating system's installer in memory. This design allows new
+Windows feature updates to boot immediately upon release, because Ventoy
+relies on Microsoft's standardized Windows Preinstallation Environment
+(WinPE) loader rather than version-specific installation logic.</p>
+<h3 id="runtime-iso-emulation">Runtime ISO Emulation</h3>
+<p>Traditional multi-boot tools extract installation files onto a USB
+drive, which often breaks when Microsoft changes file layouts or setup
+requirements in annual updates. Ventoy operates differently by leaving
+the official Windows ISO completely intact. When selected from the boot
+menu, Ventoy initializes a minimal bootloader environment, chains
+directly into Microsoft's official boot managers (<code>bootmgr</code>
+or <code>bootmgr.efi</code>), and mounts the ISO as a virtual device in
+memory. Because Microsoft's core EFI boot path remains consistent across
+releases, the initial boot phase works immediately.</p>
+<h3 id="winpe-driver-hooking">WinPE Driver Hooking</h3>
+<p>The primary technical challenge of booting a Windows ISO directly is
+ensuring that the Windows installer can find its own installation files
+after the system switches from the standard bootloader to the Windows
+kernel. Ventoy solves this using a specialized runtime driver hook:</p>
+<ol type="1">
+<li>Ventoy intercepts the early boot sequence as WinPE loads into
+memory.</li>
+<li>It injects a virtual optical drive driver into the running memory
+space.</li>
+<li>This driver maps the original ISO file stored on the USB drive to a
+virtual CD/DVD device.</li>
+<li>When <code>setup.exe</code> queries the system for the Windows
+installation media (<code>install.wim</code> or
+<code>install.esd</code>), it detects the virtual drive as standard
+physical media.</li>
+</ol>
+<p>Because Microsoft rarely alters the fundamental driver architecture
+of WinPE during annual feature updates, Ventoy's virtual disk
+abstraction functions flawlessly without requiring an update
+specifically tailored to the new release.</p>
+<h3 id="decoupled-bypass-logic">Decoupled Bypass Logic</h3>
+<p>For Windows 11 releases, Microsoft enforces requirements such as TPM
+2.0, Secure Boot, and minimum RAM thresholds. Ventoy supports these
+modern updates on day one by injecting non-destructive registry bypasses
+during the WinPE initialization phase. Because these bypasses target
+standard Windows Setup registry keys (<code>LabConfig</code>) rather
+than modifying underlying system binaries, they continue to work across
+successive Windows versions until Microsoft intentionally alters or
+deprecates those specific setup flags.</p>
+<p>Through this combination of standardized EFI chaining, runtime
+storage emulation, and dynamic memory modification, Ventoy ensures full
+compatibility with new Windows builds the moment Microsoft publishes the
+official ISOs.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

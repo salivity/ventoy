@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Build Dependencies: Compiling from Source - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source utility designed to create bootable USB drives directly from ISO, WIM, IMG, and VHD files without repeatedly formatting the disk. Building the Ventoy project from its source code requires a comprehensive set of build systems, fil">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-build-dependencies-compiling-from-source">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Build Dependencies: Compiling from Source - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-build-dependencies-compiling-from-source" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source utility designed to create bootable USB drives directly from ISO, WIM, IMG, and VHD files without repeatedly formatting the disk. Building the Ventoy project from its source code requires a comprehensive set of build systems, fil" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-build-dependencies-compiling-from-source">Ventoy Build
+Dependencies: Compiling from Source</h1>
+<p>Ventoy is an open-source utility designed to create bootable USB
+drives directly from ISO, WIM, IMG, and VHD files without repeatedly
+formatting the disk. Building the Ventoy project from its source code
+requires a comprehensive set of build systems, filesystem utilities,
+development headers, and cross-compilation toolchains to compile the
+core binaries and multi-architecture bootloaders. This article details
+the complete list of system packages, toolchains, and runtime
+dependencies required to compile the Ventoy project successfully.</p>
+<h3 id="core-build-tools-and-compilers">Core Build Tools and
+Compilers</h3>
+<p>The primary build process relies on standard GNU compilation tools
+and source management utilities:</p>
+<ul>
+<li><strong>Git:</strong> Required to clone the repository and retrieve
+submodules.</li>
+<li><strong>GCC and G++:</strong> The GNU Compiler Collection is
+required to compile native host utilities and native modules.</li>
+<li><strong>GNU Make:</strong> Used to execute the Makefiles across the
+various project components.</li>
+<li><strong>CMake:</strong> Needed for configuring certain internal
+libraries and sub-modules.</li>
+<li><strong>Autoconf and Automake:</strong> Necessary for configuring
+GRUB source trees and associated dependencies.</li>
+<li><strong>Patch:</strong> Used to apply custom Ventoy modifications
+directly to upstream source codes such as GRUB.</li>
+<li><strong>Bison and Flex:</strong> Required for parser generation
+during GRUB and secondary bootloader builds.</li>
+<li><strong>Python (3.x):</strong> Used for build automation scripts,
+packaging routines, and asset processing.</li>
+</ul>
+<h3 id="filesystem-and-archive-utilities">Filesystem and Archive
+Utilities</h3>
+<p>Ventoy manages and generates various file systems and disk images
+during compilation, requiring dedicated manipulation tools:</p>
+<ul>
+<li><strong>dosfstools (<code>mkfs.vfat</code>):</strong> Creates and
+formats FAT16/FAT32 boot partitions.</li>
+<li><strong>mtools:</strong> Enables the manipulation of MS-DOS/FAT
+filesystems without mounting.</li>
+<li><strong>xorriso:</strong> Builds and extracts ISO9660 filesystem
+images.</li>
+<li><strong>squashfs-tools (<code>mksquashfs</code>):</strong> Generates
+compressed SquashFS images for target environments.</li>
+<li><strong>tar, gzip, bzip2, xz:</strong> Standard archive utilities
+needed to unpack build-time assets and package distribution
+binaries.</li>
+</ul>
+<h3 id="libraries-and-header-files">Libraries and Header Files</h3>
+<p>Compiling the user interface and system-level daemons requires
+several C-runtime libraries and development headers:</p>
+<ul>
+<li><strong>glibc-devel and glibc-static:</strong> Provides C standard
+library headers and static libraries necessary for creating standalone,
+portable binary tools.</li>
+<li><strong>ncurses / libncurses-dev:</strong> Required for building
+terminal-based user interface components.</li>
+<li><strong>zlib / zlib-devel:</strong> Provides compression algorithms
+used within boot image generation.</li>
+<li><strong>libuuid-devel:</strong> Handles Universally Unique
+Identifier creation for disk partitions.</li>
+</ul>
+<h3 id="cross-compilation-toolchains">Cross-Compilation Toolchains</h3>
+<p>Because Ventoy creates boot environments supporting legacy BIOS (x86)
+and UEFI systems across diverse architectures (x86_64, IA32, ARM64,
+MIPS64EL, and LoongArch64), cross-compilers are mandatory if compiling
+the full boot chain from scratch:</p>
+<ul>
+<li><strong>i686-linux-gnu-gcc:</strong> For 32-bit x86 BIOS and UEFI
+binaries.</li>
+<li><strong>x86_64-linux-gnu-gcc:</strong> For standard 64-bit x86 UEFI
+binaries.</li>
+<li><strong>aarch64-linux-gnu-gcc:</strong> For 64-bit ARM UEFI
+components.</li>
+<li><strong>mips64el-linux-gnu-gcc:</strong> For 64-bit Little-Endian
+MIPS UEFI support.</li>
+<li><strong>loongarch64-linux-gnu-gcc:</strong> For LoongArch
+architecture compilation.</li>
+</ul>
+<h3 id="the-containerized-alternative-docker">The Containerized
+Alternative (Docker)</h3>
+<p>Due to the complexity of configuring cross-compilation toolchains and
+specific glibc versions on modern Linux distributions, the Ventoy
+project officially maintains a pre-configured Docker image containing
+all prerequisites. If using Docker to build the project, the only host
+dependencies required are <strong>Docker Engine</strong> and the
+<strong>Git</strong> client.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Windows Server Setup Using Ventoy Answer Files - ventoy</title>
+    <meta name="description" content="Ventoy fully supports automated answer files for unattended Windows Server setups through its native Auto Install Plugin. This article explains how Ventoy enables unattended deployments, how to configure the ventoy.json file to pair an autounattend.xml a">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/automate-windows-server-setup-using-ventoy-answer-files">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Automate Windows Server Setup Using Ventoy Answer Files - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/automate-windows-server-setup-using-ventoy-answer-files" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports automated answer files for unattended Windows Server setups through its native Auto Install Plugin. This article explains how Ventoy enables unattended deployments, how to configure the ventoy.json file to pair an autounattend.xml a" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="automate-windows-server-setup-using-ventoy-answer-files">Automate
+Windows Server Setup Using Ventoy Answer Files</h1>
+<p>Ventoy fully supports automated answer files for unattended Windows
+Server setups through its native Auto Install Plugin. This article
+explains how Ventoy enables unattended deployments, how to configure the
+<code>ventoy.json</code> file to pair an <code>autounattend.xml</code>
+answer file with your Windows Server ISO, and the key benefits of using
+this method for rapid system rollouts.</p>
+<h3 id="how-ventoy-handles-unattended-windows-server-setups">How Ventoy
+Handles Unattended Windows Server Setups</h3>
+<p>Ventoy does not modify the original Windows Server ISO to achieve an
+automated installation. Instead, it uses an internal hook via its
+<strong>Auto Install Plugin</strong> to inject an XML answer file
+(<code>autounattend.xml</code>) into the Windows PE installer runtime
+during the boot process. This means you can keep your original,
+untouched Microsoft ISOs on the flash drive while dynamically attaching
+configuration scripts at boot time.</p>
+<h3 id="step-by-step-configuration">Step-by-Step Configuration</h3>
+<p>To set up an automated Windows Server installation using Ventoy,
+follow these steps:</p>
+<h4 id="1-create-your-windows-server-answer-file">1. Create Your Windows
+Server Answer File</h4>
+<p>Generate an <code>autounattend.xml</code> file tailored to your
+Windows Server edition (such as Windows Server 2019, 2022, or 2025). The
+file should automate your desired setup options, including disk
+partitioning, regional settings, the local administrator password, and
+product key insertion. You can create this file manually or by using the
+Windows System Image Manager (SIM).</p>
+<h4 id="2-set-up-the-directory-structure">2. Set Up the Directory
+Structure</h4>
+<p>Inside the root directory of your Ventoy USB drive, create a folder
+named <code>ventoy</code> (all lowercase) if it does not already exist.
+Place your answer file in this folder or a dedicated subfolder.</p>
+<p>For example:</p>
+<ul>
+<li><code>/ventoy/ventoy.json</code></li>
+<li><code>/ventoy/script/win_server_2022.xml</code></li>
+<li><code>/iso/Windows_Server_2022.iso</code></li>
+</ul>
+<h4 id="3-configure-ventoyjson">3. Configure
+<code>ventoy.json</code></h4>
+<p>Create or edit the <code>ventoy.json</code> file inside the
+<code>/ventoy</code> folder. Use the <code>auto_install</code>
+configuration array to map your specific Windows Server ISO to your
+answer file:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;auto_install&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/iso/Windows_Server_2022.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;template&quot;</span><span class="fu">:</span> <span class="st">&quot;/ventoy/script/win_server_2022.xml&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>You can specify exact paths, or you can map an answer file to
+multiple ISOs using parent directory matching.</p>
+<h4 id="4-boot-and-deploy">4. Boot and Deploy</h4>
+<p>When you boot from the Ventoy drive and select your Windows Server
+ISO, Ventoy prompts you to choose whether to run the installation in
+automated mode or normal mode. Selecting the automated option injects
+the mapped <code>autounattend.xml</code>, allowing the Windows Server
+setup to run to completion without user intervention.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

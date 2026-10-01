@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Boot ISO in Memdisk Mode with Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy includes an alternative execution feature called Memdisk mode, which loads an entire ISO image directly into the computer's physical memory before booting. This article explains how to select and enable Memdisk mode for any specific ISO file direc">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-boot-iso-in-memdisk-mode-with-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Boot ISO in Memdisk Mode with Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-boot-iso-in-memdisk-mode-with-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy includes an alternative execution feature called Memdisk mode, which loads an entire ISO image directly into the computer's physical memory before booting. This article explains how to select and enable Memdisk mode for any specific ISO file direc" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-boot-iso-in-memdisk-mode-with-ventoy">How to Boot ISO in
+Memdisk Mode with Ventoy</h1>
+<p>Ventoy includes an alternative execution feature called Memdisk mode,
+which loads an entire ISO image directly into the computer's physical
+memory before booting. This article explains how to select and enable
+Memdisk mode for any specific ISO file directly from the Ventoy boot
+menu, ensuring compatibility for smaller utility images, WinPE
+environments, and legacy boot media that fail under normal boot
+modes.</p>
+<h3 id="steps-to-activate-memdisk-mode">Steps to Activate Memdisk
+Mode</h3>
+<ol type="1">
+<li><strong>Boot into Ventoy</strong>: Insert your Ventoy USB drive into
+your target computer and boot into the main Ventoy interface.</li>
+<li><strong>Locate the ISO</strong>: Use the arrow keys on your keyboard
+to navigate through the list and highlight the specific ISO you want to
+run.</li>
+<li><strong>Open the Boot Option Menu</strong>: Press
+<strong>Enter</strong> on the highlighted ISO. In modern versions of
+Ventoy, pressing Enter does not boot immediately; instead, it opens a
+secondary selection menu with available launch modes.</li>
+<li><strong>Select Memdisk Mode</strong>: Use the arrow keys to scroll
+down and select <strong>Boot in memdisk mode</strong>, then press
+<strong>Enter</strong> to start the loading process.</li>
+</ol>
+<h3 id="alternative-hotkey-method">Alternative Hotkey Method</h3>
+<p>You can also trigger Memdisk mode without opening the sub-menu:</p>
+<ol type="1">
+<li>Highlight the target ISO in the main Ventoy menu.</li>
+<li>Press <strong>Ctrl + m</strong> on your keyboard.</li>
+<li>Ventoy will toggle Memdisk mode for that specific file and launch it
+into RAM immediately.</li>
+</ol>
+<h3 id="requirements-and-limitations">Requirements and Limitations</h3>
+<ul>
+<li><strong>RAM Capacity</strong>: Because the image is written directly
+to memory, your system must have significantly more available RAM than
+the total file size of the ISO.</li>
+<li><strong>Operating System Support</strong>: Memdisk mode is primarily
+designed for WinPE, DOS utilities, small rescue disks, and legacy
+environments. It generally will not work for large, standard Linux
+distributions (such as Ubuntu or Fedora) that require their root
+filesystems to be loaded from disk stages.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

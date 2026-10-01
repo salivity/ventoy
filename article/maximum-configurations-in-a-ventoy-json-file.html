@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maximum Configurations in a Ventoy.json File - ventoy</title>
+    <meta name="description" content="Ventoy uses the ventoy.json file to manage plugins, custom themes, persistence files, and automated installation scripts. This article explains the theoretical and practical limits on the number of configurations supported in a single ventoy.json file, o">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/maximum-configurations-in-a-ventoy-json-file">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Maximum Configurations in a Ventoy.json File - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/maximum-configurations-in-a-ventoy-json-file" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy uses the ventoy.json file to manage plugins, custom themes, persistence files, and automated installation scripts. This article explains the theoretical and practical limits on the number of configurations supported in a single ventoy.json file, o" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="maximum-configurations-in-a-ventoyjson-file">Maximum
+Configurations in a Ventoy.json File</h1>
+<p>Ventoy uses the <code>ventoy.json</code> file to manage plugins,
+custom themes, persistence files, and automated installation scripts.
+This article explains the theoretical and practical limits on the number
+of configurations supported in a single <code>ventoy.json</code> file,
+outlining the technical boundaries imposed by the boot environment and
+best practices for scaling your setup.</p>
+<h2 id="the-numerical-limit-of-configurations">The Numerical Limit of
+Configurations</h2>
+<p>Ventoy does not enforce an arbitrary, hardcoded cap on the number of
+configurations in a single <code>ventoy.json</code> file. You can define
+as many rules, aliases, persistence mappings, and auto-install entries
+as needed, provided the file adheres to standard JSON specifications and
+remains within the physical memory limits of the boot environment.</p>
+<p>The configurations inside <code>ventoy.json</code> are structured as
+JSON arrays and objects across several primary sections:</p>
+<ul>
+<li><code>control</code>: General behavior and menu configurations.</li>
+<li><code>theme</code>: Visual customizations, display resolutions, and
+fallback settings.</li>
+<li><code>auto_install</code>: Unattended installation script paths
+mapped to ISO images.</li>
+<li><code>persistence</code>: Persistence images mapped to designated
+distribution files.</li>
+<li><code>menu_alias</code>: Renaming rules for image labels in the
+Ventoy menu.</li>
+<li><code>menu_class</code>: Icon and class assignments.</li>
+<li><code>injection</code>: Archive injection configurations.</li>
+<li><code>menu_tip</code>: Custom tooltips for individual ISO
+entries.</li>
+</ul>
+<p>Within each of these parent objects, you can declare dozens or
+hundreds of individual entries as needed.</p>
+<h2 id="practical-limits-and-constraints">Practical Limits and
+Constraints</h2>
+<p>While the software itself sets no maximum configuration count,
+several hardware and runtime constraints dictate how large and complex
+your <code>ventoy.json</code> file can safely be.</p>
+<h3 id="1-boot-time-memory-allocation">1. Boot-Time Memory
+Allocation</h3>
+<p>Ventoy parses <code>ventoy.json</code> within a pre-boot environment
+(typically via GRUB2). Because standard operating system memory
+management is not active at this phase, the JSON parser relies on
+limited heap memory allocated by the BIOS or UEFI firmware. If a
+configuration file contains tens of thousands of lines, memory
+exhaustion can lead to boot failure or cause Ventoy to ignore the file
+entirely.</p>
+<h3 id="2-file-size">2. File Size</h3>
+<p>In practice, keeping <code>ventoy.json</code> well under a few
+megabytes is essential. Typical configurations range between 1 KB and 50
+KB. A file exceeding this range usually indicates duplicate rules or
+unoptimized path matchings that risk exceeding the pre-boot runtime
+buffers.</p>
+<h3 id="3-parsing-overhead-and-menu-latency">3. Parsing Overhead and
+Menu Latency</h3>
+<p>Each entry in sections like <code>menu_alias</code>,
+<code>persistence</code>, or <code>menu_tip</code> requires Ventoy to
+evaluate image names and directory paths when drawing the boot menu. A
+file burdened with excessive, redundant entries can introduce noticeable
+input latency when navigating through boot options.</p>
+<h2 id="best-practices-for-large-configurations">Best Practices for
+Large Configurations</h2>
+<p>To maintain fast boot times while managing a large number of
+images:</p>
+<ul>
+<li><strong>Use Path Matching Over File Matching:</strong> Instead of
+mapping individual ISOs manually, point configuration directives to
+entire directories whenever possible.</li>
+<li><strong>Validate JSON Syntax:</strong> A single trailing comma or
+unmatched bracket will invalidate the entire file. Always validate the
+file using a JSON linter or the VentoyPlugson graphical
+configurator.</li>
+<li><strong>Keep Rules Modular:</strong> Consolidate shared settings
+across multiple distributions into parent directories to reduce the
+overall configuration count inside the file.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

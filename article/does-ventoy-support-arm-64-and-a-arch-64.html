@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Support ARM64 and AArch64? - ventoy</title>
+    <meta name="description" content="Ventoy provides official support for both ARM64 and AArch64 processor architectures. This capability allows users to create bootable USB drives capable of booting ARM-based ISOs, IMGs, and other disk images directly on compatible ARM hardware. While the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-support-arm-64-and-a-arch-64">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Support ARM64 and AArch64? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-support-arm-64-and-a-arch-64" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy provides official support for both ARM64 and AArch64 processor architectures. This capability allows users to create bootable USB drives capable of booting ARM-based ISOs, IMGs, and other disk images directly on compatible ARM hardware. While the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-support-arm64-and-aarch64">Does Ventoy Support ARM64
+and AArch64?</h1>
+<p>Ventoy provides official support for both ARM64 and AArch64 processor
+architectures. This capability allows users to create bootable USB
+drives capable of booting ARM-based ISOs, IMGs, and other disk images
+directly on compatible ARM hardware. While the feature functions
+similarly to Ventoy on standard x86 systems, specific hardware and
+firmware requirements apply when booting on ARM-based machines.</p>
+<h3 id="arm64-support-in-ventoy">ARM64 Support in Ventoy</h3>
+<p>Ventoy introduced support for the ARM64 (AArch64) architecture
+starting with version 1.0.80. This update expanded the utility beyond
+traditional x86 and x86_64 platforms, allowing systems powered by 64-bit
+ARM processors to utilize Ventoy's file-copy boot mechanism.</p>
+<p>When using Ventoy on ARM64 hardware, you can copy supported ARM64
+installation images (such as Ubuntu, Debian, openSUSE, or Windows on
+ARM) directly to the USB drive and boot them from the Ventoy selection
+menu.</p>
+<h3 id="how-arm64-booting-works-on-ventoy">How ARM64 Booting Works on
+Ventoy</h3>
+<p>On traditional PCs, Ventoy supports both legacy BIOS and UEFI
+firmware. On ARM64 platforms, Ventoy operates exclusively through UEFI,
+as ARM architecture does not use legacy x86 BIOS standards.</p>
+<p>Key characteristics of Ventoy’s ARM64 support include:</p>
+<ul>
+<li><strong>UEFI Only:</strong> The target device must utilize standard
+UEFI firmware implementation to load the Ventoy bootloader.</li>
+<li><strong>Architecture-Specific Binaries:</strong> Ventoy includes the
+necessary EFI boot files (<code>BOOTAA64.EFI</code>) alongside its
+standard x86 binaries, allowing a single Ventoy drive to technically
+support multiple CPU architectures if configured properly.</li>
+<li><strong>Standard ISO Booting:</strong> Linux distributions compiled
+for AArch64 that support standard UEFI boot processes can be launched
+without unpacking the images.</li>
+</ul>
+<h3 id="limitations-and-hardware-compatibility">Limitations and Hardware
+Compatibility</h3>
+<p>While Ventoy supports the ARM64 architecture at the software level,
+real-world compatibility depends heavily on the target hardware's boot
+environment:</p>
+<ol type="1">
+<li><strong>Enterprise and Server Hardware:</strong> ARM64 servers (such
+as those using Ampere Altra processors) follow standard UEFI
+specifications, making them fully compatible with Ventoy.</li>
+<li><strong>SBCs (Single Board Computers):</strong> Devices like the
+Raspberry Pi or Rockchip boards typically do not use a standard PC-style
+UEFI implementation out of the box. Booting Ventoy on these boards often
+requires custom UEFI firmware overlays (such as Tianocore EDK2 firmware)
+rather than their default U-Boot loaders.</li>
+<li><strong>Windows on ARM Laptops:</strong> Laptops running Qualcomm
+Snapdragon processors generally utilize UEFI, but vendor-specific Secure
+Boot configurations and driver limitations may require Secure Boot to be
+disabled to boot Ventoy.</li>
+</ol>
+<p>Ventoy fully supports ARM64 and AArch64, provided the target machine
+provides a standard UEFI runtime environment to initialize the
+bootloader.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

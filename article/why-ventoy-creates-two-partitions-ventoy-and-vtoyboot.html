@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Creates Two Partitions: Ventoy and VTOYBOOT - ventoy</title>
+    <meta name="description" content="When installing Ventoy onto a USB storage device, the tool automatically divides the drive into two distinct partitions labeled Ventoy and VTOYBOOT. This article explains the technical reasons behind this dual-partition architecture, detailing how it sep">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-creates-two-partitions-ventoy-and-vtoyboot">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Creates Two Partitions: Ventoy and VTOYBOOT - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-creates-two-partitions-ventoy-and-vtoyboot" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When installing Ventoy onto a USB storage device, the tool automatically divides the drive into two distinct partitions labeled Ventoy and VTOYBOOT. This article explains the technical reasons behind this dual-partition architecture, detailing how it sep" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-creates-two-partitions-ventoy-and-vtoyboot">Why
+Ventoy Creates Two Partitions: Ventoy and VTOYBOOT</h1>
+<p>When installing Ventoy onto a USB storage device, the tool
+automatically divides the drive into two distinct partitions labeled
+<code>Ventoy</code> and <code>VTOYBOOT</code>. This article explains the
+technical reasons behind this dual-partition architecture, detailing how
+it separates core bootloader files from user data, satisfies strict UEFI
+hardware standards, and ensures broad compatibility across both modern
+and legacy computing systems.</p>
+<h3 id="the-distinct-roles-of-each-partition">The Distinct Roles of Each
+Partition</h3>
+<p>To understand why the division exists, it is necessary to examine
+what each partition actually contains:</p>
+<ul>
+<li><strong>Partition 1 (<code>Ventoy</code>):</strong> This is the
+primary data partition occupying nearly all available capacity on the
+flash drive. It is where users copy and paste their ISO, WIM, IMG, and
+VHD(x) disk images, alongside regular files. By default, it is formatted
+using the exFAT file system, though users can manually reformat it as
+NTFS, ext4, or XFS.</li>
+<li><strong>Partition 2 (<code>VTOYBOOT</code>):</strong> This is a
+tiny, hidden system partition (usually around 32 MB) formatted as FAT16
+or FAT32. It houses the Ventoy core engine, including the GRUB
+bootloader, EFI boot binaries, and hardware initialization drivers.</li>
+</ul>
+<h3 id="compliance-with-the-uefi-specification">Compliance with the UEFI
+Specification</h3>
+<p>The primary technical driver for creating the <code>VTOYBOOT</code>
+partition is the strict design of modern UEFI (Unified Extensible
+Firmware Interface) firmware.</p>
+<p>According to UEFI specifications, a motherboard's firmware natively
+searches for an EFI System Partition (ESP) formatted with a FAT file
+system (FAT12, FAT16, or FAT32) to locate executable boot files. Most
+standard UEFI implementations cannot read or boot directly from modern
+file systems like NTFS, exFAT, or ext4 without specialized, preloaded
+third-party drivers.</p>
+<p>By placing the initial boot files inside a dedicated FAT partition
+(<code>VTOYBOOT</code>), Ventoy guarantees that any standard UEFI system
+can detect and execute its bootloader right out of the box.</p>
+<h3 id="overcoming-the-4-gb-file-size-limit">Overcoming the 4 GB File
+Size Limit</h3>
+<p>While the FAT file system is universally compatible with UEFI
+firmware, standard FAT32 imposes a hard file size limit of 4 GB. Most
+contemporary operating system installation images (such as modern
+Windows 11 or full-featured Linux distributions) exceed this limit.</p>
+<p>If Ventoy used a single FAT partition for the entire drive to satisfy
+UEFI requirements, users would be unable to store disk images larger
+than 4 GB. The two-partition model neatly solves this:</p>
+<ol type="1">
+<li><strong>Boot Phase:</strong> The motherboard reads the small FAT
+partition (<code>VTOYBOOT</code>), initializing the Ventoy core.</li>
+<li><strong>Driver Loading:</strong> Ventoy loads its own internal file
+system drivers for exFAT, NTFS, and ext4 into memory.</li>
+<li><strong>Payload Execution:</strong> Ventoy accesses the large
+<code>Ventoy</code> partition to read and load multi-gigabyte ISOs
+without file system constraints.</li>
+</ol>
+<h3 id="protection-from-accidental-deletion-and-corruption">Protection
+from Accidental Deletion and Corruption</h3>
+<p>The <code>VTOYBOOT</code> partition is marked with specific partition
+flags that classify it as a system volume. In Windows, this partition is
+hidden by default from File Explorer and assigned no drive letter.</p>
+<p>This isolation protects the vital bootloader binaries from accidental
+deletion, disk fragmentation, and user tampering. Users can safely add,
+delete, rename, or organize their payload images in the visible
+<code>Ventoy</code> partition without risking the integrity of the
+underlying boot mechanism.</p>
+<h3 id="universal-compatibility-for-dual-boot-modes">Universal
+Compatibility for Dual-Boot Modes</h3>
+<p>Ventoy supports both Legacy BIOS (MBR) and UEFI (x86_64, IA32, ARM64,
+and MIPS) boot modes from a single drive. Housing all platform-specific
+initialization code within the <code>VTOYBOOT</code> structure allows
+the tool to execute the appropriate boot path seamlessly, leaving the
+primary <code>Ventoy</code> partition as a clean, standardized storage
+space regardless of the host machine's architecture.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

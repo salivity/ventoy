@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Alter ISO Files When Booting? - ventoy</title>
+    <meta name="description" content="Ventoy does not alter a single byte of an ISO file during either the copying process or the boot process. When you place an image onto a Ventoy USB drive, the file remains completely untouched, maintaining identical cryptographic checksums (such as MD5 o">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-alter-iso-files-when-booting">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Alter ISO Files When Booting? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-alter-iso-files-when-booting" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not alter a single byte of an ISO file during either the copying process or the boot process. When you place an image onto a Ventoy USB drive, the file remains completely untouched, maintaining identical cryptographic checksums (such as MD5 o" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-alter-iso-files-when-booting">Does Ventoy Alter ISO
+Files When Booting?</h1>
+<p>Ventoy does not alter a single byte of an ISO file during either the
+copying process or the boot process. When you place an image onto a
+Ventoy USB drive, the file remains completely untouched, maintaining
+identical cryptographic checksums (such as MD5 or SHA-256) before and
+after booting. Ventoy achieves this by using in-memory virtualization
+rather than modifying the underlying file or extracting its
+contents.</p>
+<h3 id="the-copying-process">The Copying Process</h3>
+<p>When you copy an ISO file to a Ventoy drive, your operating system
+performs a standard file transfer to a standard filesystem (typically
+exFAT, NTFS, or ext4). Ventoy does not intercept, unpack, recompile, or
+inject data into the file during this write operation. The file stored
+on the disk partition is an exact, bit-for-bit duplicate of the source
+file you downloaded.</p>
+<h3 id="the-boot-process">The Boot Process</h3>
+<p>Traditional multiboot tools often extract the contents of an ISO or
+alter configuration files to make them bootable from USB media. Ventoy
+operates differently:</p>
+<ol type="1">
+<li><strong>Hardware Emulation in RAM:</strong> Upon selecting an ISO
+from the Ventoy menu, the bootloader hooks standard BIOS interrupts
+(such as INT 13h) or UEFI Block I/O protocols entirely in system
+memory.</li>
+<li><strong>Virtual Drive Mapping:</strong> Ventoy maps the virtual
+optical disc directly to the raw, contiguous storage sectors occupied by
+the ISO on the flash drive.</li>
+<li><strong>Read-Only Access:</strong> The operating system being booted
+accesses the ISO through these memory hooks, treating the file as a
+physical, read-only CD or DVD.</li>
+</ol>
+<p>Because all mapping and runtime redirection occur strictly in
+volatile RAM, the physical disk sectors housing the ISO are never
+written to.</p>
+<h3 id="handling-dynamic-writes-and-persistence">Handling Dynamic Writes
+and Persistence</h3>
+<p>Many modern live operating systems require write access during
+runtime to handle temporary logs, system states, or user data. Even in
+these cases, the original ISO remains untouched:</p>
+<ul>
+<li><strong>RAM Disks (OverlayFS):</strong> Most live Linux environments
+create a temporary filesystem in RAM for any write operations,
+discarding changes upon reboot.</li>
+<li><strong>Ventoy Persistence Plugins:</strong> If you configure Ventoy
+for persistence, all changes are routed to a separate dedicated image
+file (such as a <code>.dat</code> file) defined in the configuration.
+The primary ISO remains strictly read-only.</li>
+</ul>
+<h3 id="how-to-verify">How to Verify</h3>
+<p>You can verify that Ventoy preserves data integrity by generating a
+SHA-256 hash of your original ISO file on your host machine. Copy the
+file to the Ventoy drive, boot from it, shut down the computer, and
+recompute the SHA-256 hash directly from the USB drive. The checksum
+will match the original hash identically, confirming that zero bytes
+were modified.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

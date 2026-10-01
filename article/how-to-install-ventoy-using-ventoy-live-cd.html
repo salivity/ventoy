@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Install Ventoy Using Ventoy LiveCD - ventoy</title>
+    <meta name="description" content="The Ventoy LiveCD project is a specialized, bootable ISO utility created to deploy or update Ventoy onto USB flash drives without relying on an existing host operating system. This article explains what the Ventoy LiveCD is, why it is useful, and the ste">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-install-ventoy-using-ventoy-live-cd">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Install Ventoy Using Ventoy LiveCD - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-install-ventoy-using-ventoy-live-cd" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Ventoy LiveCD project is a specialized, bootable ISO utility created to deploy or update Ventoy onto USB flash drives without relying on an existing host operating system. This article explains what the Ventoy LiveCD is, why it is useful, and the ste" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-install-ventoy-using-ventoy-livecd">How to Install Ventoy
+Using Ventoy LiveCD</h1>
+<p>The Ventoy LiveCD project is a specialized, bootable ISO utility
+created to deploy or update Ventoy onto USB flash drives without relying
+on an existing host operating system. This article explains what the
+Ventoy LiveCD is, why it is useful, and the step-by-step process for
+using it to install the Ventoy bootloader directly to your target
+drive.</p>
+<h3 id="what-is-the-ventoy-livecd">What Is the Ventoy LiveCD?</h3>
+<p>Ventoy is traditionally installed onto a USB drive through a
+graphical utility in Windows or command-line scripts in Linux. However,
+there are scenarios where users cannot access a working operating
+system, encounter driver conflicts, or lack administrative permissions
+to format external disks.</p>
+<p>The Ventoy LiveCD solves this by packaging a lightweight, standalone
+Linux environment containing the necessary Ventoy installation binaries.
+When booted, it provides a dedicated environment whose sole purpose is
+to format, install, or update Ventoy on connected storage devices.</p>
+<h3 id="why-use-ventoy-livecd">Why Use Ventoy LiveCD?</h3>
+<ul>
+<li><strong>OS Independence:</strong> It works regardless of whether
+your primary computer runs Windows, macOS, or Linux.</li>
+<li><strong>Troubleshooting:</strong> It bypasses write-lock
+restrictions, OS-level security policies, or disk management bugs in
+standard operating systems.</li>
+<li><strong>Bare-Metal Utility:</strong> It allows you to prepare
+bootable multi-ISO drives directly from a clean hardware
+environment.</li>
+</ul>
+<h3 id="how-to-install-ventoy-using-the-livecd">How to Install Ventoy
+Using the LiveCD</h3>
+<h4 id="step-1-download-the-ventoy-livecd-image">Step 1: Download the
+Ventoy LiveCD Image</h4>
+<p>Obtain the official Ventoy LiveCD file, which is distributed as an
+ISO image (named in the format <code>ventoy-x.x.xx-livecd.iso</code>)
+alongside the standard release archives on the Ventoy project release
+page.</p>
+<h4 id="step-2-write-the-livecd-to-temporary-media">Step 2: Write the
+LiveCD to Temporary Media</h4>
+<p>Because the LiveCD is an ISO file, it must be written to temporary
+bootable media:</p>
+<ul>
+<li>Burn the ISO to a physical CD or DVD, or</li>
+<li>Flash the ISO to a secondary, disposable USB flash drive using an
+image-writing tool (such as Rufus, BalenaEtcher, or the <code>dd</code>
+command in Linux).</li>
+</ul>
+<h4 id="step-3-boot-into-the-livecd-environment">Step 3: Boot into the
+LiveCD Environment</h4>
+<ol type="1">
+<li>Insert the temporary LiveCD media into your computer.</li>
+<li>Insert the target USB flash drive—the one you intend to use as your
+permanent Ventoy drive.</li>
+<li>Restart the computer and open your system's boot menu (typically
+accessed by pressing keys such as F12, F11, F8, or Del during
+startup).</li>
+<li>Select the LiveCD media as the boot device.</li>
+</ol>
+<h4 id="step-4-run-the-installation-process">Step 4: Run the
+Installation Process</h4>
+<ol type="1">
+<li>Once the LiveCD finishes booting, it automatically launches the
+Ventoy installation interface (either a text-based menu or a simple
+graphical interface).</li>
+<li>Carefully select your <strong>target USB drive</strong> from the
+list of detected storage devices. Ensure you do not select your internal
+hard drive or the LiveCD media itself.</li>
+<li>Choose the <strong>Install</strong> option.</li>
+<li>The utility will prompt you with a warning that all existing data on
+the target drive will be destroyed. Confirm the prompt to proceed.</li>
+<li>The utility creates the required dual-partition structure (a hidden
+EFI system partition for booting and a large exFAT data partition).</li>
+</ol>
+<h4 id="step-5-finalize-and-test">Step 5: Finalize and Test</h4>
+<p>Once the installation status displays success, shut down the
+computer. Remove the temporary LiveCD media. You can now insert the
+newly configured Ventoy USB drive into any computer and simply drag and
+drop your desired ISO, WIM, or IMG files into the partition to boot
+them.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

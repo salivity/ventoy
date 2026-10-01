@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why OS Installers Fail to Unmount Ventoy Drives - ventoy</title>
+    <meta name="description" content="When installing an operating system using a Ventoy multiboot USB drive, users occasionally encounter errors stating that the installer cannot unmount the installation media or the target disk. Unlike traditional USB boot tools that extract installation f">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-os-installers-fail-to-unmount-ventoy-drives">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why OS Installers Fail to Unmount Ventoy Drives - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-os-installers-fail-to-unmount-ventoy-drives" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When installing an operating system using a Ventoy multiboot USB drive, users occasionally encounter errors stating that the installer cannot unmount the installation media or the target disk. Unlike traditional USB boot tools that extract installation f" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-os-installers-fail-to-unmount-ventoy-drives">Why OS
+Installers Fail to Unmount Ventoy Drives</h1>
+<p>When installing an operating system using a Ventoy multiboot USB
+drive, users occasionally encounter errors stating that the installer
+cannot unmount the installation media or the target disk. Unlike
+traditional USB boot tools that extract installation files directly to a
+partition, Ventoy operates through a virtual loopback mechanism. This
+article breaks down the technical reasons why operating system
+installers struggle to unmount Ventoy media, focusing on device mapping
+dependencies, locked file handles, and installer partition scanners.</p>
+<h3 id="the-virtual-loopback-dependency">The Virtual Loopback
+Dependency</h3>
+<p>Standard bootable drives write ISO contents directly onto the raw
+partition using tools like Rufus or <code>dd</code>. In contrast, Ventoy
+stores the ISO file as a discrete file on an exFAT or NTFS
+filesystem.</p>
+<p>During boot, Ventoy uses a custom driver (such as a device-mapper or
+loop device) to virtually mount the ISO image inside the running live
+environment. This creates a hard dependency chain: the live installer
+runs from within the ISO, which relies on the virtual loop device, which
+in turn relies on the mounted physical partition of the USB drive. When
+the installer executes a cleanup or partition reset command to unmount
+all attached drives, the operating system kernel rejects the request
+because the active filesystem is still reading data from that exact
+underlying storage device.</p>
+<h3 id="open-file-handles-and-target-disk-discovery">Open File Handles
+and Target Disk Discovery</h3>
+<p>Modern installers, including Calamares, Debian Installer, and
+Ubuntu’s Subiquity, run automated disk preparation scripts before
+writing changes. These scripts often attempt to:</p>
+<ul>
+<li>Query all block devices to generate a partition map.</li>
+<li>Unmount any partitions currently mounted on the target drive or
+adjacent removable drives to avoid data corruption.</li>
+<li>Scan installation media for integrity verification.</li>
+</ul>
+<p>During this process, daemon processes like <code>udev</code>,
+<code>systemd-udevd</code>, or disk monitor services open file
+descriptors pointing to the Ventoy partition. Because these files remain
+locked by active system processes, the standard <code>umount</code>
+system call fails with a <code>target is busy</code> (EBUSY) error
+code.</p>
+<h3 id="installer-partition-clashes">Installer Partition Clashes</h3>
+<p>Some operating system installers do not distinguish between internal
+destination drives and external source drives when unmounting partitions
+prior to formatting. If the installer issues a global unmount command
+(such as <code>umount -a</code> or a blind script targeting all non-root
+block devices), it attempts to sever the connection to the Ventoy
+physical partition (<code>/dev/sdX1</code> or
+<code>/dev/sdX2</code>).</p>
+<p>Because the installer binary and root filesystem often reside within
+the virtual media mapped to that physical device, dropping the mount
+crashes the installer or halts the installation wizard entirely.</p>
+<h3 id="how-to-bypass-ventoy-unmount-errors">How to Bypass Ventoy
+Unmount Errors</h3>
+<p>To work around these installer limitations without switching to a
+different USB creation tool, you can apply several specific
+techniques:</p>
+<ul>
+<li><strong>Use Memdisk Mode:</strong> Press <code>F1</code> in the
+Ventoy boot menu before selecting the ISO to enable Memdisk mode. This
+loads the entire ISO image into physical RAM, releasing the physical USB
+drive completely and allowing the installer to unmount it safely.</li>
+<li><strong>Manual Lazy Unmounting:</strong> If dropped into a terminal
+or shell during an installation failure, running
+<code>umount -l /cdrom</code> or <code>umount -l /isodevice</code>
+detaches the filesystem immediately from the filesystem hierarchy while
+resolving pending references in the background.</li>
+<li><strong>Text or Safe Graphics Mode:</strong> Some graphical
+installers launch background monitoring daemons that lock storage
+handles; selecting the text-based installer or a basic graphic
+environment often avoids triggering unnecessary partition locks.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

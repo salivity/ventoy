@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How vtoyboot Patches Linux VHDs for Ventoy - ventoy</title>
+    <meta name="description" content="The vtoyboot tool allows standard Linux installations housed inside virtual disk images (such as .vhd or .img files) to boot natively via Ventoy on physical hardware. It achieves this by modifying the guest operating system's initial ramdisk (initramfs o">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-vtoyboot-patches-linux-vh-ds-for-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How vtoyboot Patches Linux VHDs for Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-vtoyboot-patches-linux-vh-ds-for-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The vtoyboot tool allows standard Linux installations housed inside virtual disk images (such as .vhd or .img files) to boot natively via Ventoy on physical hardware. It achieves this by modifying the guest operating system's initial ramdisk (initramfs o" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-vtoyboot-patches-linux-vhds-for-ventoy">How vtoyboot Patches
+Linux VHDs for Ventoy</h1>
+<p>The <code>vtoyboot</code> tool allows standard Linux installations
+housed inside virtual disk images (such as <code>.vhd</code> or
+<code>.img</code> files) to boot natively via Ventoy on physical
+hardware. It achieves this by modifying the guest operating system's
+initial ramdisk (<code>initramfs</code> or <code>initrd</code>) to
+include specialized drivers, search scripts, and loop-mounting hooks.
+These modifications enable the Linux kernel to locate its host image on
+the Ventoy drive during early userspace initialization and mount it
+seamlessly as the root filesystem.</p>
+<h3 id="the-underlying-boot-dilemma">The Underlying Boot Dilemma</h3>
+<p>When Ventoy boots a virtual disk image, it relies on BIOS or UEFI
+firmware-level emulation (such as INT 13h or UEFI RAM-disk protocols) to
+present the virtual disk as a physical drive to the bootloader. However,
+once GRUB loads the Linux kernel, the kernel takes control of hardware
+management and discards firmware-level disk mappings.</p>
+<p>Without modification, the kernel attempts to mount a root device
+(e.g., <code>/dev/sda1</code> or a filesystem UUID) that no longer
+exists in physical space, resulting in a kernel panic or a drop to an
+emergency shell. The kernel must be made aware that its root filesystem
+is trapped inside an image file residing on a physical partition
+formatted as exFAT, NTFS, or ext4.</p>
+<h3 id="detecting-the-distribution-and-initramfs-framework">Detecting
+the Distribution and Initramfs Framework</h3>
+<p>The <code>vtoyboot</code> script is executed inside the virtual
+machine while the guest Linux system is running. Upon execution, the
+script identifies the host distribution's initramfs generation
+framework. It supports the major Linux init systems, including:</p>
+<ul>
+<li><strong>Dracut</strong> (Fedora, RHEL, CentOS, openSUSE)</li>
+<li><strong>initramfs-tools</strong> (Debian, Ubuntu, Linux Mint)</li>
+<li><strong>mkinitcpio</strong> (Arch Linux, Manjaro)</li>
+</ul>
+<p>By identifying the active framework, <code>vtoyboot</code> determines
+where to inject its custom hooks and configuration files.</p>
+<h3 id="injecting-early-userspace-hooks">Injecting Early Userspace
+Hooks</h3>
+<p>The core of <code>vtoyboot</code> consists of custom scripts and
+binaries (such as <code>vtoy_mount</code> or Dracut modules) placed into
+the system directories where the initramfs generator sources its
+components.</p>
+<p>These injected scripts alter the early boot sequence:</p>
+<ol type="1">
+<li><strong>Hardware and Filesystem Modules</strong>: The script ensures
+that storage drivers for physical interfaces (USB, NVMe, SATA) and
+filesystem drivers for the host Ventoy drive (such as
+<code>exfat</code>, <code>ntfs3</code>, or <code>fuse</code>) are forced
+into the generated initramfs image.</li>
+<li><strong>Loop Device Support</strong>: It enables the loopback block
+driver (<code>loop</code>) and device mapper modules inside the
+initramfs, which are necessary to map a raw disk file to a block
+device.</li>
+</ol>
+<h3 id="execution-during-the-early-boot-process">Execution During the
+Early Boot Process</h3>
+<p>Once the patched system boots via Ventoy on physical hardware, the
+modified initramfs executes before the real root is mounted:</p>
+<ol type="1">
+<li><strong>Finding the Host Partition</strong>: The injected hook
+searches physical disks for the Ventoy boot environment and the parent
+drive where the <code>.vhd</code> resides.</li>
+<li><strong>Loop-Mounting the Disk Image</strong>: The script identifies
+the specific VHD file path passed by the bootloader parameters, mounts
+the host filesystem read-only or read-write, and attaches the virtual
+disk image to a loop device (e.g., <code>/dev/loop0</code>).</li>
+<li><strong>Partition Mapping</strong>: The partitions within the
+virtual disk image are exposed as sub-devices (e.g.,
+<code>/dev/loop0p1</code>, <code>/dev/loop0p2</code>) using
+<code>kpartx</code> or the kernel's built-in partition-scanning
+capabilities.</li>
+<li><strong>Pivoting Root</strong>: The initramfs mounts the designated
+root partition from the loop device to <code>/sysroot</code> or
+<code>/newroot</code> and completes the standard
+<code>switch_root</code> routine, handing control over to the guest
+system's <code>systemd</code> or <code>init</code> process.</li>
+</ol>
+<h3 id="finalizing-the-patch">Finalizing the Patch</h3>
+<p>Before exiting, <code>vtoyboot</code> automatically triggers the
+system's native command (<code>update-initramfs -u</code>,
+<code>dracut -f</code>, or <code>mkinitcpio -P</code>) to rebuild the
+initramfs images with the new hooks compiled directly into them. Once
+the machine is shut down, the resulting virtual disk file can be renamed
+with a <code>.vtoy</code> extension (e.g., <code>linux.vhd.vtoy</code>)
+and copied directly to a Ventoy USB drive for native hardware
+execution.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Boot ISOs in Deep Subdirectories? - ventoy</title>
+    <meta name="description" content="Ventoy fully supports detecting and booting ISO files located within deeply nested subdirectories on its data partition. By default, the bootable USB solution automatically performs a recursive scan across directories to compile its boot menu, eliminatin">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-boot-is-os-in-deep-subdirectories">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Boot ISOs in Deep Subdirectories? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-boot-is-os-in-deep-subdirectories" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports detecting and booting ISO files located within deeply nested subdirectories on its data partition. By default, the bootable USB solution automatically performs a recursive scan across directories to compile its boot menu, eliminatin" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-boot-isos-in-deep-subdirectories">Can Ventoy Boot
+ISOs in Deep Subdirectories?</h1>
+<p>Ventoy fully supports detecting and booting ISO files located within
+deeply nested subdirectories on its data partition. By default, the
+bootable USB solution automatically performs a recursive scan across
+directories to compile its boot menu, eliminating the need to keep image
+files exclusively in the root directory. This article explains how
+Ventoy handles nested folders, directory depth limits, configuration
+options, and best practices for organizing your ISO library.</p>
+<h2 id="automatic-directory-traversal">Automatic Directory
+Traversal</h2>
+<p>When a system boots into Ventoy, the software scans the primary
+storage partition (typically the first partition formatted as exFAT,
+NTFS, ext4, or FAT32) for supported image formats, including
+<code>.iso</code>, <code>.wim</code>, <code>.vhd</code>, and
+<code>.img</code>.</p>
+<p>This scan is recursive, meaning Ventoy automatically looks through
+parent folders and child subfolders. You can organize your images using
+logical folder structures, such as:</p>
+<ul>
+<li><code>/ISOs/Linux/Ubuntu/ubuntu-22.04.iso</code></li>
+<li><code>/ISOs/Windows/Win11/Win11_English_x64.iso</code></li>
+<li><code>/Utilities/Antivirus/RescueDisk.iso</code></li>
+</ul>
+<p>Ventoy aggregates all discovered files into a single, unified boot
+menu by default, displaying the file name regardless of its location in
+the directory tree.</p>
+<h2 id="directory-depth-limits-and-configuration">Directory Depth Limits
+and Configuration</h2>
+<p>While Ventoy supports nested directories, directory traversal is
+governed by predefined search limits to prevent long scanning delays or
+memory issues:</p>
+<ul>
+<li><strong>Default Search Depth:</strong> Ventoy searches
+subdirectories down to a set depth level automatically. For standard
+multi-level folder structures, no extra configuration is required.</li>
+<li><strong>Customizing Search Depth via
+<code>ventoy.json</code>:</strong> If your ISO files are stored
+extremely deep in a folder hierarchy, you can configure the search depth
+using the <code>ventoy.json</code> configuration file. Within the
+<code>control</code> section, the <code>max_search_depth</code>
+parameter allows you to define how many directory levels Ventoy will
+traverse during boot initialization.</li>
+</ul>
+<p>Example configuration snippet in
+<code>/ventoy/ventoy.json</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;max_search_depth&quot;</span><span class="fu">:</span> <span class="dv">5</span> <span class="fu">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Setting this value to an appropriate integer ensures Ventoy parses
+your deeply nested subfolders without unnecessary overhead.</p>
+<h2 id="tree-view-mode">Tree View Mode</h2>
+<p>If you store a large number of ISO files in nested folders, a flat
+list of files in the main menu can become difficult to navigate. Ventoy
+includes a built-in Tree View mode:</p>
+<ul>
+<li>Press <strong>F3</strong> on the main Ventoy boot screen to toggle
+<strong>Tree View</strong>.</li>
+<li>Tree View replaces the flat list with a navigable directory
+structure that mirrors your actual folder hierarchy on the USB
+drive.</li>
+</ul>
+<h2 id="best-practices-for-nested-directories-in-ventoy">Best Practices
+for Nested Directories in Ventoy</h2>
+<ol type="1">
+<li><strong>Avoid Extremely Long Paths:</strong> Boot environments have
+memory and string-length limitations. Keep folder names reasonably
+concise to prevent path truncation.</li>
+<li><strong>Avoid Non-Standard Characters:</strong> Do not use special
+symbols, non-ASCII characters, or trailing spaces in folder names.
+Standard alphanumeric characters, underscores, and hyphens ensure
+compatibility across both legacy BIOS and UEFI modes.</li>
+<li><strong>Exclude Non-Boot Folders:</strong> If your USB drive
+contains personal files alongside ISOs, use the
+<code>VTOY_DIR_RECYCLE</code> attribute or the <code>ventoy.json</code>
+file to restrict scanning to specific image directories. Limiting the
+search scope reduces boot-time scanning delays.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

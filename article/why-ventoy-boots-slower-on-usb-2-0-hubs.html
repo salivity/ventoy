@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Boots Slower on USB 2.0 Hubs - ventoy</title>
+    <meta name="description" content="Ventoy is a popular open-source utility designed to create bootable USB drives containing multiple ISO files, but users often experience severe slowdowns when booting through USB 2.0 hubs. This performance degradation occurs due to a combination of physi">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-boots-slower-on-usb-2-0-hubs">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Boots Slower on USB 2.0 Hubs - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-boots-slower-on-usb-2-0-hubs" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is a popular open-source utility designed to create bootable USB drives containing multiple ISO files, but users often experience severe slowdowns when booting through USB 2.0 hubs. This performance degradation occurs due to a combination of physi" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-boots-slower-on-usb-20-hubs">Why Ventoy Boots Slower
+on USB 2.0 Hubs</h1>
+<p>Ventoy is a popular open-source utility designed to create bootable
+USB drives containing multiple ISO files, but users often experience
+severe slowdowns when booting through USB 2.0 hubs. This performance
+degradation occurs due to a combination of physical bandwidth
+constraints, shared hub architectures, firmware driver limitations in
+the pre-boot environment, and insufficient power delivery. Understanding
+these bottlenecks makes it clear why an operating system installation or
+live environment can take minutes to load through a hub instead of
+seconds.</p>
+<h3 id="1-severe-bandwidth-and-throughput-constraints">1. Severe
+Bandwidth and Throughput Constraints</h3>
+<p>USB 2.0 has a theoretical maximum transfer rate of 480 Mbps (60
+MB/s), but real-world data transfers typically peak around 30 to 40 MB/s
+under ideal conditions. Ventoy operates by mounting and reading entire
+disk images (often several gigabytes in size) directly from the storage
+media. When forced through a USB 2.0 interface, transferring large
+kernel images, <code>initramfs</code> archives, or OS setup files
+requires significantly more time compared to modern USB 3.0 ports, which
+operate at 5 Gbps or higher.</p>
+<h3 id="2-hub-overhead-and-shared-bus-bandwidth">2. Hub Overhead and
+Shared Bus Bandwidth</h3>
+<p>A USB hub does not multiply available bandwidth; it shares it among
+all connected downstream devices. When multiple devices (such as
+keyboards, mice, or external drives) are connected to the same hub, the
+host controller must allocate bandwidth slices to each peripheral.
+Furthermore, USB 2.0 hubs use Transaction Translators (TTs) to handle
+data conversion and packet arbitration. This extra processing layer
+introduces latency, packet overhead, and microframe delays, slowing down
+sustained sequential reads essential for booting.</p>
+<h3 id="3-basic-uefi-and-bios-driver-limitations">3. Basic UEFI and BIOS
+Driver Limitations</h3>
+<p>During the boot sequence, an operating system's optimized hardware
+drivers are not yet loaded. Instead, the computer relies on basic USB
+drivers built into the motherboard's UEFI or legacy BIOS (such as INT
+13h routines).</p>
+<p>These pre-boot environments prioritize compatibility over speed. Many
+motherboard firmwares:</p>
+<ul>
+<li>Lack optimized support for bulk transfer protocols through external
+hubs.</li>
+<li>Drop down to USB 1.1 speeds (12 Mbps / ~1.5 MB/s) when encountering
+complex hub topologies during initialization.</li>
+<li>Poll USB endpoints at slow, fixed intervals rather than using
+efficient interrupt-driven transfers.</li>
+</ul>
+<p>Because Ventoy loads files into memory primarily during this early
+boot phase, any firmware-level communication inefficiency heavily
+impacts the total boot time.</p>
+<h3 id="4-inadequate-power-delivery">4. Inadequate Power Delivery</h3>
+<p>Standard USB 2.0 ports supply a maximum of 500mA of current at 5V
+(2.5 watts). If you use a passive (unpowered) hub, that single 500mA
+current pool is divided among the hub controller and every plugged-in
+device. High-speed USB flash drives, particularly those built with
+modern NVMe or SSD controllers, consume significant power under
+sustained read loads. When voltage drops due to power starvation, flash
+drives frequently reset, throttle down their controller clock speeds, or
+encounter read errors that trigger repetitive packet retries.</p>
+<h3 id="how-to-fix-ventoy-slow-boot-times">How to Fix Ventoy Slow Boot
+Times</h3>
+<ul>
+<li><strong>Connect Directly to the Motherboard:</strong> Bypass
+external hubs completely. Use the ports located directly on the
+computer's rear I/O panel to eliminate hub overhead and ensure direct
+controller access.</li>
+<li><strong>Use USB 3.0 or Higher Ports:</strong> Connect your Ventoy
+drive to blue, red, or USB-C ports rated for USB 3.0/3.1/3.2
+speeds.</li>
+<li><strong>Use an Active (Powered) Hub:</strong> If a hub is mandatory,
+switch to an independently powered USB 3.0 hub with its own dedicated AC
+adapter.</li>
+<li><strong>Adjust UEFI/BIOS Settings:</strong> Ensure "XHCI Hand-off"
+is enabled in your system firmware to allow the hardware to handle USB
+speeds efficiently prior to OS handoff.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

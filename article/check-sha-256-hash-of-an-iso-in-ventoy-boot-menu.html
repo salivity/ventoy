@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check SHA-256 Hash of an ISO in Ventoy Boot Menu - ventoy</title>
+    <meta name="description" content="Verifying the integrity of an operating system image ensures that the file is not corrupted or tampered with before installation. Ventoy includes a native checksum feature that allows you to calculate and verify the SHA-256 hash of any ISO file directly">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/check-sha-256-hash-of-an-iso-in-ventoy-boot-menu">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Check SHA-256 Hash of an ISO in Ventoy Boot Menu - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/check-sha-256-hash-of-an-iso-in-ventoy-boot-menu" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Verifying the integrity of an operating system image ensures that the file is not corrupted or tampered with before installation. Ventoy includes a native checksum feature that allows you to calculate and verify the SHA-256 hash of any ISO file directly" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="check-sha-256-hash-of-an-iso-in-ventoy-boot-menu">Check SHA-256
+Hash of an ISO in Ventoy Boot Menu</h1>
+<p>Verifying the integrity of an operating system image ensures that the
+file is not corrupted or tampered with before installation. Ventoy
+includes a native checksum feature that allows you to calculate and
+verify the SHA-256 hash of any ISO file directly from the boot screen,
+eliminating the need to pre-check the file inside an operating system.
+This guide walks you through accessing the checksum tool and verifying
+your image directly from the Ventoy menu.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Ensure your Ventoy USB drive is updated to version 1.0.86 or later,
+as direct checksum calculation from the boot menu was introduced in this
+release.</p>
+<h2 id="steps-to-check-the-sha-256-hash">Steps to Check the SHA-256
+Hash</h2>
+<ol type="1">
+<li><p><strong>Boot into Ventoy</strong><br />
+Insert your Ventoy USB drive into your PC and boot into the main Ventoy
+interface via your system's boot menu.</p></li>
+<li><p><strong>Select the ISO File</strong><br />
+Use the arrow keys to navigate the list and highlight the ISO file you
+want to verify.</p></li>
+<li><p><strong>Open the Secondary Menu</strong><br />
+Press <code>m</code> or press <code>Enter</code> to bring up the file's
+secondary action menu. This menu displays launch options such as Normal
+mode, GRUB2 mode, and Checksum.</p></li>
+<li><p><strong>Choose the Checksum Option</strong><br />
+Highlight <strong>Checksum</strong> from the list and press
+<code>Enter</code>.</p></li>
+<li><p><strong>Select SHA-256</strong><br />
+Ventoy will display a list of supported hashing algorithms (such as MD5,
+SHA1, SHA256, and SHA512). Select <strong>SHA256</strong> and press
+<code>Enter</code>.</p></li>
+<li><p><strong>View the Calculated Hash</strong><br />
+Ventoy will read the ISO file from your storage media and display a
+progress indicator. Once reading is complete, the calculated SHA-256
+string will appear on the screen. Compare this string to the official
+hash provided by the software distributor to confirm the integrity of
+the image.</p></li>
+</ol>
+<h2 id="automatic-hash-verification-optional">Automatic Hash
+Verification (Optional)</h2>
+<p>If you place a matching <code>.sha256</code> text file in the same
+directory as the ISO on your USB drive (using the exact same filename
+prefix, for example <code>ubuntu.iso</code> and
+<code>ubuntu.iso.sha256</code>), Ventoy will automatically compare the
+calculated value against the file's contents and display a green match
+confirmation directly on the screen.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

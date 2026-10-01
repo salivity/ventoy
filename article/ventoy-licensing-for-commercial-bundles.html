@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Licensing for Commercial Bundles - ventoy</title>
+    <meta name="description" content="Bundling Ventoy with a commercial deployment kit is legally permissible, but it requires strict adherence to open-source compliance requirements. Because Ventoy is licensed under the GNU General Public License version 3 (GPLv3), organizations may package">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-licensing-for-commercial-bundles">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Licensing for Commercial Bundles - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-licensing-for-commercial-bundles" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Bundling Ventoy with a commercial deployment kit is legally permissible, but it requires strict adherence to open-source compliance requirements. Because Ventoy is licensed under the GNU General Public License version 3 (GPLv3), organizations may package" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-licensing-for-commercial-bundles">Ventoy Licensing for
+Commercial Bundles</h1>
+<p>Bundling Ventoy with a commercial deployment kit is legally
+permissible, but it requires strict adherence to open-source compliance
+requirements. Because Ventoy is licensed under the GNU General Public
+License version 3 (GPLv3), organizations may package and distribute it
+commercially as long as they provide access to Ventoy's source code,
+maintain mandatory license notices, and avoid creating combined works
+that would trigger copyleft obligations on proprietary deployment
+scripts or software.</p>
+<h3 id="the-underlying-license-gplv3">The Underlying License: GPLv3</h3>
+<p>Ventoy is open-source software primarily distributed under the GPLv3.
+Under this license, commercial use, commercial distribution, and
+charging fees for hardware or media containing the software are fully
+allowed. The GPLv3 does not restrict commercialization; instead, it
+enforces rules regarding the preservation of user freedoms, source code
+availability, and modifications.</p>
+<h3 id="copyleft-obligations-and-source-code-disclosure">Copyleft
+Obligations and Source Code Disclosure</h3>
+<p>If an organization distributes Ventoy as part of a physical or
+digital kit, it must satisfy GPLv3 distribution obligations:</p>
+<ul>
+<li><strong>Providing Source Code:</strong> You must provide the
+corresponding source code for the exact version of Ventoy included in
+the kit, including any scripts or binary tools used to generate the
+installation. This can be accomplished by including the source code on
+the distribution media or by providing a valid written offer (or online
+link) to download the source code at no charge.</li>
+<li><strong>Documenting Modifications:</strong> If your engineering team
+modifies Ventoy's core binaries, bootloader code, or installation
+scripts, all modifications must be released under the GPLv3 and clearly
+documented with dates and descriptions.</li>
+</ul>
+<h3 id="mere-aggregation-vs-derivative-works">Mere Aggregation vs.
+Derivative Works</h3>
+<p>A primary concern for commercial vendors is preventing their
+proprietary payloads (such as custom operating system images, automated
+installer scripts, and proprietary diagnostic software) from becoming
+subject to the GPL.</p>
+<p>Under the GPLv3, placing Ventoy on the same storage medium as
+proprietary files is classified as "mere aggregation." Because Ventoy
+acts primarily as an independent bootloader and file-agnostic launcher
+that reads standard ISO, WIM, or VHD files without statically linking to
+them, the payloads kept inside the Ventoy storage partition remain
+independent works. Consequently, bundling custom proprietary payloads
+alongside Ventoy does not force those proprietary components to be
+open-sourced, provided they do not incorporate or link directly into
+Ventoy's source code.</p>
+<h3 id="attribution-and-notice-requirements">Attribution and Notice
+Requirements</h3>
+<p>Any deployment kit that includes Ventoy must preserve the original
+legal notices:</p>
+<ul>
+<li>Include a full, unaltered copy of the GNU General Public License
+v3.0.</li>
+<li>Retain all existing copyright notices, warranty disclaimers, and
+author attributions present in the original distribution.</li>
+<li>Provide documentation to end users informing them that the bundle
+includes software distributed under the GPLv3.</li>
+</ul>
+<h3 id="third-party-components">Third-Party Components</h3>
+<p>Ventoy relies on several third-party open-source components to handle
+low-level booting and file-system translation, such as GRUB, iPXE, and
+musl libc. Most of these subcomponents also carry GPL or GPL-compatible
+copyleft licenses. When distributing a full Ventoy installation package,
+compliance requires ensuring the source code and licenses for these
+integrated third-party projects are accounted for along with Ventoy’s
+primary codebase.</p>
+<h3 id="trademark-considerations">Trademark Considerations</h3>
+<p>While the GPLv3 governs the software code, it does not grant
+automatic rights to use the project’s name or logos for commercial
+branding. Organizations should ensure their marketing materials,
+packaging, and commercial documentation do not state or imply that their
+commercial kit is officially sponsored, maintained, or endorsed by the
+original Ventoy developers.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

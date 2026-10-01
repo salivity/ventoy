@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Some ISOs Need Write Access in Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy boots operating system ISO files directly from storage media without requiring prior file extraction, but certain live distributions fail to boot properly because their startup routines explicitly require write access to the source drive. This iss">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-some-is-os-need-write-access-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Some ISOs Need Write Access in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-some-is-os-need-write-access-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy boots operating system ISO files directly from storage media without requiring prior file extraction, but certain live distributions fail to boot properly because their startup routines explicitly require write access to the source drive. This iss" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-some-isos-need-write-access-in-ventoy">Why Some ISOs Need
+Write Access in Ventoy</h1>
+<p>Ventoy boots operating system ISO files directly from storage media
+without requiring prior file extraction, but certain live distributions
+fail to boot properly because their startup routines explicitly require
+write access to the source drive. This issue occurs when an operating
+system's initialization scripts assume traditional installation methods,
+requiring scratch space, live persistence, or specific lock files on the
+boot partition. Understanding the technical mechanics behind live file
+systems, initialization scripts (initramfs), and Ventoy’s virtual disk
+emulation explains why this requirement exists and how it affects live
+execution.</p>
+<h3 id="the-contrast-between-ventoy-and-traditional-booting">The
+Contrast Between Ventoy and Traditional Booting</h3>
+<p>Traditional USB creation tools, such as Rufus in "DD image" mode,
+overwrite the entire USB drive with the raw disk image of the operating
+system. This allows the ISO's native partition layout—including writable
+secondary partitions or hybrid filesystems—to control the physical
+hardware directly.</p>
+<p>Ventoy, by contrast, formats the drive with its own bootloader and
+filesystem (typically exFAT or NTFS) and hooks the boot process to
+loopback-mount the ISO file in memory or via virtual block devices.
+Because the host filesystem holds the ISO file, allowing arbitrary write
+access directly to the physical storage device during the early boot
+phase risks corrupting the host filesystem table. Consequently, Ventoy
+often presents the virtual ISO mapping in a read-only state.</p>
+<h3 id="hardcoded-read-write-mount-scripts">Hardcoded Read-Write Mount
+Scripts</h3>
+<p>Many live Linux distributions utilize early boot scripts inside their
+<code>initramfs</code> (initial RAM file system) to locate the boot
+media by label, UUID, or bus path. In several distributions—particularly
+older utilities, specialized forensic environments, or custom rescue
+environments—these scripts include commands that explicitly mount the
+source storage device using read-write parameters
+(<code>mount -o rw ...</code>).</p>
+<p>If the script fails to mount the physical drive as read-write, the
+script throws an error and drops into an emergency shell. The underlying
+OS may not actually need to write any data to run, but the boot script
+strictly checks for write permissions before proceeding to the root
+pivot stage.</p>
+<h3 id="live-overlays-and-ephemeral-scratch-space">Live Overlays and
+Ephemeral Scratch Space</h3>
+<p>Live operating systems create the illusion of a fully writable
+desktop by combining a read-only base image (usually a compressed
+SquashFS file) with a writable upper layer using union filesystems such
+as OverlayFS or AUFS.</p>
+<p>Normally, this writable layer is created entirely in the system's RAM
+(tmpfs). However, certain distributions are designed to look for
+writable media upon boot to automatically store:</p>
+<ul>
+<li>Machine machine IDs and hardware state.</li>
+<li>Ephemeral runtime logs before systemd initialization.</li>
+<li>Automatic persistent directories, avoiding the exhaustion of system
+memory on low-RAM machines.</li>
+</ul>
+<p>When booted through Ventoy, the live system locates the physical USB
+drive housing the ISO, identifies it as the installation source, and
+attempts to create scratch directories or lockfiles on it. Because the
+drive is either locked by Ventoy's virtual disk layer or protected
+against concurrent writes, the initialization sequence halts.</p>
+<h3 id="drive-locking-and-filesystem-integrity">Drive Locking and
+Filesystem Integrity</h3>
+<p>When an operating system kernel loads from an ISO file stored on an
+exFAT partition, the kernel must not modify the underlying blocks that
+form the ISO file itself. If a live distribution were to mount the
+parent partition as read-write and make uncoordinated changes, it could
+alter file allocation tables, leading to immediate kernel panics or
+permanent file corruption across all files stored on the Ventoy drive.
+To prevent this, Ventoy's runtime hooks intercept write commands or
+force the loopback structure to remain strictly read-only, triggering
+failures in images that do not support graceful fallback to read-only
+operation.</p>
+<h3 id="resolving-write-access-conflicts-in-ventoy">Resolving
+Write-Access Conflicts in Ventoy</h3>
+<p>To bypass write-access limitations for stubborn ISO images, specific
+workarounds adjust how Ventoy presents the image to the kernel:</p>
+<ul>
+<li><strong>Ventoy Memdisk Mode:</strong> Pressing <code>Ctrl+m</code>
+before selecting an ISO loads the entire image directly into RAM. The
+live operating system perceives the memory space as a physical disk,
+satisfying read-write requests without touching the USB storage.</li>
+<li><strong>Ventoy Persistence Plugin:</strong> Configuring a dedicated
+persistence image (<code>.dat</code> file) via Ventoy's JSON
+configuration provides a formatted, isolated space where the live OS can
+execute write operations safely.</li>
+<li><strong>Alternative File Formats:</strong> Converting the ISO into
+an <code>.img</code> or <code>.vtoy</code> raw disk image allows the
+distribution's native partition structure to boot with proper read-write
+boundaries handled outside the standard ISO loopback framework.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

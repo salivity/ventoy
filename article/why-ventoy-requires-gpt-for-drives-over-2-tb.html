@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Requires GPT for Drives Over 2TB - ventoy</title>
+    <meta name="description" content="When configuring a bootable drive using Ventoy, choosing the GUID Partition Table (GPT) partition style becomes mandatory whenever the storage drive exceeds 2 Terabytes (2TB). This requirement is rooted in the structural constraints of the legacy Master">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-requires-gpt-for-drives-over-2-tb">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Requires GPT for Drives Over 2TB - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-requires-gpt-for-drives-over-2-tb" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When configuring a bootable drive using Ventoy, choosing the GUID Partition Table (GPT) partition style becomes mandatory whenever the storage drive exceeds 2 Terabytes (2TB). This requirement is rooted in the structural constraints of the legacy Master" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-requires-gpt-for-drives-over-2tb">Why Ventoy Requires
+GPT for Drives Over 2TB</h1>
+<p>When configuring a bootable drive using Ventoy, choosing the GUID
+Partition Table (GPT) partition style becomes mandatory whenever the
+storage drive exceeds 2 Terabytes (2TB). This requirement is rooted in
+the structural constraints of the legacy Master Boot Record (MBR)
+partition scheme. This article explains the technical mechanics behind
+the 2TB limitation, how Ventoy interacts with disk partitioning, and why
+GPT is required to ensure full drive utilization and reliable
+booting.</p>
+<h3 id="the-32-bit-limitation-of-mbr">The 32-Bit Limitation of MBR</h3>
+<p>The fundamental reason MBR cannot support storage drives exceeding
+2TB is its reliance on a 32-bit field to store Logical Block Addresses
+(LBAs). In standard drives, a single logical sector contains 512
+bytes.</p>
+<p>Because a 32-bit integer can address a maximum of <span
+class="math inline">\(2^{32}\)</span> (4,294,967,296) sectors:</p>
+<p><span class="math display">\[\text{Maximum Capacity} = 4,294,967,296
+\times 512 \text{ bytes} = 2,199,023,255,552 \text{ bytes} \approx 2.19
+\text{ TB (or 2 TiB)}\]</span></p>
+<p>Any storage capacity beyond this ~2.2TB threshold cannot be
+referenced, partitioned, or read by an operating system using an MBR
+partition table. Any excess storage on a larger drive effectively
+becomes unusable, unallocated space.</p>
+<h3 id="how-ventoy-partitions-storage">How Ventoy Partitions
+Storage</h3>
+<p>Ventoy functions by dividing your storage media into two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (exFAT/NTFS/ext4):</strong> The primary storage
+area holding your bootable ISO, IMG, VHD, and EFI files.</li>
+<li><strong>Partition 2 (FAT):</strong> A hidden, dedicated partition
+containing the Ventoy core bootloader files and EFI utilities.</li>
+</ol>
+<p>If you attempt to configure a 4TB or 8TB external drive using MBR,
+Ventoy cannot allocate partition space across the entire disk. If Ventoy
+attempts to place its secondary boot partition near the end of the
+physical disk space, the system will fail entirely because that region
+cannot be addressed by an MBR scheme.</p>
+<h3 id="why-gpt-solves-the-problem">Why GPT Solves the Problem</h3>
+<p>GPT eliminates this ceiling by utilizing 64-bit logical block
+addressing. With 64 bits, a partition table can address up to <span
+class="math inline">\(2^{64}\)</span> sectors:</p>
+<p><span class="math display">\[\text{Maximum Capacity} =
+18,446,744,073,709,551,616 \times 512 \text{ bytes} \approx 9.4 \text{
+ZB (Zettabytes)}\]</span></p>
+<p>By utilizing GPT, Ventoy can freely assign the primary storage
+partition to cover multiple terabytes of storage, allowing users to
+store massive libraries of operating system images without wasting drive
+capacity.</p>
+<h3 id="uefi-firmware-support">UEFI Firmware Support</h3>
+<p>Drives exceeding 2TB are overwhelmingly used on modern systems
+equipped with UEFI firmware rather than legacy BIOS. UEFI was designed
+specifically to work natively with GPT. Setting up Ventoy with GPT
+ensures that modern hardware can properly locate Ventoy's bootloader,
+initialize the EFI System Partition (ESP), and launch operating system
+installers seamlessly.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

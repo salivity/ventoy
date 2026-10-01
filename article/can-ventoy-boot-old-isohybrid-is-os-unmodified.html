@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Boot Old Isohybrid ISOs Unmodified? - ventoy</title>
+    <meta name="description" content="Ventoy can boot legacy hybrid ISOs created with the isohybrid utility directly without any modification or conversion. Because isohybrid images preserve standard optical disc structures while adding partition tables for raw disk writing, Ventoy reads the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-boot-old-isohybrid-is-os-unmodified">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Boot Old Isohybrid ISOs Unmodified? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-boot-old-isohybrid-is-os-unmodified" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy can boot legacy hybrid ISOs created with the isohybrid utility directly without any modification or conversion. Because isohybrid images preserve standard optical disc structures while adding partition tables for raw disk writing, Ventoy reads the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-boot-old-isohybrid-isos-unmodified">Can Ventoy Boot
+Old Isohybrid ISOs Unmodified?</h1>
+<p>Ventoy can boot legacy hybrid ISOs created with the
+<code>isohybrid</code> utility directly without any modification or
+conversion. Because <code>isohybrid</code> images preserve standard
+optical disc structures while adding partition tables for raw disk
+writing, Ventoy reads them seamlessly alongside modern UEFI and BIOS
+images. This article explains how Ventoy interacts with these hybrid
+images, why they function without modification, and what fallback
+options exist for legacy distributions.</p>
+<h3 id="how-isohybrid-and-ventoy-interact">How Isohybrid and Ventoy
+Interact</h3>
+<p>The <code>isohybrid</code> tool—historically part of the Syslinux
+suite—modifies an ISO 9660 image by adding a Master Boot Record (MBR)
+partition table into the first 512 bytes (the system area) of the file.
+This allows the file to be written directly to a USB drive via tools
+like <code>dd</code> while remaining a valid, burnable CD/DVD image
+utilizing the El Torito boot specification.</p>
+<p>Ventoy does not overwrite your flash drive or write images
+sector-by-sector. Instead, it creates a custom boot environment on the
+USB drive that mounts and boots ISO files directly from a standard
+filesystem (such as exFAT or NTFS). Because an <code>isohybrid</code>
+file retains its standard ISO 9660 layout and El Torito boot records,
+Ventoy detects and processes it as a standard ISO image. You simply copy
+the file to the Ventoy partition, and it appears in the boot menu ready
+to run.</p>
+<h3 id="boot-modes-and-compatibility">Boot Modes and Compatibility</h3>
+<p>Most older distributions packaged with <code>isohybrid</code> boot
+via legacy BIOS (CSM) using ISOLINUX. Ventoy handles these through its
+standard boot chain by dynamically patching runtime calls or providing
+virtual media mappings to satisfy the distribution's installer or live
+environment.</p>
+<p>In rare cases where a very old distribution fails to boot—often
+because its early initialization scripts (<code>initramfs</code>)
+strictly look for a physical CD-ROM drive rather than a USB
+device—Ventoy provides built-in fallback modes accessible directly from
+its menu:</p>
+<ul>
+<li><strong>Normal Mode:</strong> The default mechanism. Ventoy hooks
+the boot process to ensure the Linux kernel can locate the ISO file on
+the USB drive. This works for the vast majority of
+<code>isohybrid</code> images.</li>
+<li><strong>Memdisk Mode:</strong> Pressing <code>Ctrl+m</code> before
+selecting the ISO instructs Ventoy to load the entire image into RAM
+using Syslinux's MEMDISK. This is ideal for smaller, legacy hybrid ISOs
+(under a few hundred megabytes) because it fully simulates a standard
+optical drive or floppy disk at the BIOS level.</li>
+<li><strong>GRUB2 Mode:</strong> Accessible via <code>Ctrl+r</code>,
+this bypasses Ventoy's proprietary hooks and uses standard GRUB2
+loopback mechanisms, which can resolve compatibility quirks with
+specific legacy bootloaders.</li>
+</ul>
+<p>No manual stripping of the MBR, file renaming, or repackaging is
+necessary to run older hybrid ISOs on Ventoy.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

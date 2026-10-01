@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy on Drives Over 2TB with MBR Partitioning - ventoy</title>
+    <meta name="description" content="This article examines how the multi-boot tool Ventoy operates when installed on storage drives larger than 2TB using the Master Boot Record (MBR) partition scheme. Due to the inherent 32-bit logical block addressing limitations of MBR, drives exceeding 2">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-on-drives-over-2-tb-with-mbr-partitioning">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy on Drives Over 2TB with MBR Partitioning - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-on-drives-over-2-tb-with-mbr-partitioning" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how the multi-boot tool Ventoy operates when installed on storage drives larger than 2TB using the Master Boot Record (MBR) partition scheme. Due to the inherent 32-bit logical block addressing limitations of MBR, drives exceeding 2" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-on-drives-over-2tb-with-mbr-partitioning">Ventoy on
+Drives Over 2TB with MBR Partitioning</h1>
+<p>This article examines how the multi-boot tool Ventoy operates when
+installed on storage drives larger than 2TB using the Master Boot Record
+(MBR) partition scheme. Due to the inherent 32-bit logical block
+addressing limitations of MBR, drives exceeding 2TB cannot have their
+full capacity addressed under standard sector sizes. While Ventoy
+permits MBR installation on these high-capacity drives, it confines its
+partition boundaries within the 2TB limit, leaving the remaining storage
+unusable unless specific sector configurations or the GPT partition
+style are utilized.</p>
+<h3 id="the-2tb-mbr-architectural-limit">The 2TB MBR Architectural
+Limit</h3>
+<p>Standard MBR partitioning relies on 32-bit values to store sector
+addresses. On modern storage drives using standard 512-byte logical
+sector emulation (512e), the maximum addressable storage capacity is
+2,199,023,255,552 bytes (approximately 2.2TB or 2TiB). Any storage
+beyond this boundary cannot be indexed, partitioned, or read by an MBR
+partition table.</p>
+<h3 id="ventoys-partition-structure">Ventoy's Partition Structure</h3>
+<p>When installed, Ventoy splits a storage drive into two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (ExFAT/NTFS/ext4):</strong> The primary data
+partition where ISOs, images, and user files are stored.</li>
+<li><strong>Partition 2 (FAT):</strong> A small, hidden EFI system
+partition labeled <code>VTOYEFI</code> containing the bootloaders and
+core files required to launch the Ventoy environment in both legacy BIOS
+and UEFI modes.</li>
+</ol>
+<h3 id="how-ventoy-behaves-with-mbr-on-drives-larger-than-2tb">How
+Ventoy Behaves with MBR on Drives Larger Than 2TB</h3>
+<p>When you instruct the Ventoy installer to format a drive larger than
+2TB using MBR:</p>
+<ul>
+<li><strong>Truncation of Usable Space:</strong> Ventoy creates its two
+partitions strictly within the first 2TB of the disk. The main image
+partition occupies the majority of this addressable space, followed by
+the hidden <code>VTOYEFI</code> partition placed at or near the 2TB
+boundary.</li>
+<li><strong>Unallocated Remainder:</strong> All storage capacity
+exceeding the 2TB threshold is left unallocated. Operating systems
+cannot create secondary partitions or extend the existing Ventoy
+partition into this area under an MBR layout.</li>
+<li><strong>Boot Functionality:</strong> The drive remains functional
+for booting. Both legacy BIOS and UEFI systems can boot from the drive,
+provided the machine's firmware can read the primary MBR partition
+table.</li>
+</ul>
+<h3 id="the-exception-4kn-drives">The Exception: 4Kn Drives</h3>
+<p>If the target drive uses native 4K sectors (4096 bytes per sector
+without 512e emulation), MBR can technically address up to 16TB. In this
+rare scenario, Ventoy using MBR can utilize the full capacity of a drive
+up to 16TB. However, most external hard drives and USB flash drives
+expose 512-byte logical sectors to maintain backward compatibility,
+subjecting them to the standard 2TB ceiling.</p>
+<h3 id="recommended-alternative-switching-to-gpt">Recommended
+Alternative: Switching to GPT</h3>
+<p>To access the full capacity of a drive larger than 2TB, configure
+Ventoy to use GUID Partition Table (GPT) instead of MBR:</p>
+<ol type="1">
+<li>Open the Ventoy installation tool.</li>
+<li>Navigate to <strong>Option</strong> &gt; <strong>Partition
+Style</strong>.</li>
+<li>Select <strong>GPT</strong> before installing Ventoy to the target
+drive.</li>
+</ol>
+<p>GPT removes the 2TB barrier, allowing the primary Ventoy data
+partition to expand across the entire storage volume. Modern UEFI
+systems boot natively from GPT drives without issue. However, selecting
+GPT may limit bootability on older legacy BIOS-only machines that lack
+hybrid or protective MBR support.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

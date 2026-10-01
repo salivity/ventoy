@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use ventoy_grub.cfg for Custom GRUB Entries - ventoy</title>
+    <meta name="description" content="The ventoygrub.cfg configuration file allows Ventoy users to define custom GRUB2 boot entries, chainload other bootloaders, and execute custom scripts without altering the underlying Ventoy installation. This guide explains what the file does, where to p">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-use-ventoy-grub-cfg-for-custom-grub-entries">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Use ventoy_grub.cfg for Custom GRUB Entries - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-use-ventoy-grub-cfg-for-custom-grub-entries" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The ventoygrub.cfg configuration file allows Ventoy users to define custom GRUB2 boot entries, chainload other bootloaders, and execute custom scripts without altering the underlying Ventoy installation. This guide explains what the file does, where to p" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-use-ventoy_grubcfg-for-custom-grub-entries">How to Use
+ventoy_grub.cfg for Custom GRUB Entries</h1>
+<p>The <code>ventoy_grub.cfg</code> configuration file allows Ventoy
+users to define custom GRUB2 boot entries, chainload other bootloaders,
+and execute custom scripts without altering the underlying Ventoy
+installation. This guide explains what the file does, where to place it
+on your drive, how to write standard GRUB2 menu entries for it, and how
+to access your custom menu options directly from the Ventoy
+interface.</p>
+<hr />
+<h3 id="what-is-ventoy_grubcfg">What is
+<code>ventoy_grub.cfg</code>?</h3>
+<p>Ventoy is an open-source tool used to create bootable USB drives
+simply by copying ISO, WIM, IMG, and VHD(x) files directly onto the
+storage media. While Ventoy automatically generates its own dynamic menu
+based on the image files found on the partition, advanced users often
+require custom boot logic.</p>
+<p>The <code>ventoy_grub.cfg</code> file is a user-defined GRUB2 script
+file. When present, Ventoy reads this file and integrates its
+definitions into a dedicated submenu, allowing users to:</p>
+<ul>
+<li>Boot operating systems installed on internal hard drives.</li>
+<li>Chainload specific <code>.efi</code> binaries or specialized boot
+files.</li>
+<li>Pass custom kernel parameters to distributions.</li>
+<li>Add administrative entries like hardware reboots, shutdowns, or UEFI
+firmware access.</li>
+</ul>
+<hr />
+<h3 id="file-location-and-setup">File Location and Setup</h3>
+<p>To make Ventoy recognize your custom configuration, create a text
+file named <code>ventoy_grub.cfg</code> in the proper location on your
+drive:</p>
+<ol type="1">
+<li>Open your Ventoy USB drive's primary storage partition (the
+partition where your ISO files reside, formatted as exFAT, NTFS, or
+FAT32).</li>
+<li>Create a folder named <code>ventoy</code> in the root of that
+partition (if it does not already exist).</li>
+<li>Place <code>ventoy_grub.cfg</code> inside this folder.</li>
+</ol>
+<p>The absolute path should be:</p>
+<pre class="text"><code>/ventoy/ventoy_grub.cfg</code></pre>
+<hr />
+<h3 id="syntax-and-structure">Syntax and Structure</h3>
+<p>The file uses standard GRUB2 configuration syntax. Each custom entry
+is enclosed within a <code>menuentry</code> block.</p>
+<h4 id="example-configuration">Example Configuration</h4>
+<p>Below is a functional sample <code>ventoy_grub.cfg</code>
+demonstrating common entries:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return to Ventoy Main Menu</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">menuentry</span> <span class="st">&quot;&lt;- Return to Previous Menu [Esc]&quot;</span> <span class="at">--class</span><span class="op">=</span>vtoyret {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">VTOY_RET</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Boot Windows Boot Manager from the primary internal disk (UEFI)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">menuentry</span> <span class="st">&quot;Boot Local Windows Boot Manager&quot;</span> <span class="at">--class</span><span class="op">=</span>windows {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">insmod</span> chain</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">insmod</span> ntfs</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">search</span> <span class="at">--no-floppy</span> <span class="at">--file</span> <span class="at">--set</span><span class="op">=</span>root /EFI/Microsoft/Boot/bootmgfw.efi</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">chainloader</span> /EFI/Microsoft/Boot/bootmgfw.efi</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Reboot into UEFI Firmware Settings</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ex">menuentry</span> <span class="st">&quot;UEFI Firmware Settings&quot;</span> <span class="at">--class</span><span class="op">=</span>efi {</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">fwsetup</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Restart Computer</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ex">menuentry</span> <span class="st">&quot;Reboot System&quot;</span> <span class="at">--class</span><span class="op">=</span>reboot {</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">reboot</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Halt System</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ex">menuentry</span> <span class="st">&quot;Power Off&quot;</span> <span class="at">--class</span><span class="op">=</span>halt {</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="ex">halt</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<hr />
+<h3 id="accessing-custom-entries-in-ventoy">Accessing Custom Entries in
+Ventoy</h3>
+<ol type="1">
+<li>Boot your computer from the Ventoy USB drive.</li>
+<li>At the main Ventoy boot menu, press the <strong>F6</strong> key on
+your keyboard.</li>
+<li>Ventoy will parse <code>/ventoy/ventoy_grub.cfg</code> and display
+your custom GRUB menu.</li>
+<li>Select the desired entry and press <strong>Enter</strong> to execute
+it.</li>
+</ol>
+<p>To return to the standard ISO file list, select the entry containing
+the <code>VTOY_RET</code> command or press <strong>Esc</strong>.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

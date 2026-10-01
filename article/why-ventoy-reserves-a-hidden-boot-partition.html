@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Ventoy Reserves a Hidden Boot Partition - ventoy</title>
+    <meta name="description" content="When you install Ventoy on a USB flash drive, it automatically divides the drive into two distinct partitions, placing a small, typically hidden partition at the very end of the disk. This article explains the technical reasons behind this layout, coveri">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-ventoy-reserves-a-hidden-boot-partition">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Ventoy Reserves a Hidden Boot Partition - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-ventoy-reserves-a-hidden-boot-partition" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When you install Ventoy on a USB flash drive, it automatically divides the drive into two distinct partitions, placing a small, typically hidden partition at the very end of the disk. This article explains the technical reasons behind this layout, coveri" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-ventoy-reserves-a-hidden-boot-partition">Why Ventoy Reserves
+a Hidden Boot Partition</h1>
+<p>When you install Ventoy on a USB flash drive, it automatically
+divides the drive into two distinct partitions, placing a small,
+typically hidden partition at the very end of the disk. This article
+explains the technical reasons behind this layout, covering how this
+reserved partition ensures universal UEFI and BIOS booting, guarantees
+filesystem compatibility across different operating systems, and
+protects essential bootloader files from accidental user tampering.</p>
+<h2 id="the-dual-partition-architecture-of-ventoy">The Dual-Partition
+Architecture of Ventoy</h2>
+<p>Ventoy splits the target storage device into two partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Data Partition):</strong> Takes up nearly the
+entire drive, formatted by default as exFAT (though it can be NTFS,
+ext4, or other systems). This is where you drag and drop your bootable
+ISO, WIM, IMG, and VHD files.</li>
+<li><strong>Partition 2 (The Hidden Partition):</strong> A small
+partition (usually around 32MB) labeled <code>VTOYEFI</code>. It is
+formatted as FAT16 or FAT32 and resides at the tail end of the
+drive.</li>
+</ol>
+<h2 id="1-compliance-with-the-uefi-specification">1. Compliance with the
+UEFI Specification</h2>
+<p>The Unified Extensible Firmware Interface (UEFI) standard mandates
+that the system firmware must be able to read an EFI System Partition
+(ESP) formatted with a FAT filesystem (FAT12, FAT16, or FAT32). Most
+modern UEFI implementations do not natively include drivers for
+filesystems like exFAT, NTFS, or ext4.</p>
+<p>Because ISO files are often larger than 4GB, the main storage
+partition cannot comfortably use FAT32 due to its 4GB file size limit.
+By creating a dedicated, smaller FAT partition, Ventoy ensures that the
+computer's UEFI firmware can locate and load the initial EFI bootloader
+(<code>bootx64.efi</code>, <code>bootia32.efi</code>, etc.) regardless
+of what filesystem you choose for your main ISO storage partition.</p>
+<h2 id="2-preventing-accidental-modification-and-corruption">2.
+Preventing Accidental Modification and Corruption</h2>
+<p>The secondary partition holds core boot assets, including GRUB
+bootloaders, drivers, and Ventoy core binaries. Placing these critical
+files on the primary partition would expose them to accidental deletion,
+formatting, or malware infection when managing ISO files on daily-use
+operating systems. By default, major operating systems do not assign a
+drive letter to this EFI system partition, keeping the boot mechanism
+isolated and safe from routine file management mistakes.</p>
+<h2 id="3-compatibility-with-older-windows-systems">3. Compatibility
+with Older Windows Systems</h2>
+<p>Older versions of Windows (specifically versions prior to Windows 10
+version 1703) do not support multiple partitions on removable USB flash
+drives. When a multi-partition removable drive was plugged into these
+systems, Windows would only detect and mount the very first partition,
+ignoring all subsequent partitions.</p>
+<p>Ventoy places the large data partition as Partition 1 and shoves the
+bootloader into Partition 2 at the physical end of the drive. This
+design ensures that legacy Windows machines immediately mount the ISO
+storage area, allowing users to copy files onto the drive without error
+or confusion.</p>
+<h2 id="4-simplified-resizing-and-non-destructive-upgrades">4.
+Simplified Resizing and Non-Destructive Upgrades</h2>
+<p>Placing the small system partition at the end of the disk makes
+managing drive capacity straightforward. The main data partition can
+easily be expanded or shrunk to the right without disrupting the
+physical sectors occupied by the bootloader partition.</p>
+<p>Additionally, when you update Ventoy to a newer version, the
+installer only needs to overwrite the small reserved partition at the
+end of the drive. The main data partition remains completely untouched,
+allowing seamless upgrades without wiping or backing up your ISO
+collection.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

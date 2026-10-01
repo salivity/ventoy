@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Boot on Apple Silicon Macs? - ventoy</title>
+    <meta name="description" content="This article explores whether Ventoy, the popular open-source multiboot USB utility, can boot on Apple Silicon Macs (M1, M2, and M3 series) using external USB boot methods. It covers the technical reasons behind Apple's proprietary bootloader restriction">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-boot-on-apple-silicon-macs">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Boot on Apple Silicon Macs? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-boot-on-apple-silicon-macs" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explores whether Ventoy, the popular open-source multiboot USB utility, can boot on Apple Silicon Macs (M1, M2, and M3 series) using external USB boot methods. It covers the technical reasons behind Apple's proprietary bootloader restriction" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-boot-on-apple-silicon-macs">Does Ventoy Boot on
+Apple Silicon Macs?</h1>
+<p>This article explores whether Ventoy, the popular open-source
+multiboot USB utility, can boot on Apple Silicon Macs (M1, M2, and M3
+series) using external USB boot methods. It covers the technical reasons
+behind Apple's proprietary bootloader restrictions, the architectural
+incompatibilities between standard UEFI tools and Apple hardware, and
+the available alternatives for running multiple operating systems on
+Apple Silicon.</p>
+<h2 id="the-short-answer">The Short Answer</h2>
+<p>No, Ventoy does not boot on Apple Silicon Macs using external USB
+boot methods. If you insert a Ventoy USB drive into an M1, M2, or M3 Mac
+and access the Startup Options menu (by holding the power button), the
+Mac will not recognize the Ventoy drive as a bootable device.</p>
+<h2 id="why-ventoy-does-not-work-on-apple-silicon">Why Ventoy Does Not
+Work on Apple Silicon</h2>
+<p>Ventoy relies on standard PC firmware standards—specifically legacy
+BIOS and standard Unified Extensible Firmware Interface (UEFI)
+implementations. Apple Silicon Macs completely abandon both standards in
+favor of a proprietary architecture and boot chain.</p>
+<h3 id="1-lack-of-standard-uefi-firmware">1. Lack of Standard UEFI
+Firmware</h3>
+<p>Traditional Intel-based Macs and standard PC hardware contain UEFI
+firmware capable of locating an EFI System Partition
+(<code>/EFI/BOOT/BOOTX64.EFI</code> or
+<code>/EFI/BOOT/BOOTAA64.EFI</code>) on an external drive and launching
+it. Apple Silicon Macs do not possess standard UEFI firmware. Instead,
+they utilize Apple's own boot flow derived from iOS, which relies on
+iBoot and does not inherently discover or execute raw EFI binaries from
+an external USB drive.</p>
+<h3 id="2-proprietary-security-and-boot-policies">2. Proprietary
+Security and Boot Policies</h3>
+<p>Apple Silicon hardware enforces strict cryptographic verification
+managed by the Secure Enclave. To boot an operating system:</p>
+<ul>
+<li>The OS must be wrapped in an Apple-compatible container.</li>
+<li>The bootloader must be paired with an authorized Local Boot Policy
+created within the Mac's internal recovery environment.</li>
+<li>The boot components must be cryptographically signed for that
+specific machine.</li>
+</ul>
+<p>Ventoy's generic partition layouts (which typically include an
+exFAT/NTFS data partition alongside a VTOYEFI partition) do not comply
+with Apple's secure boot manifest requirements.</p>
+<h3 id="3-arm64-limitations">3. ARM64 Limitations</h3>
+<p>Even though Ventoy provides experimental support for standard ARM64
+UEFI devices, this support is intended for standard ARM PCs (such as
+Windows on ARM laptops, Ampere servers, or single-board computers using
+standard UEFI firmware like EDK2). It does not bridge the gap to Apple's
+non-standard boot protocol.</p>
+<h2 id="how-external-booting-works-on-apple-silicon">How External
+Booting Works on Apple Silicon</h2>
+<p>Apple Silicon Macs do support booting from external drives, but only
+under strict conditions:</p>
+<ul>
+<li><strong>macOS:</strong> You can install macOS onto an external drive
+using Apple's official installer. The installer writes an
+Apple-compliant bootloader and registers a Local Boot Policy with the
+Mac's internal Secure Enclave.</li>
+<li><strong>Linux:</strong> Projects like Asahi Linux allow Linux to run
+bare-metal on Apple Silicon. However, this requires a specialized boot
+chain (<code>m1n1</code> bootloader, U-Boot, and GRUB) specifically
+engineered to communicate with Apple hardware. These components must
+initially be installed through macOS to set up the necessary
+Apple-specific boot environment.</li>
+</ul>
+<p>Because Ventoy depends on arbitrary ISO files containing standard PC
+bootloaders, it cannot interface with this customized, multi-stage
+startup sequence.</p>
+<h2 id="alternatives-to-ventoy-on-apple-silicon">Alternatives to Ventoy
+on Apple Silicon</h2>
+<p>Because a universal USB multiboot tool like Ventoy is not available
+for Apple Silicon hardware, you should consider the following
+alternatives depending on your use case:</p>
+<ul>
+<li><strong>Virtualization (Recommended):</strong> If you need to test
+or use various operating systems (Linux distributions or Windows on
+ARM), use virtualization software designed for Apple Silicon, such as
+UTM, Parallels Desktop, or VMware Fusion. UTM is an open-source option
+capable of running ARM-native ISOs directly from disk images without
+needing physical USB boot media.</li>
+<li><strong>Dual-Booting with Asahi Linux:</strong> If you require
+bare-metal Linux performance, use the Asahi Linux installer inside macOS
+rather than attempting to boot a generic live USB.</li>
+<li><strong>Secondary Intel Hardware:</strong> If you need Ventoy to
+repair, install, or diagnose conventional PCs, continue using Ventoy on
+an Intel/AMD x86 system, where its multiboot capabilities remain fully
+supported.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Ventoy vtoytool Command-Line Utility? - ventoy</title>
+    <meta name="description" content="This article provides an overview of vtoytool, a specialized command-line utility bundled with the Ventoy bootable USB solution. It explains the tool's core functions, including its ability to detect the Ventoy boot runtime, identify the specific image f">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/what-is-the-ventoy-vtoytool-command-line-utility">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Ventoy vtoytool Command-Line Utility? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/what-is-the-ventoy-vtoytool-command-line-utility" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of vtoytool, a specialized command-line utility bundled with the Ventoy bootable USB solution. It explains the tool's core functions, including its ability to detect the Ventoy boot runtime, identify the specific image f" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-ventoy-vtoytool-command-line-utility">What Is the
+Ventoy vtoytool Command-Line Utility?</h1>
+<p>This article provides an overview of <code>vtoytool</code>, a
+specialized command-line utility bundled with the Ventoy bootable USB
+solution. It explains the tool's core functions, including its ability
+to detect the Ventoy boot runtime, identify the specific image file used
+to boot the system, read boot environment variables, and facilitate
+script automation within a running operating system.</p>
+<h3 id="primary-purpose-of-vtoytool">Primary Purpose of vtoytool</h3>
+<p>The <code>vtoytool</code> utility is a lightweight Linux binary
+included in Ventoy's tool package designed to run inside an operating
+system that was booted using Ventoy. While Ventoy primarily operates at
+the pre-boot level via GRUB to load ISO, WIM, IMG, and VHD files, the
+guest operating system often loses context regarding how it was booted.
+The <code>vtoytool</code> command bridges this gap by querying the
+low-level runtime data left behind by Ventoy in system memory or runtime
+structures.</p>
+<h3 id="key-functions-and-capabilities">Key Functions and
+Capabilities</h3>
+<ol type="1">
+<li><p><strong>Detecting Ventoy Boot Status</strong><br />
+The primary task of <code>vtoytool</code> is to determine whether the
+current operating system instance was booted via a Ventoy-prepared
+drive. By checking specific runtime signatures and hardware tables
+populated during the initial boot sequence, the tool can confirm
+Ventoy's presence.</p></li>
+<li><p><strong>Retrieving the Active Boot Image Path</strong><br />
+When booting multiple ISO or image files from a single drive, guest
+systems frequently need to locate the original installation media.
+<code>vtoytool</code> can read and return the exact file path, file
+name, and storage partition of the ISO or image file currently
+loaded.</p></li>
+<li><p><strong>Querying Ventoy Environment Variables</strong><br />
+The utility can read system parameters passed from the Ventoy
+bootloader, such as:</p>
+<ul>
+<li><strong>Boot Mode:</strong> Distinguishes whether the system booted
+via Legacy BIOS or UEFI.</li>
+<li><strong>Ventoy Version:</strong> Identifies the version of Ventoy
+installed on the USB media.</li>
+<li><strong>Device Information:</strong> Reports the disk signature,
+partition layout, and physical storage device holding the Ventoy
+files.</li>
+</ul></li>
+<li><p><strong>Integration with Automated Deployment
+Scripts</strong><br />
+<code>vtoytool</code> is frequently used in custom installation scripts,
+preseed configurations, Kickstart files, or live system initialization
+routines. For instance, an automated Linux installer can invoke
+<code>vtoytool</code> to find the original ISO file, mount it locally,
+and extract packages without requiring network access or hardcoded drive
+paths.</p></li>
+</ol>
+<h3 id="summary">Summary</h3>
+<p>In essence, <code>vtoytool</code> acts as an information conduit
+between the operating system and the underlying Ventoy bootloader. It
+allows running systems and administrative scripts to inspect the boot
+environment, identify the source installation media, and interact with
+Ventoy's configuration state programmatically.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

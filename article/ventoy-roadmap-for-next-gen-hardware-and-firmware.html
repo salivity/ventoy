@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Roadmap for Next-Gen Hardware and Firmware - ventoy</title>
+    <meta name="description" content="This article provides an overview of Ventoy's ongoing and projected development roadmap, focusing on its expansion toward emerging hardware architectures and evolving firmware environments. As computing platforms diversify away from standard x86 BIOS arc">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-roadmap-for-next-gen-hardware-and-firmware">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Roadmap for Next-Gen Hardware and Firmware - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-roadmap-for-next-gen-hardware-and-firmware" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of Ventoy's ongoing and projected development roadmap, focusing on its expansion toward emerging hardware architectures and evolving firmware environments. As computing platforms diversify away from standard x86 BIOS arc" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-roadmap-for-next-gen-hardware-and-firmware">Ventoy
+Roadmap for Next-Gen Hardware and Firmware</h1>
+<p>This article provides an overview of Ventoy's ongoing and projected
+development roadmap, focusing on its expansion toward emerging hardware
+architectures and evolving firmware environments. As computing platforms
+diversify away from standard x86 BIOS architectures toward native UEFI,
+ARM64, and RISC-V, Ventoy is actively adapting its core multiboot
+toolchain. Below is a detailed breakdown of how Ventoy plans to support
+newer CPU architectures, modern firmware standards, and advanced boot
+ecosystems.</p>
+<h3 id="expansion-of-processor-architectures">Expansion of Processor
+Architectures</h3>
+<p>While Ventoy established its reputation on x86 and x86_64
+architectures, hardware diversification has made cross-architecture
+capability a development priority:</p>
+<ul>
+<li><strong>ARM64 (AArch64) Stabilization:</strong> Ventoy offers
+initial support for ARM64 UEFI environments, but upcoming milestones
+target functional parity with x86_64. This involves broader
+compatibility with ARM-based servers, Windows on ARM hardware, and
+popular single-board computers (SBCs) that implement standard UEFI
+implementations.</li>
+<li><strong>RISC-V Architecture Evaluation:</strong> As RISC-V gains
+traction in developer platforms and embedded systems, Ventoy's
+development trajectory includes tracking RISC-V EFI specifications.
+Adaptation relies on maturing GRUB2 RISC-V upstream patches, which will
+eventually allow Ventoy to mount and boot RISC-V Linux distributions
+natively.</li>
+<li><strong>LoongArch Refinements:</strong> Initial hooks for the
+LoongArch architecture have been introduced in recent cycles. Future
+updates focus on refining chainloading mechanisms and expanding
+image-type support for distributions targeting this architecture.</li>
+</ul>
+<h3 id="adaptation-to-modern-firmware-standards">Adaptation to Modern
+Firmware Standards</h3>
+<p>Legacy BIOS (CSM) is rapidly disappearing from modern motherboards,
+shifting the boot ecosystem entirely to UEFI:</p>
+<ul>
+<li><strong>Class 3 and Class 3+ UEFI Support:</strong> Modern systems
+operate exclusively in native UEFI without any Compatibility Support
+Module (CSM). Future Ventoy updates are optimizing memory allocation,
+video output protocols (GOP), and native EFI drivers to ensure seamless
+handoffs without relying on legacy fallbacks.</li>
+<li><strong>Secure Boot Lifecycle and Key Management:</strong> With
+Microsoft updating revocation lists (DBX) and introducing new
+certificate authorities, Ventoy's integration with the <code>shim</code>
+loader and Machine Owner Key (MOK) system is undergoing continuous
+maintenance. The roadmap focuses on streamlining the initial
+key-enrollment process to minimize user friction during Secure Boot
+verification.</li>
+<li><strong>Alternative Firmware Compatibility:</strong> Independent
+open-source firmware solutions like Coreboot, Libreboot, and Tianocore
+(EDK II) payloads are increasingly used in privacy-focused hardware.
+Ventoy's roadmap includes targeted compatibility testing against these
+firmware stacks to resolve non-standard ACPI table handling and memory
+mapping issues.</li>
+</ul>
+<h3 id="storage-protocols-and-filesystem-hooks">Storage Protocols and
+Filesystem Hooks</h3>
+<p>Modern hardware architectures employ high-throughput storage
+interfaces that require lower-level firmware awareness:</p>
+<ul>
+<li><strong>Advanced Controller Interfacing:</strong> Newer
+motherboards, particularly enterprise platforms and handheld gaming
+systems, utilize cutting-edge NVMe specifications and USB4/Thunderbolt
+controller tunnels. Ventoy continues to update its underlying driver
+stack to recognize dynamic block devices directly from the pre-boot
+environment.</li>
+<li><strong>Direct Virtual Disk Mapping:</strong> Ventoy relies on
+device mapper hooks to present ISO, WIM, and IMG files as physical media
+to the loaded operating system. As kernel security models become more
+restrictive, the Ventoy roadmap includes redesigning OS-specific runtime
+scripts (such as <code>ventoy-ng</code>) to maintain compatibility with
+modern Linux kernels, Windows 11 updates, and custom hypervisors without
+tripping kernel integrity protections.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

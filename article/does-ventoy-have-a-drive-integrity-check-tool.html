@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Have a Drive Integrity Check Tool? - ventoy</title>
+    <meta name="description" content="Ventoy revolutionized the process of creating bootable USB flash drives, but users frequently wonder whether the project provides an official command-line tool to check drive integrity. While Ventoy includes various installation scripts and utilities, it">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-have-a-drive-integrity-check-tool">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Have a Drive Integrity Check Tool? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-have-a-drive-integrity-check-tool" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy revolutionized the process of creating bootable USB flash drives, but users frequently wonder whether the project provides an official command-line tool to check drive integrity. While Ventoy includes various installation scripts and utilities, it" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-have-a-drive-integrity-check-tool">Does Ventoy Have
+a Drive Integrity Check Tool?</h1>
+<p>Ventoy revolutionized the process of creating bootable USB flash
+drives, but users frequently wonder whether the project provides an
+official command-line tool to check drive integrity. While Ventoy
+includes various installation scripts and utilities, it does not ship
+with an official, dedicated command-line utility for testing physical
+USB drive integrity, hardware health, or flash storage authenticity.
+Understanding how Ventoy manages data reliability and knowing which
+external command-line tools to use instead ensures your boot media
+remains dependable.</p>
+<h3 id="ventoys-native-capabilities">Ventoy's Native Capabilities</h3>
+<p>Ventoy focuses strictly on partition management, filesystem
+formatting, and dynamic multi-boot capabilities. Its primary
+command-line interface on Linux, <code>Ventoy2Disk.sh</code>, handles
+formatting, creating system and data partitions, and upgrading the
+Ventoy bootloader. However, this script does not analyze flash memory
+cells, search for bad blocks, or detect fraudulent flash drives with
+spoofed capacities.</p>
+<p>While physical drive checking is not present, Ventoy does support
+software-level verification through its checksum plugin. By configuring
+a <code>ventoy.json</code> configuration file, you can define MD5,
+SHA-1, or SHA-256 hashes for your ISO files. When booting, Ventoy can
+compare the image's hash against the expected checksum, verifying that
+individual files have not been corrupted during transfer or storage.</p>
+<h3 id="checking-drive-integrity-on-linux">Checking Drive Integrity on
+Linux</h3>
+<p>Since Ventoy lacks a built-in hardware testing utility, Linux users
+should rely on native system tools before or after installing
+Ventoy.</p>
+<ol type="1">
+<li><strong>badblocks</strong>: This standard utility scans storage
+devices for defective sectors. Running
+<code>badblocks -sv /dev/sdX</code> performs a non-destructive read test
+across the entire drive.</li>
+<li><strong>f3 (Fight Flash Fraud)</strong>: A command-line package
+designed to test true flash capacity and detect counterfait USB drives.
+The tool uses <code>f3write</code> to fill the drive with known patterns
+and <code>f3read</code> to verify that the stored data is fully intact
+and readable.</li>
+</ol>
+<h3 id="checking-drive-integrity-on-windows">Checking Drive Integrity on
+Windows</h3>
+<p>Windows environments also lack a Ventoy-specific hardware testing
+tool, requiring native or standard alternative solutions:</p>
+<ol type="1">
+<li><strong>CHKDSK</strong>: The standard Windows utility checks
+filesystem integrity and scans for bad sectors. Running
+<code>chkdsk X: /f /r</code> via an elevated Command Prompt inspects the
+partition allocated to Ventoy, locates bad sectors, and recovers
+readable information.</li>
+<li><strong>H2testw</strong>: Although GUI-based, it is the standard
+Windows equivalent to <code>f3</code> for validating the genuine
+capacity and physical reliability of USB flash drives.</li>
+</ol>
+<h3 id="best-practice">Best Practice</h3>
+<p>Because Ventoy cannot monitor physical flash degradation or identify
+bad sectors directly, always test a USB drive using external tools like
+<code>badblocks</code> or <code>f3</code> before running the Ventoy
+installation script. Once the drive is verified as physically healthy,
+install Ventoy and implement the checksum plugin to protect against
+file-level corruption.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

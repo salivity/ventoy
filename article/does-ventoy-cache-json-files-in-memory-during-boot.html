@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Cache JSON Files in Memory During Boot? - ventoy</title>
+    <meta name="description" content="This article examines how Ventoy handles its primary configuration file, ventoy.json, during the initial startup process, specifically answering whether the tool caches JSON data in memory. It covers how the underlying GRUB2 environment reads configurati">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-cache-json-files-in-memory-during-boot">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Cache JSON Files in Memory During Boot? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-cache-json-files-in-memory-during-boot" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article examines how Ventoy handles its primary configuration file, ventoy.json, during the initial startup process, specifically answering whether the tool caches JSON data in memory. It covers how the underlying GRUB2 environment reads configurati" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-cache-json-files-in-memory-during-boot">Does Ventoy
+Cache JSON Files in Memory During Boot?</h1>
+<p>This article examines how Ventoy handles its primary configuration
+file, <code>ventoy.json</code>, during the initial startup process,
+specifically answering whether the tool caches JSON data in memory. It
+covers how the underlying GRUB2 environment reads configuration files,
+the lifecycle of this data in RAM, and the practical implications for
+users modifying settings on live USB drives.</p>
+<h2 id="the-direct-answer">The Direct Answer</h2>
+<p>Yes, Ventoy reads and caches the <code>ventoy.json</code>
+configuration file into memory during the boot process. When a computer
+boots from a Ventoy USB drive, the system loads Ventoy's modified GRUB2
+core into RAM. During initialization, the internal JSON parsing engine
+reads the <code>/ventoy/ventoy.json</code> file from the physical
+storage medium, parses the key-value pairs, and stores these structures
+directly in system memory.</p>
+<h2 id="how-ventoy-processes-configuration-files">How Ventoy Processes
+Configuration Files</h2>
+<p>Ventoy relies on a modular GRUB2 architecture to create its dynamic
+boot menu. The handling of the JSON configuration follows a specific
+sequence:</p>
+<ol type="1">
+<li><strong>Storage Detection:</strong> During early boot, Ventoy mounts
+the primary file system partition containing the ISOs and the
+<code>ventoy</code> directory.</li>
+<li><strong>File Loading:</strong> The bootloader searches for
+<code>/ventoy/ventoy.json</code>. If found, a custom GRUB C-module reads
+the file contents into a memory buffer.</li>
+<li><strong>Parsing and Structuring:</strong> The JSON parser converts
+the raw text into structured memory objects. These objects control theme
+parameters, global control plugins, image list options, and menu
+aliases.</li>
+<li><strong>Menu Generation:</strong> The boot menu is rendered based on
+the parsed values held in memory, rather than by querying the physical
+drive repeatedly.</li>
+</ol>
+<h2 id="why-ventoy-uses-in-memory-caching">Why Ventoy Uses In-Memory
+Caching</h2>
+<p>Caching the configuration in RAM serves two main technical
+purposes:</p>
+<ul>
+<li><strong>Performance:</strong> Reading repeatedly from USB flash
+drives—especially older USB 2.0 drives—introduces input/output latency.
+Caching the file in RAM ensures the user interface remains responsive
+when navigating menus, toggling display modes, or switching themes.</li>
+<li><strong>Storage Independence:</strong> Certain Ventoy plugins (such
+as auto-install scripts or persistence configurations) require fast
+access to predetermined flags. By keeping parsed definitions in memory,
+Ventoy reduces read cycles on the flash storage controller.</li>
+</ul>
+<h2 id="memory-lifecycle-and-live-modifications">Memory Lifecycle and
+Live Modifications</h2>
+<p>The cached JSON data exists only within the execution context of the
+bootloader. Because the data resides in volatile memory allocated to
+GRUB:</p>
+<ul>
+<li><strong>Handoff to OS:</strong> Once a user selects an ISO and the
+target operating system's kernel assumes control of the hardware, the
+entire GRUB memory space—including the cached JSON data—is discarded and
+overwritten by the OS memory manager.</li>
+<li><strong>On-the-Fly Editing:</strong> If a user physically connects
+to the drive over a network or modifies the JSON file via a live
+multi-boot environment while the menu is running, the running Ventoy
+interface will not reflect these changes automatically. Ventoy does not
+actively poll the disk for configuration changes; it requires a menu
+reload or a system reboot to re-read and re-cache the updated
+<code>ventoy.json</code> file.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

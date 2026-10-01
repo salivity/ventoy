@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Cleans Up Variables Before OS Handoff - ventoy</title>
+    <meta name="description" content="Ventoy relies on a heavily modified GRUB2 core and custom UEFI/BIOS shims to manage boot options, set runtime parameters, and map ISO files to virtual storage before booting an operating system. To ensure seamless operation, Ventoy cleans up its temporar">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-cleans-up-variables-before-os-handoff">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Cleans Up Variables Before OS Handoff - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-cleans-up-variables-before-os-handoff" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy relies on a heavily modified GRUB2 core and custom UEFI/BIOS shims to manage boot options, set runtime parameters, and map ISO files to virtual storage before booting an operating system. To ensure seamless operation, Ventoy cleans up its temporar" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-cleans-up-variables-before-os-handoff">How Ventoy
+Cleans Up Variables Before OS Handoff</h1>
+<p>Ventoy relies on a heavily modified GRUB2 core and custom UEFI/BIOS
+shims to manage boot options, set runtime parameters, and map ISO files
+to virtual storage before booting an operating system. To ensure
+seamless operation, Ventoy cleans up its temporary state and isolates
+runtime variables using standard UEFI memory-typing conventions,
+volatile variable attributes, and execution hooks triggered at
+<code>ExitBootServices</code>. This approach allows Ventoy to maintain
+virtual disk access for the target kernel while safely discarding its
+internal bootloader variables and scratchpad memory.</p>
+<p>During the pre-boot phase, Ventoy executes scripts and stores
+parameters—such as ISO paths, hardware detection flags, and user
+configurations—within GRUB’s internal memory pool and the UEFI variable
+store. For memory-allocated data, Ventoy assigns these buffers to
+<code>EfiBootServicesData</code> or <code>EfiBootServicesCode</code>.
+Under the UEFI specification, all memory classified under boot services
+is designated as transient; it is strictly reserved for pre-boot
+operations and is marked to be reclaimed by the operating system kernel
+once the boot process transitions out of firmware services.</p>
+<p>To clean up variables exposed through firmware interfaces, Ventoy
+assigns volatile flags to its custom UEFI environment variables. These
+variables are created without the <code>EFI_VARIABLE_NON_VOLATILE</code>
+attribute, meaning they exist exclusively in system RAM during the
+active boot phase. Consequently, they do not write to the physical NVRAM
+chip, preventing persistent clutter or interference with the target
+operating system's variable namespace. Any runtime variables used
+exclusively for ISO chaining are either explicitly deleted prior to
+kernel execution or naturally drop out of scope when firmware tables are
+finalized.</p>
+<p>The physical handoff occurs when the operating system loader calls
+the UEFI interface function <code>ExitBootServices()</code>. Ventoy
+hooks this function to complete its state transition. Upon interception,
+Ventoy uninstalls its temporary protocol interfaces and deregisters
+pre-boot event listeners, ensuring that CPU register states and memory
+management structures return to a standard state expected by the OS
+kernel.</p>
+<p>The only component that persists past this cleanup is the minimal
+runtime disk abstraction layer, typically preserved in memory marked as
+<code>EfiRuntimeServicesData</code> or
+<code>EfiReservedMemoryType</code>. This persistent segment contains
+only the essential logic required to intercept disk read requests and
+route them to the underlying ISO file, stripped of all setup variables,
+menu scripts, and interface configurations.</p>
+<p>In legacy BIOS mode, a comparable procedure takes place. Ventoy
+establishes its runtime variables in conventional memory used by the
+bootloader stage. Once the target kernel is loaded, Ventoy relocates a
+minimal INT 13h interrupt service routine to the Extended BIOS Data Area
+(EBDA) or top of conventional memory, restores the default CPU register
+states, and relinquishes the remaining memory space. The incoming kernel
+then safely overwrites the original memory footprint containing Ventoy's
+temporary execution variables.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Alter UEFI NVRAM Variables? - ventoy</title>
+    <meta name="description" content="Using Ventoy to boot multiple operating systems generally does not alter persistent UEFI NVRAM variables on the host motherboard during standard operations. Because Ventoy operates primarily from the USB drive and system memory, it leaves the host's firm">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-alter-uefi-nvram-variables">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Alter UEFI NVRAM Variables? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-alter-uefi-nvram-variables" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Using Ventoy to boot multiple operating systems generally does not alter persistent UEFI NVRAM variables on the host motherboard during standard operations. Because Ventoy operates primarily from the USB drive and system memory, it leaves the host's firm" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-alter-uefi-nvram-variables">Does Ventoy Alter UEFI
+NVRAM Variables?</h1>
+<p>Using Ventoy to boot multiple operating systems generally does not
+alter persistent UEFI NVRAM variables on the host motherboard during
+standard operations. Because Ventoy operates primarily from the USB
+drive and system memory, it leaves the host's firmware settings intact.
+The sole persistent exception occurs when using Ventoy with UEFI Secure
+Boot enabled, which requires enrolling a Machine Owner Key (MOK) into
+the motherboard's NVRAM.</p>
+<h3 id="standard-booting-and-nvram">Standard Booting and NVRAM</h3>
+<p>Under standard boot conditions with Secure Boot disabled, Ventoy does
+not modify UEFI NVRAM. When your system boots Ventoy, the motherboard’s
+UEFI firmware executes the default fallback bootloader path
+(<code>\EFI\BOOT\BOOTX64.EFI</code>) directly from the removable drive.
+Ventoy initializes its GRUB-based environment entirely in system RAM and
+reads disk images (ISOs, IMGs, or VHDs) straight from the flash drive.
+It does not invoke UEFI runtime services like <code>SetVariable()</code>
+to create persistent <code>BootXXXX</code> entries, change the system
+boot order, or write persistent configuration data to the
+motherboard.</p>
+<h3 id="the-secure-boot-exception-mok-enrollment">The Secure Boot
+Exception: MOK Enrollment</h3>
+<p>If Secure Boot is active on the host machine, Ventoy relies on the
+standard Linux <code>shim</code> loader to authenticate its binaries.
+Because Ventoy’s custom keys are not signed by Microsoft’s default
+third-party UEFI Certificate Authority, the system will prompt you to
+enroll Ventoy’s public key via the <code>MokManager</code>
+interface.</p>
+<p>Enrolling this key permanently writes Ventoy's certificate to the
+<code>MokList</code> variable within your motherboard’s NVRAM. This is a
+deliberate, persistent modification designed to allow the system to
+trust Ventoy on subsequent boots without disabling Secure Boot. If you
+want to avoid writing to NVRAM entirely, you must disable Ventoy’s
+Secure Boot support via the Ventoy configuration utility or disable
+Secure Boot directly within your motherboard's UEFI setup.</p>
+<h3 id="host-firmware-behavior-vs-ventoy-actions">Host Firmware Behavior
+vs. Ventoy Actions</h3>
+<p>It is important to distinguish between Ventoy's actions and the
+automatic behavior of the host motherboard's UEFI firmware:</p>
+<ul>
+<li><strong>Automatic Boot Option Cache:</strong> Some UEFI
+implementations automatically create transient or semi-permanent boot
+entries in NVRAM when a new USB drive containing an EFI system partition
+is detected. This is executed by the motherboard's own firmware logic,
+not by Ventoy code.</li>
+<li><strong>Booted Operating System Installers:</strong> While Ventoy
+itself does not alter NVRAM, operating system installers booted through
+Ventoy (such as Windows Setup or a Linux distribution installer) will
+interact with UEFI NVRAM. These installers routinely call
+<code>SetVariable()</code> to register new boot options and set
+themselves as the primary boot target.</li>
+</ul>
+<p>Outside of the optional Secure Boot Machine Owner Key enrollment,
+Ventoy functions in a completely stateless manner relative to the host
+machine's NVRAM, leaving your motherboard firmware clean upon drive
+removal.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Prevents File Fragmentation Boot Errors - ventoy</title>
+    <meta name="description" content="This article explains the technical mechanisms Ventoy uses to reliably boot ISO and image files regardless of physical drive fragmentation. Unlike traditional boot utilities that fail when an image is broken into non-contiguous clusters across a storage">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-prevents-file-fragmentation-boot-errors">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Prevents File Fragmentation Boot Errors - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-prevents-file-fragmentation-boot-errors" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the technical mechanisms Ventoy uses to reliably boot ISO and image files regardless of physical drive fragmentation. Unlike traditional boot utilities that fail when an image is broken into non-contiguous clusters across a storage" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-prevents-file-fragmentation-boot-errors">How Ventoy
+Prevents File Fragmentation Boot Errors</h1>
+<p>This article explains the technical mechanisms Ventoy uses to
+reliably boot ISO and image files regardless of physical drive
+fragmentation. Unlike traditional boot utilities that fail when an image
+is broken into non-contiguous clusters across a storage device, Ventoy
+combines native filesystem drivers, dynamic in-memory block mapping,
+runtime BIOS/UEFI firmware hooks, and OS-stage virtual drive emulation
+to ensure seamless execution.</p>
+<h3 id="the-problem-with-traditional-iso-booting">The Problem with
+Traditional ISO Booting</h3>
+<p>Standard multi-boot tools and BIOS-based bootloaders often rely on
+disk-chaining mechanisms that assume an ISO file occupies a single,
+continuous sequence of sectors on a storage drive. When files are
+written, deleted, and rewritten on a USB drive, the filesystem naturally
+fragments larger files. If a traditional loader attempts to map an ISO
+by its starting sector and total length, any fragmented clusters point
+to unrelated data, corrupting the payload and crashing the boot
+sequence.</p>
+<h3 id="1-embedded-filesystem-drivers">1. Embedded Filesystem
+Drivers</h3>
+<p>Ventoy operates on a custom-patched GRUB2 core that incorporates
+native read drivers for modern filesystems, including exFAT, NTFS,
+ext3/ext4, UDF, and XFS. Instead of reading raw sector offsets provided
+by a host OS during installation, Ventoy navigates the target
+partition's file allocation structures (such as the File Allocation
+Table in exFAT or the Master File Table in NTFS) directly at boot time.
+This allows it to identify the exact location of every fragmented
+cluster associated with an ISO file.</p>
+<h3 id="2-dynamic-extent-mapping-scatter-gather-tables">2. Dynamic
+Extent Mapping (Scatter-Gather Tables)</h3>
+<p>Once an image is selected from the boot menu, Ventoy reads the file’s
+cluster chain and builds a runtime memory table containing every
+fragmented segment (known as extents). Each entry in this scatter-gather
+list records:</p>
+<ul>
+<li>The starting Logical Block Addressing (LBA) sector on the physical
+USB drive.</li>
+<li>The length of that continuous segment.</li>
+<li>The corresponding virtual LBA sector inside the emulated ISO.</li>
+</ul>
+<p>This dynamic mapping translates a fragmented physical file into an
+unbroken, contiguous virtual address space purely in memory.</p>
+<h3 id="3-firmware-level-interception-bios-and-uefi">3. Firmware-Level
+Interception (BIOS and UEFI)</h3>
+<p>Before handing control to the kernel inside the ISO, Ventoy
+establishes hooks at the firmware level to ensure read requests are
+translated according to the scatter-gather table:</p>
+<ul>
+<li><strong>Legacy BIOS (INT 13h Hooking):</strong> Ventoy installs a
+memory-resident handler for BIOS interrupt <code>INT 13h</code>. When
+the guest bootloader attempts to read sectors from the emulated CD/DVD
+drive, the hook intercepts the request, queries the fragment table, and
+directs the hardware to read the exact corresponding physical sectors on
+the USB drive.</li>
+<li><strong>UEFI (<code>EFI_BLOCK_IO_PROTOCOL</code>):</strong> In
+modern UEFI systems, Ventoy registers a virtual device handle that
+implements the <code>EFI_BLOCK_IO_PROTOCOL</code> (and
+<code>EFI_BLOCK_IO2_PROTOCOL</code>). When the target operating system's
+EFI bootloader requests blocks, Ventoy’s custom driver intercepts the
+call, splits or redirects the read requests across the fragmented
+segments, and returns the data as if it came from an unfragmented
+optical disc.</li>
+</ul>
+<h3 id="4-preserving-the-mapping-into-the-os-kernel">4. Preserving the
+Mapping into the OS Kernel</h3>
+<p>The most difficult challenge in booting fragmented files occurs when
+the operating system kernel initializes, loads its own USB drivers, and
+drops BIOS/UEFI runtime services. At this stage, traditional firmware
+hooks are discarded.</p>
+<p>Ventoy solves this transition using secondary hooks tailored to
+specific operating systems:</p>
+<ul>
+<li><strong>Linux:</strong> Ventoy injects an initramfs hook or daemon
+that locates the physical ISO using filesystem labels and constructs a
+loopback device or Device Mapper (<code>dm-linear</code>) table. This
+ensures the Linux kernel continues to see a single unified block
+device.</li>
+<li><strong>Windows:</strong> Ventoy utilizes a companion virtual disk
+driver (<code>ventoy.sys</code>) or pre-boot memory patches that create
+an emulated CD-ROM drive directly within Windows Setup, redirecting
+physical I/O requests through the host driver without relying on
+physical drive continuity.</li>
+</ul>
+<p>Through this multi-stage interception model, Ventoy eliminates the
+technical requirement for defragmentation, allowing users to copy, move,
+or modify ISO files freely without risking boot failure.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Format Ventoy Partition as exFAT - ventoy</title>
+    <meta name="description" content="This guide explains how to set the main data partition of a Ventoy USB drive to the exFAT file system. Ventoy divides a flash drive into two partitions: a hidden boot partition (VTOYEFI) and a primary data partition where ISO files are stored. While exFA">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-format-ventoy-partition-as-ex-fat">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Format Ventoy Partition as exFAT - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-format-ventoy-partition-as-ex-fat" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This guide explains how to set the main data partition of a Ventoy USB drive to the exFAT file system. Ventoy divides a flash drive into two partitions: a hidden boot partition (VTOYEFI) and a primary data partition where ISO files are stored. While exFA" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-format-ventoy-partition-as-exfat">How to Format Ventoy
+Partition as exFAT</h1>
+<p>This guide explains how to set the main data partition of a Ventoy
+USB drive to the exFAT file system. Ventoy divides a flash drive into
+two partitions: a hidden boot partition (VTOYEFI) and a primary data
+partition where ISO files are stored. While exFAT is the default file
+system for Ventoy, you can explicitly configure it during the initial
+installation or safely reformat the primary data partition on an
+existing Ventoy drive without damaging the bootloader.</p>
+<h2 id="method-1-set-exfat-during-initial-installation">Method 1: Set
+exFAT During Initial Installation</h2>
+<p>If you are creating a new Ventoy drive using the official Ventoy
+tool, you can select exFAT before installing.</p>
+<ol type="1">
+<li>Insert your USB drive into your computer.</li>
+<li>Open the <strong>Ventoy2Disk</strong> application.</li>
+<li>Select your USB device from the <strong>Device</strong> drop-down
+menu.</li>
+<li>Click on the <strong>Option</strong> menu in the top toolbar.</li>
+<li>Navigate to <strong>Partition Configuration</strong>.</li>
+<li>Check the <strong>Partition File System</strong> setting and select
+<strong>exFAT</strong> from the drop-down list.</li>
+<li>Click <strong>OK</strong> to save the settings.</li>
+<li>Click <strong>Install</strong> to format the drive and install
+Ventoy with an exFAT data partition.</li>
+</ol>
+<h2 id="method-2-reformat-an-existing-ventoy-partition-windows">Method
+2: Reformat an Existing Ventoy Partition (Windows)</h2>
+<p>If Ventoy is already installed and you want to switch or reset the
+data partition to exFAT, format only the primary partition. Do not
+format the secondary EFI partition.</p>
+<ol type="1">
+<li>Insert your Ventoy USB drive into your Windows PC.</li>
+<li>Open <strong>File Explorer</strong> and locate the drive labeled
+<strong>Ventoy</strong>.</li>
+<li>Right-click the Ventoy drive and select
+<strong>Format...</strong></li>
+<li>Under <strong>File system</strong>, select
+<strong>exFAT</strong>.</li>
+<li>Set the <strong>Allocation unit size</strong> to the default
+value.</li>
+<li>Ensure the <strong>Volume label</strong> is set to
+<code>Ventoy</code>.</li>
+<li>Check the <strong>Quick Format</strong> box.</li>
+<li>Click <strong>Start</strong> and confirm the prompt to format the
+partition.</li>
+</ol>
+<h2 id="method-3-reformat-an-existing-ventoy-partition-linux">Method 3:
+Reformat an Existing Ventoy Partition (Linux)</h2>
+<p>You can reformat the data partition in Linux using the terminal while
+keeping the boot partition intact.</p>
+<ol type="1">
+<li>Open a terminal.</li>
+<li>Identify the partition identifiers of your USB drive:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">lsblk</span></span></code></pre></div>
+Ventoy will typically show as a drive with two partitions (e.g.,
+<code>/dev/sdb1</code> for data and <code>/dev/sdb2</code> for
+VTOYEFI).</li>
+<li>Unmount the data partition if it is currently mounted:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /dev/sdX1</span></code></pre></div>
+<em>(Replace <code>/dev/sdX1</code> with your actual Ventoy data
+partition).</em></li>
+<li>Format the first partition as exFAT:
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkfs.exfat <span class="at">-n</span> Ventoy /dev/sdX1</span></code></pre></div></li>
+<li>Run <code>sync</code> to ensure all operations are completed before
+unplugging the drive.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

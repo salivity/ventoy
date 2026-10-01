@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Ventoy Boot VMDK Files Directly? - ventoy</title>
+    <meta name="description" content="Ventoy does not natively support booting VMware disk images with the .vmdk extension directly from a USB drive. While Ventoy is a versatile multi-boot utility capable of loading various file types, it natively recognizes only ISO, WIM, IMG, VHD, VHDX, an">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-ventoy-boot-vmdk-files-directly">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Ventoy Boot VMDK Files Directly? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-ventoy-boot-vmdk-files-directly" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not natively support booting VMware disk images with the .vmdk extension directly from a USB drive. While Ventoy is a versatile multi-boot utility capable of loading various file types, it natively recognizes only ISO, WIM, IMG, VHD, VHDX, an" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-ventoy-boot-vmdk-files-directly">Can Ventoy Boot VMDK Files
+Directly?</h1>
+<p>Ventoy does not natively support booting VMware disk images with the
+<code>.vmdk</code> extension directly from a USB drive. While Ventoy is
+a versatile multi-boot utility capable of loading various file types, it
+natively recognizes only ISO, WIM, IMG, VHD, VHDX, and EFI files. To run
+an operating system stored within a VMDK file through Ventoy, you must
+first convert the virtual disk into a supported format, such as VHD,
+VHDX, or a raw disk image.</p>
+<h3 id="ventoy-supported-formats">Ventoy Supported Formats</h3>
+<p>Ventoy operates by directly scanning the partitions of your USB drive
+for specific bootable image extensions. The officially supported image
+formats are:</p>
+<ul>
+<li><strong>ISO:</strong> Standard optical disc images (Linux
+distributions, Windows installers, rescue disks).</li>
+<li><strong>WIM:</strong> Windows Imaging Format files.</li>
+<li><strong>IMG:</strong> Raw sector-by-sector disk images.</li>
+<li><strong>VHD / VHDX:</strong> Microsoft Virtual Hard Disk formats
+(requires the Ventoy VHD boot plugin for Windows systems).</li>
+<li><strong>EFI:</strong> Raw EFI executable binaries.</li>
+</ul>
+<p>Because <code>.vmdk</code> (Virtual Machine Disk) is structured
+primarily for VMware environments and often contains descriptor files or
+split sparse extents, Ventoy’s bootloader cannot parse it out of the
+box.</p>
+<h3 id="workarounds-to-boot-a-vmdk-with-ventoy">Workarounds to Boot a
+VMDK with Ventoy</h3>
+<p>To boot the system contained inside a <code>.vmdk</code> file, you
+need to convert it into a compatible format before copying it to your
+Ventoy drive.</p>
+<h4 id="1-convert-vmdk-to-vhd-or-vhdx">1. Convert VMDK to VHD or
+VHDX</h4>
+<p>Converting the VMDK to Microsoft's VHD or VHDX format is the most
+reliable method for Windows-based virtual machines. You can use free
+conversion utilities such as:</p>
+<ul>
+<li><strong>qemu-img:</strong> A cross-platform command-line tool. You
+can convert the file using the following command:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-img</span> convert <span class="at">-f</span> vmdk <span class="at">-O</span> vpc source.vmdk target.vhd</span></code></pre></div>
+<em>(Note: For VHDX, change <code>-O vpc</code> to
+<code>-O vhdx</code>)</em></li>
+<li><strong>StarWind V2V Converter:</strong> A free GUI tool that safely
+converts VMware disk files into bootable VHD/VHDX images without data
+corruption.</li>
+</ul>
+<p>If you are booting a Windows VHD/VHDX, you must also place the
+official <code>ventoy_vhdboot.dat</code> plugin inside a folder named
+<code>ventoy</code> in the root of the USB drive.</p>
+<h4 id="2-convert-vmdk-to-raw-img">2. Convert VMDK to Raw IMG</h4>
+<p>For Linux-based or custom operating system disks, converting the VMDK
+into a raw image file (<code>.img</code>) is often the best choice:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-img</span> convert <span class="at">-f</span> vmdk <span class="at">-O</span> raw source.vmdk target.img</span></code></pre></div>
+<p>Once the conversion is complete, place the resulting
+<code>.img</code> file anywhere on the Ventoy partition, and Ventoy will
+automatically list it in the boot menu.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

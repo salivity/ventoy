@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repair Ventoy Boot Partition Without Losing Data - ventoy</title>
+    <meta name="description" content="A corrupted Ventoy boot partition (VTOYEFI) can prevent your multiboot drive from booting while leaving your ISO collection completely intact. This guide explains how to restore the boot partition safely without wiping or reformatting your main data part">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/repair-ventoy-boot-partition-without-losing-data">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Repair Ventoy Boot Partition Without Losing Data - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/repair-ventoy-boot-partition-without-losing-data" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="A corrupted Ventoy boot partition (VTOYEFI) can prevent your multiboot drive from booting while leaving your ISO collection completely intact. This guide explains how to restore the boot partition safely without wiping or reformatting your main data part" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="repair-ventoy-boot-partition-without-losing-data">Repair Ventoy
+Boot Partition Without Losing Data</h1>
+<p>A corrupted Ventoy boot partition (VTOYEFI) can prevent your
+multiboot drive from booting while leaving your ISO collection
+completely intact. This guide explains how to restore the boot partition
+safely without wiping or reformatting your main data partition, using
+the official Ventoy Update tool, partition repair utilities, and direct
+image restoration.</p>
+<h2 id="method-1-use-the-native-ventoy-update-feature">Method 1: Use the
+Native Ventoy Update Feature</h2>
+<p>The official Ventoy installer includes a non-destructive update
+function specifically designed to refresh the bootloader and the EFI
+system partition without touching the data partition.</p>
+<h3 id="on-windows">On Windows</h3>
+<ol type="1">
+<li>Download the latest Ventoy release zip file from the official
+website and extract it.</li>
+<li>Plug in your corrupted Ventoy USB drive.</li>
+<li>Run <code>Ventoy2Disk.exe</code> as Administrator.</li>
+<li>Select your USB drive from the <strong>Device</strong> drop-down
+list.</li>
+<li>Verify that the current version and the target version are
+displayed.</li>
+<li>Click the <strong>Update</strong> button (do not click
+<strong>Install</strong>, as "Install" will wipe the drive).</li>
+<li>Confirm the prompt to proceed. The tool will rewrite the EFI boot
+files and repair the boot structure while leaving the data partition
+intact.</li>
+</ol>
+<h3 id="on-linux">On Linux</h3>
+<ol type="1">
+<li>Download and extract the latest Linux tarball for Ventoy.</li>
+<li>Open a terminal and navigate to the extracted directory.</li>
+<li>Identify your USB drive's device path (for example,
+<code>/dev/sdb</code>) using <code>lsblk</code>.</li>
+<li>Run the update command using the <code>-u</code> flag:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sh Ventoy2Disk.sh <span class="at">-u</span> /dev/sdX</span></code></pre></div>
+<em>(Replace <code>/dev/sdX</code> with your actual USB device node,
+such as <code>/dev/sdb</code>. Do not include a partition
+number.)</em></li>
+</ol>
+<hr />
+<h2 id="method-2-repair-the-file-system-with-disk-utilities">Method 2:
+Repair the File System with Disk Utilities</h2>
+<p>If the partition table is intact but the FAT16/FAT32 file system of
+the <code>VTOYEFI</code> partition has logical corruption, file system
+repair tools can fix it.</p>
+<h3 id="on-windows-1">On Windows</h3>
+<ol type="1">
+<li>Press <code>Win + X</code> and select <strong>Disk
+Management</strong>.</li>
+<li>Locate the Ventoy drive. It will have two partitions: the large data
+partition and a small (~32MB) partition labeled
+<code>VTOYEFI</code>.</li>
+<li>Right-click the <code>VTOYEFI</code> partition, select
+<strong>Change Drive Letter and Paths</strong>, and assign it a
+temporary letter (e.g., <code>Z:</code>).</li>
+<li>Open Command Prompt as Administrator and run:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">chkdsk</span> Z: <span class="at">/f</span></span></code></pre></div></li>
+<li>Once completed, remove the drive letter in Disk Management to keep
+the EFI partition hidden.</li>
+</ol>
+<h3 id="on-linux-1">On Linux</h3>
+<ol type="1">
+<li>Identify the second partition of the Ventoy drive (typically
+<code>/dev/sdX2</code>):
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">lsblk</span></span></code></pre></div></li>
+<li>Unmount the partition if it is mounted:
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /dev/sdX2</span></code></pre></div></li>
+<li>Run <code>fsck.vfat</code> to automatically repair file system
+errors:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> fsck.vfat <span class="at">-a</span> /dev/sdX2</span></code></pre></div></li>
+</ol>
+<hr />
+<h2
+id="method-3-restore-the-efi-partition-image-via-linux-advanced">Method
+3: Restore the EFI Partition Image via Linux (Advanced)</h2>
+<p>If the boot partition is severely corrupted or unreadable, you can
+rewrite the partition image directly from the official Ventoy release
+files using the <code>dd</code> command.</p>
+<ol type="1">
+<li>Download and extract the Ventoy Linux package.</li>
+<li>Navigate to the <code>boot</code> directory inside the extracted
+folder:
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ventoy-<span class="pp">*</span>/boot/</span></code></pre></div></li>
+<li>Locate the file named <code>boot.img</code> or
+<code>ventoy.disk.img.xz</code>.</li>
+<li>Decompress the disk image if it is compressed:
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xz</span> <span class="at">-d</span> <span class="at">-k</span> ventoy.disk.img.xz</span></code></pre></div></li>
+<li>Identify your USB drive's second partition (e.g.,
+<code>/dev/sdX2</code>).</li>
+<li>Write the image directly to the second partition:
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dd if=ventoy.disk.img of=/dev/sdX2 bs=1M status=progress</span></code></pre></div>
+<em>(Ensure you target partition 2 specifically, not the entire disk
+<code>/dev/sdX</code> or partition 1 <code>/dev/sdX1</code>.)</em></li>
+<li>Run <code>sync</code> to ensure all writes are flushed before
+unplugging the drive.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

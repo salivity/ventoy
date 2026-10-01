@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can You Burn a Ventoy Image to a Dual-Layer DVD? - ventoy</title>
+    <meta name="description" content="Ventoy is widely recognized as a premier utility for creating multiboot USB flash drives by simply dragging and dropping ISO files onto the storage device. However, many users wonder if this same flexible multiboot functionality can be transferred to opt">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-you-burn-a-ventoy-image-to-a-dual-layer-dvd">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can You Burn a Ventoy Image to a Dual-Layer DVD? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-you-burn-a-ventoy-image-to-a-dual-layer-dvd" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is widely recognized as a premier utility for creating multiboot USB flash drives by simply dragging and dropping ISO files onto the storage device. However, many users wonder if this same flexible multiboot functionality can be transferred to opt" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-you-burn-a-ventoy-image-to-a-dual-layer-dvd">Can You Burn a
+Ventoy Image to a Dual-Layer DVD?</h1>
+<p>Ventoy is widely recognized as a premier utility for creating
+multiboot USB flash drives by simply dragging and dropping ISO files
+onto the storage device. However, many users wonder if this same
+flexible multiboot functionality can be transferred to optical media,
+specifically dual-layer DVDs (DVD-DL) which provide up to 8.5 GB of
+storage. This article explains whether burning a Ventoy image to a
+dual-layer DVD is technically possible, why optical media behaves
+differently with Ventoy, and what alternatives exist for creating
+multiboot discs.</p>
+<h3 id="the-direct-answer-no">The Direct Answer: No</h3>
+<p>You cannot create a functional, file-dropping multiboot disc by
+burning a Ventoy installation onto a dual-layer DVD. Ventoy is
+fundamentally engineered as a block-device utility intended for
+rewritable, partitionable flash media such as USB drives, external SSDs,
+and SD cards, rather than optical discs (CDs, DVDs, or Blu-ray).</p>
+<h3 id="why-ventoy-cannot-work-on-a-dual-layer-dvd">Why Ventoy Cannot
+Work on a Dual-Layer DVD</h3>
+<ol type="1">
+<li><p><strong>Partition Table Architecture</strong><br />
+Ventoy requires creating two specific partitions on a drive: a hidden
+system partition formatted as FAT (VTOYEFI) containing the core
+bootloader files, and a data partition (formatted as exFAT, NTFS, FAT32,
+or ext4) where ISO files are placed. Standard optical media relies on
+different storage architectures (ISO 9660 or UDF) and does not handle
+standard MBR or GPT partition tables in the manner Ventoy
+expects.</p></li>
+<li><p><strong>Read/Write Operations and Dynamic Booting</strong><br />
+When Ventoy boots a system, it performs active read and write
+operations, builds runtime menus dynamically, and hooks into memory to
+map the selected ISO directly to the system hardware. Optical discs like
+dual-layer DVD-R or DVD+R discs are read-only media once burned,
+preventing Ventoy from executing its dynamic mounting hooks
+properly.</p></li>
+<li><p><strong>Inability to Add ISOs Dynamically</strong><br />
+The core appeal of Ventoy is the ability to copy and delete ISO images
+at will. Because a dual-layer DVD is finalized during the burning
+process, you lose the capability to update, swap, or append operating
+system images dynamically, defeating the primary mechanism of how Ventoy
+operates.</p></li>
+</ol>
+<h3 id="the-confusion-around-the-ventoy-livecd-iso">The Confusion Around
+the Ventoy "LiveCD" ISO</h3>
+<p>Ventoy does release a file called
+<code>ventoy-x.x.xx-livecd.iso</code>. While you can burn this specific
+ISO onto a dual-layer DVD (or a standard DVD/CD), <strong>it will not
+act as a multiboot DVD</strong>.</p>
+<p>The Ventoy LiveCD is simply a standalone Linux environment whose sole
+purpose is to boot your computer into an interface where you can install
+Ventoy onto a USB drive. It is designed for users who cannot run
+Ventoy's installer inside their host operating system, not as a bootable
+platform for hosting your own collection of OS installers on a disc.</p>
+<h3
+id="alternatives-for-creating-a-multiboot-dual-layer-dvd">Alternatives
+for Creating a Multiboot Dual-Layer DVD</h3>
+<p>If you need to combine multiple ISOs or installation utilities onto a
+single 8.5 GB dual-layer DVD, you must use tools designed specifically
+for optical authoring:</p>
+<ul>
+<li><strong>SARDU (Shardana Antivirus Rescue Disk Utility):</strong>
+Capable of generating an optical-compatible ISO containing multiple
+rescue systems and utilities that can be burned to a DVD-DL.</li>
+<li><strong>XBoot:</strong> A Windows utility that allows you to bundle
+several ISOs and bootloaders into a single, comprehensive ISO file
+configured specifically for burning to DVD media.</li>
+<li><strong>Custom GRUB2 / ISOLINUX Authoring:</strong> Advanced users
+can manually build a bootable UDF/ISO image with an ISOLINUX or GRUB
+menu, extracting the contents of multiple boot disks into distinct
+folders on the DVD.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

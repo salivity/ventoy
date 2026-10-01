@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Ventoy on an Internal SSD or Hard Drive - ventoy</title>
+    <meta name="description" content="Ventoy is widely recognized as a tool for creating bootable USB flash drives, but it can also be installed directly onto an internal solid-state drive (SSD) or hard disk drive (HDD). While Ventoy deliberately hides internal disks by default to protect us">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/install-ventoy-on-an-internal-ssd-or-hard-drive">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Install Ventoy on an Internal SSD or Hard Drive - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/install-ventoy-on-an-internal-ssd-or-hard-drive" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is widely recognized as a tool for creating bootable USB flash drives, but it can also be installed directly onto an internal solid-state drive (SSD) or hard disk drive (HDD). While Ventoy deliberately hides internal disks by default to protect us" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="install-ventoy-on-an-internal-ssd-or-hard-drive">Install Ventoy
+on an Internal SSD or Hard Drive</h1>
+<p>Ventoy is widely recognized as a tool for creating bootable USB flash
+drives, but it can also be installed directly onto an internal
+solid-state drive (SSD) or hard disk drive (HDD). While Ventoy
+deliberately hides internal disks by default to protect users from
+accidental data loss, changing a simple setting allows you to turn any
+internal drive into a high-speed, multi-boot storage unit capable of
+launching ISO, WIM, and IMG files without external media.</p>
+<h3 id="how-ventoy-works-on-internal-drives">How Ventoy Works on
+Internal Drives</h3>
+<p>Ventoy functions on an internal SATA or NVMe drive just as it does on
+a USB stick. During installation, it divides the target drive into two
+partitions:</p>
+<ol type="1">
+<li><strong>VTOYEFI Partition:</strong> A small, hidden FAT-formatted
+system partition that contains the bootloader (supporting both legacy
+BIOS and UEFI modes).</li>
+<li><strong>Data Partition:</strong> The remaining drive space formatted
+as exFAT by default (though NTFS, ext4, or other file systems are
+supported), where you paste your bootable ISO files.</li>
+</ol>
+<p>Once configured, your system's motherboard can boot directly to the
+internal drive, presenting the standard Ventoy menu to launch any
+operating system image stored on it.</p>
+<h3 id="how-to-enable-internal-drive-installation">How to Enable
+Internal Drive Installation</h3>
+<p>Because an installation formats the target drive and wipes all
+existing data, internal disks are protected by default. To make an
+internal drive visible:</p>
+<ol type="1">
+<li>Open the Ventoy installation program on your computer.</li>
+<li>Click on the <strong>Option</strong> menu at the top.</li>
+<li>Check the box labeled <strong>Show all devices</strong>.</li>
+<li>Return to the device dropdown list and select your internal SSD or
+HDD.</li>
+<li>Click <strong>Install</strong> to partition the drive and set up the
+Ventoy boot environment.</li>
+</ol>
+<h3 id="key-advantages">Key Advantages</h3>
+<ul>
+<li><strong>Superior Read Speeds:</strong> Internal SATA and NVMe drives
+offer dramatically faster read and write speeds than standard USB flash
+drives. Operating system installers and live environments load
+significantly faster.</li>
+<li><strong>Large Storage Capacity:</strong> Internal drives generally
+offer larger capacities at a lower cost, allowing you to store dozens of
+OS images, diagnostic utilities, and large backup files on a single
+machine.</li>
+<li><strong>Convenience:</strong> An internal multi-boot drive
+eliminates the need to carry or keep track of physical USB drives for
+maintenance, testing, or multi-OS environments.</li>
+</ul>
+<h3 id="risks-and-limitations">Risks and Limitations</h3>
+<ul>
+<li><strong>Total Data Erasure:</strong> Standard installation
+overwrites the drive's partition table. Installing Ventoy on the wrong
+internal drive will erase your existing operating system and personal
+data.</li>
+<li><strong>Single-Drive Dual-Booting Complications:</strong> While
+Ventoy can reserve non-partitioned space at the end of the disk for a
+secondary OS installation, running both a primary operating system and
+Ventoy on the exact same physical drive requires advanced partition
+management. Ventoy is best deployed on a dedicated secondary internal
+drive rather than sharing a drive with your main operating system.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

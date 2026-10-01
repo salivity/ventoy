@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Invalid JSON Cause Ventoy to Crash? - ventoy</title>
+    <meta name="description" content="When customizing a multiboot USB drive with Ventoy, using an invalid ventoy.json file typically does not cause the entire bootloader to crash permanently or lock up your computer. Instead, Ventoy includes built-in safeguards to catch parsing errors, disp">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-invalid-json-cause-ventoy-to-crash">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Invalid JSON Cause Ventoy to Crash? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-invalid-json-cause-ventoy-to-crash" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When customizing a multiboot USB drive with Ventoy, using an invalid ventoy.json file typically does not cause the entire bootloader to crash permanently or lock up your computer. Instead, Ventoy includes built-in safeguards to catch parsing errors, disp" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-invalid-json-cause-ventoy-to-crash">Can Invalid JSON Cause
+Ventoy to Crash?</h1>
+<p>When customizing a multiboot USB drive with Ventoy, using an invalid
+<code>ventoy.json</code> file typically does not cause the entire
+bootloader to crash permanently or lock up your computer. Instead,
+Ventoy includes built-in safeguards to catch parsing errors, displaying
+a syntax error prompt upon boot and falling back to its default
+configuration. However, while the main menu interface remains
+functional, the specific custom behaviors—such as themes, persistence,
+and automated installation scripts—will fail to load, potentially
+breaking the launch of individual operating systems.</p>
+<h3 id="how-ventoy-handles-ventoyjson">How Ventoy Handles
+<code>ventoy.json</code></h3>
+<p>Ventoy relies on an optional configuration file located at
+<code>/ventoy/ventoy.json</code> on the USB drive's primary partition.
+This file configures themes, menu aliases, auto-install scripts,
+persistence images, and password protection.</p>
+<p>During the boot process, Ventoy uses a lightweight embedded JSON
+parser to read these instructions before rendering the user
+interface.</p>
+<h3 id="what-happens-when-json-syntax-is-invalid">What Happens When JSON
+Syntax Is Invalid</h3>
+<p>If your <code>ventoy.json</code> contains a syntax error—such as a
+missing closing brace, a missing comma, unescaped backslashes, or
+illegal trailing commas—the following occurs:</p>
+<ol type="1">
+<li><strong>Error Notification:</strong> Ventoy detects that the file
+cannot be parsed. Before the main menu appears, it halts and displays an
+on-screen warning stating that a syntax error was found, often
+specifying the line and column number where parsing failed.</li>
+<li><strong>User Acknowledgment:</strong> You are typically prompted to
+press <code>Enter</code> to acknowledge the error.</li>
+<li><strong>Fallback to Defaults:</strong> Ventoy bypasses the corrupt
+<code>ventoy.json</code> entirely and loads its hardcoded, default theme
+and global parameters.</li>
+<li><strong>Normal Navigation:</strong> The ISO file list still
+populates, and you can still navigate the menu and select an image to
+boot.</li>
+</ol>
+<p>Because of this error-handling design, the core Ventoy GRUB/EFI
+bootloader environment will not crash or freeze at the firmware level
+simply due to bad syntax.</p>
+<h3 id="when-invalid-json-can-break-os-booting">When Invalid JSON Can
+Break OS Booting</h3>
+<p>While the interface itself survives, an invalid configuration can
+cause secondary failures:</p>
+<ul>
+<li><strong>Persistence Failures:</strong> If you depend on
+<code>ventoy.json</code> to link a persistence image (.dat file) to a
+live Linux ISO, the failure to parse the JSON means the OS will boot
+purely into volatile RAM without your saved changes, or it may fail to
+mount the overlay filesystem.</li>
+<li><strong>Auto-Installation Failure:</strong> Unattended install
+scripts (e.g., Windows <code>autounattend.xml</code> or Linux Kickstart)
+mapped through the configuration will not load, forcing you into manual
+installation menus.</li>
+<li><strong>Path and Injection Issues:</strong> Any injected drivers,
+VHD/VTOY configurations, or custom menu parameters will be skipped
+entirely.</li>
+</ul>
+<h3 id="common-syntax-mistakes-to-avoid">Common Syntax Mistakes to
+Avoid</h3>
+<p>The embedded parser used by Ventoy is strict. The most frequent
+errors that trigger the syntax warning include:</p>
+<ul>
+<li><strong>Trailing Commas:</strong> Standard JSON does not allow a
+comma after the final key-value pair or array element.</li>
+<li><strong>Unescaped Backslashes:</strong> File paths on Windows
+frequently use backslashes. In JSON, backslashes are escape characters;
+write paths using forward slashes (<code>/</code>) or double backslashes
+(<code>\\</code>).</li>
+<li><strong>Single Quotes:</strong> JSON requires double quotes
+(<code>"</code>) for strings and keys. Single quotes (<code>'</code>)
+will immediately invalidate the file.</li>
+</ul>
+<h3 id="how-to-prevent-and-fix-configuration-errors">How to Prevent and
+Fix Configuration Errors</h3>
+<p>To avoid boot-time syntax errors, validate your configuration file
+before deploying the USB drive. You can paste the contents of your
+<code>ventoy.json</code> into any online JSON validator (linter) or open
+the file in a modern code editor like VS Code, which highlights
+formatting mistakes automatically.</p>
+<p>Alternatively, use the official <strong>VentoyPlugson</strong> tool
+provided in the Ventoy download package. VentoyPlugson starts a local
+web service with a graphical user interface, allowing you to configure
+themes, plugins, and options via sliders and dropdowns. When you save
+your changes, VentoyPlugson automatically generates valid, error-free
+JSON directly onto the USB drive.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

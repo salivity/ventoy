@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles Bad Sectors on USB Drives - ventoy</title>
+    <meta name="description" content="Ventoy does not have built-in bad block detection, repair, or sector reallocation mechanisms, meaning it cannot bypass or repair physical defects on failing flash media. Instead, Ventoy relies entirely on the drive's internal hardware controller and the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-bad-sectors-on-usb-drives">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles Bad Sectors on USB Drives - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-bad-sectors-on-usb-drives" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not have built-in bad block detection, repair, or sector reallocation mechanisms, meaning it cannot bypass or repair physical defects on failing flash media. Instead, Ventoy relies entirely on the drive's internal hardware controller and the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-bad-sectors-on-usb-drives">How Ventoy Handles
+Bad Sectors on USB Drives</h1>
+<p>Ventoy does not have built-in bad block detection, repair, or sector
+reallocation mechanisms, meaning it cannot bypass or repair physical
+defects on failing flash media. Instead, Ventoy relies entirely on the
+drive's internal hardware controller and the host operating system's
+filesystem driver to manage storage integrity. When bad sectors are
+present on a flash drive, Ventoy will either fail to install, corrupt
+during deployment, or throw critical read errors when attempting to boot
+an image.</p>
+<h3 id="hardware-level-vs-software-level-handling">Hardware-Level vs.
+Software-Level Handling</h3>
+<p>Flash drives manage media health via an internal Flash Translation
+Layer (FTL). The FTL automatically reallocates bad NAND flash blocks to
+reserved spare blocks transparently. When a drive begins failing
+noticeably, it typically means the FTL has exhausted its pool of reserve
+blocks and can no longer map out failing cells.</p>
+<p>Ventoy operates at the software and bootloader level and does not
+interact with the flash hardware at a low enough level to force block
+retirements. If the USB controller exposes a bad block to the system as
+an I/O error, Ventoy cannot correct it.</p>
+<h3 id="impact-during-ventoy-installation">Impact During Ventoy
+Installation</h3>
+<p>During installation, Ventoy formats the drive into two distinct
+partitions:</p>
+<ol type="1">
+<li><strong>Partition 1:</strong> The larger partition (usually exFAT by
+default, but can be formatted to NTFS, ext4, FAT32, etc.) used to store
+bootable ISO, WIM, IMG, or VHD files.</li>
+<li><strong>Partition 2:</strong> A small, hidden FAT16 partition
+containing the Ventoy bootloader files (VTOYEFI), core GRUB modules, and
+UEFI/BIOS runtime binaries.</li>
+</ol>
+<p>If bad sectors reside in the area targeted for Partition 2, the
+Ventoy installation process will terminate with write errors, or the
+device will fail to initialize in the computer's BIOS/UEFI boot menu. If
+bad sectors land on Partition 1, the filesystem creation step may hang
+or fail.</p>
+<h3 id="impact-during-runtime-and-iso-booting">Impact During Runtime and
+ISO Booting</h3>
+<p>Ventoy functions differently from traditional bootable USB creators.
+Instead of extracting ISO contents, it uses custom GRUB-based runtime
+hooks to dynamically read and map ISO files directly from the storage
+partition into system memory.</p>
+<ul>
+<li><strong>Corrupted Image Storage:</strong> If you copy an ISO file
+across a region containing bad sectors, the write operation may either
+fail mid-transfer or silently write corrupted data.</li>
+<li><strong>Boot Failures:</strong> When Ventoy boots an image, it reads
+disk sectors sequentially or as mapped by the filesystem. Hitting an
+unreadable sector causes read timeouts, I/O errors, kernel panics (in
+Linux), or blue screens/stop errors (in Windows PE/installers).</li>
+<li><strong>Missing Fallback:</strong> Ventoy has no built-in retry
+logic or error recovery for damaged payloads. If an ISO cannot be read
+cleanly from the USB drive, the boot process halts immediately.</li>
+</ul>
+<h3 id="filesystem-bad-block-marking-limitations">Filesystem Bad Block
+Marking Limitations</h3>
+<p>While some filesystems allow you to mark bad blocks (such as using
+<code>chkdsk /r</code> on NTFS or <code>badblocks</code> with
+<code>e2fsck</code> on ext4) to prevent the OS from writing to those
+clusters, this approach is unreliable with Ventoy:</p>
+<ul>
+<li>Ventoy requires that the files it boots can be mapped and accessed
+predictably. If a marked cluster interrupts an image, the underlying
+installer or OS kernel may still fail when expecting contiguous data
+structures.</li>
+<li>USB flash controllers often shift logical block addresses (LBAs)
+unpredictably due to wear-leveling algorithms, meaning a cluster marked
+"bad" by a filesystem tool may not permanently correspond to the
+physical failing block.</li>
+</ul>
+<h3 id="diagnosing-failing-media">Diagnosing Failing Media</h3>
+<p>Because Ventoy cannot mitigate hardware decay, media reliability must
+be verified externally. If you suspect your flash drive has bad
+sectors:</p>
+<ol type="1">
+<li><strong>Perform a Full Surface Test:</strong> Use non-destructive
+verification tools such as <strong>H2testw</strong> (Windows) or
+<strong>F3</strong> (Linux/macOS) to write and read back random data
+across the entire capacity.</li>
+<li><strong>Inspect SMART and I/O Logs:</strong> Check system logs
+(<code>dmesg</code> on Linux or Event Viewer on Windows) for persistent
+<code>I/O device error</code> or
+<code>Reset to device \Device\RaidPortX was issued</code>
+notifications.</li>
+<li><strong>Replace the Drive:</strong> Flash drives exhibiting
+read/write errors have exhausted their spare cell capacity and must be
+replaced; software-level workarounds will not provide a reliable boot
+environment.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

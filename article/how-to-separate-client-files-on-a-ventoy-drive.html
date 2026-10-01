@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Separate Client Files on a Ventoy Drive - ventoy</title>
+    <meta name="description" content="Technicians frequently use Ventoy to consolidate multiple operating system installers and utility ISOs onto a single USB drive. However, storing client backups, driver packages, and recovery data alongside bootable installation media can quickly lead to">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-separate-client-files-on-a-ventoy-drive">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Separate Client Files on a Ventoy Drive - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-separate-client-files-on-a-ventoy-drive" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Technicians frequently use Ventoy to consolidate multiple operating system installers and utility ISOs onto a single USB drive. However, storing client backups, driver packages, and recovery data alongside bootable installation media can quickly lead to" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-separate-client-files-on-a-ventoy-drive">How to Separate
+Client Files on a Ventoy Drive</h1>
+<p>Technicians frequently use Ventoy to consolidate multiple operating
+system installers and utility ISOs onto a single USB drive. However,
+storing client backups, driver packages, and recovery data alongside
+bootable installation media can quickly lead to menu clutter and
+accidental data exposure. This guide outlines the most effective methods
+to cleanly separate and secure client files from boot media on a Ventoy
+drive, utilizing partition splitting, directory isolation flags, and
+custom configuration files.</p>
+<h3 id="method-1-create-a-dedicated-data-partition">Method 1: Create a
+Dedicated Data Partition</h3>
+<p>The most secure and organized approach is to isolate client data onto
+its own dedicated partition. By separating the storage environments, you
+prevent operating system installers from touching client data and keep
+your backup tools isolated.</p>
+<ol type="1">
+<li><strong>Reserve Space During Installation:</strong> When initially
+formatting your USB drive with the Ventoy GUI tool, open the
+<strong>Option</strong> menu and select <strong>Partition
+Configuration</strong>. Check the box to reserve space at the bottom of
+the drive and specify the amount of gigabytes you need for client
+files.</li>
+<li><strong>Format the Reserved Space:</strong> Once Ventoy finishes
+installing, open your operating system’s disk manager (such as Windows
+Disk Management or GParted on Linux). Locate the unallocated reserved
+space at the end of the drive, create a new partition, and format it
+with your desired filesystem (NTFS or exFAT).</li>
+<li><strong>Label the Partitions:</strong> Name the default Ventoy boot
+partition something clear, such as <code>VENTOY_BOOT</code>, and label
+the second partition <code>CLIENT_DATA</code>. Ventoy will strictly
+ignore the secondary partition unless you explicitly configure it
+otherwise.</li>
+</ol>
+<h3 id="method-2-use-the-ventoyignore-directory-flag">Method 2: Use the
+<code>.ventoyignore</code> Directory Flag</h3>
+<p>If you prefer to keep all files on a single partition without
+repartitioning the drive, you can prevent Ventoy from scanning specific
+folders for bootable media.</p>
+<ol type="1">
+<li>Navigate to the root directory of your Ventoy drive in your file
+manager.</li>
+<li>Create a dedicated folder for client files, such as
+<code>Client_Backups</code> or <code>Technician_Tools</code>.</li>
+<li>Open that folder, create a blank text document, and rename it
+exactly to <code>.ventoyignore</code> (ensuring there is no hidden
+<code>.txt</code> extension).</li>
+<li>Place all client files, diagnostic logs, and temporary storage
+inside this directory. Ventoy will skip this folder entirely during its
+boot-time ISO scan, keeping your boot menu clean and responsive.</li>
+</ol>
+<h3 id="method-3-restrict-ventoy-scanning-paths-via-ventoyjson">Method
+3: Restrict Ventoy Scanning Paths via <code>ventoy.json</code></h3>
+<p>For complete control over where Ventoy looks for bootable images, you
+can configure the bootloader to scan only one specific folder.</p>
+<ol type="1">
+<li>In the root of your Ventoy drive, create a folder named
+<code>ventoy</code> (all lowercase).</li>
+<li>Inside the <code>ventoy</code> folder, create a plain text file
+named <code>ventoy.json</code>.</li>
+<li>Create a separate folder in the root of the drive exclusively for
+your bootable media, such as <code>/ISOs</code>.</li>
+<li>Open <code>ventoy.json</code> in a text editor and add the following
+configuration:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;ventoy_search_path&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;/ISOs&quot;</span><span class="ot">]</span> <span class="fu">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>By defining the <code>ventoy_search_path</code>, Ventoy will ignore
+any other folder in the root directory. You can then create standard
+folders for client files anywhere outside the <code>/ISOs</code>
+directory without fear of boot menu interference.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

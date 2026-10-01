@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify ISO Checksums Before Adding to Ventoy - ventoy</title>
+    <meta name="description" content="Corrupted or incomplete ISO files placed on a Ventoy multiboot drive frequently lead to kernel panics, failed installations, and hard-to-diagnose boot errors. Establishing a strict checksum verification workflow—validating the file immediately after do">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/verify-iso-checksums-before-adding-to-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Verify ISO Checksums Before Adding to Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/verify-iso-checksums-before-adding-to-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Corrupted or incomplete ISO files placed on a Ventoy multiboot drive frequently lead to kernel panics, failed installations, and hard-to-diagnose boot errors. Establishing a strict checksum verification workflow—validating the file immediately after do" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="verify-iso-checksums-before-adding-to-ventoy">Verify ISO
+Checksums Before Adding to Ventoy</h1>
+<p>Corrupted or incomplete ISO files placed on a Ventoy multiboot drive
+frequently lead to kernel panics, failed installations, and
+hard-to-diagnose boot errors. Establishing a strict checksum
+verification workflow—validating the file immediately after download,
+safely flushing storage buffers, and re-verifying the file directly on
+the USB drive—ensures that only pristine images make it to your boot
+menu.</p>
+<h2 id="1-upstream-verification-post-download">1. Upstream Verification
+(Post-Download)</h2>
+<p>Before copying any image to storage media, verify that the downloaded
+ISO matches the cryptographic hash published by the distribution
+vendor.</p>
+<h3 id="on-linux-and-macos">On Linux and macOS</h3>
+<p>Most modern distributions provide SHA-256 hashes. If the distributor
+provides a <code>.sha256</code> file along with the ISO, run:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sha256sum</span> <span class="at">-c</span> filename.iso.sha256</span></code></pre></div>
+<p>If you only have the hash string from the website, calculate the hash
+manually:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sha256sum</span> filename.iso</span></code></pre></div>
+<p>Compare the output against the vendor's published string. On macOS,
+use <code>shasum -a 256 filename.iso</code>.</p>
+<h3 id="on-windows">On Windows</h3>
+<p>Open PowerShell and use the <code>Get-FileHash</code> cmdlet:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Get-FileHash <span class="op">.</span>\filename<span class="op">.</span><span class="fu">iso</span> <span class="op">-</span>Algorithm SHA256</span></code></pre></div>
+<p>To compare it automatically against the expected hash, run:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">(</span>Get-FileHash <span class="op">.</span>\filename<span class="op">.</span><span class="fu">iso</span> <span class="op">-</span>Algorithm SHA256<span class="op">).</span><span class="fu">Hash</span> <span class="op">-eq</span> <span class="st">&quot;PASTE_EXPECTED_HASH_HERE&quot;</span></span></code></pre></div>
+<p>A return value of <code>True</code> confirms the file downloaded
+without corruption.</p>
+<h2 id="2-safe-transfer-and-cache-synchronization">2. Safe Transfer and
+Cache Synchronization</h2>
+<p>USB transfer mechanisms often utilize write caching. If a drive is
+disconnected while data remains in the operating system's write buffer,
+the ISO file on the Ventoy drive will be truncated or corrupted.</p>
+<ul>
+<li><strong>Linux:</strong> After copying the ISO to the Ventoy
+partition, run the <code>sync</code> command in your terminal before
+unplugging the drive. This forces all unwritten system buffers to commit
+to the physical USB storage.</li>
+<li><strong>Windows:</strong> Always use the <strong>Safely Remove
+Hardware and Eject Media</strong> tray icon. Wait for the confirmation
+prompt before removing the drive.</li>
+</ul>
+<h2 id="3-post-copy-drive-verification">3. Post-Copy Drive
+Verification</h2>
+<p>A file can verify correctly on a local NVMe drive and still fail when
+written to a USB drive due to faulty flash memory, bad sectors, or
+improper unmounting. Generating a checksum directly from the USB drive
+guarantees storage integrity.</p>
+<h3 id="direct-comparison">Direct Comparison</h3>
+<p>Run the checksum utility targeting the mounted Ventoy path rather
+than the local file:</p>
+<ul>
+<li><strong>Linux:</strong>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sha256sum</span> /media/user/Ventoy/filename.iso</span></code></pre></div></li>
+<li><strong>Windows (PowerShell):</strong>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Get-FileHash D<span class="op">:</span>\filename<span class="op">.</span><span class="fu">iso</span> <span class="op">-</span>Algorithm SHA256</span></code></pre></div></li>
+</ul>
+<p>If the generated hash on the USB partition does not match the
+upstream vendor hash, reformat the drive or replace the USB media.</p>
+<h2 id="4-automated-verification-scripts">4. Automated Verification
+Scripts</h2>
+<p>To eliminate manual entry, automate the process using simple terminal
+logic that copies and immediately validates the file.</p>
+<h3 id="linux-bash-workflow">Linux Bash Workflow</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="va">ISO_PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$1</span><span class="st">&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="va">VENTOY_PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$2</span><span class="st">&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking source integrity...&quot;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sha256sum</span> <span class="at">-c</span> <span class="st">&quot;</span><span class="va">${ISO_PATH}</span><span class="st">.sha256&quot;</span> <span class="kw">||</span> <span class="bu">exit</span> 1</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Copying to Ventoy...&quot;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="st">&quot;</span><span class="va">$ISO_PATH</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">$VENTOY_PATH</span><span class="st">&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sync</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Verifying USB copy...&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="va">TARGET_ISO</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${VENTOY_PATH}</span><span class="st">/</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">&quot;</span><span class="va">$ISO_PATH</span><span class="st">&quot;</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="va">ORIGINAL_HASH</span><span class="op">=</span><span class="va">$(</span><span class="fu">sha256sum</span> <span class="st">&quot;</span><span class="va">$ISO_PATH</span><span class="st">&quot;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span><span class="va">)</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="va">USB_HASH</span><span class="op">=</span><span class="va">$(</span><span class="fu">sha256sum</span> <span class="st">&quot;</span><span class="va">$TARGET_ISO</span><span class="st">&quot;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span><span class="va">)</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">&quot;</span><span class="va">$ORIGINAL_HASH</span><span class="st">&quot;</span> <span class="ot">=</span> <span class="st">&quot;</span><span class="va">$USB_HASH</span><span class="st">&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Verification successful: Safe to boot.&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Hash mismatch: USB file is corrupt!&quot;</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span> <span class="st">&quot;</span><span class="va">$TARGET_ISO</span><span class="st">&quot;</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<h2 id="summary-checklist">Summary Checklist</h2>
+<ol type="1">
+<li>Compute the local file hash using SHA-256 or SHA-512 against the
+vendor release page.</li>
+<li>Transfer the file to the Ventoy partition.</li>
+<li>Flush system cache buffers (<code>sync</code> on Linux; "Safely
+Remove" on Windows).</li>
+<li>Run the checksum utility directly against the file stored on the USB
+drive.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

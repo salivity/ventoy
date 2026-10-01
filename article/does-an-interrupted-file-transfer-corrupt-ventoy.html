@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does an Interrupted File Transfer Corrupt Ventoy? - ventoy</title>
+    <meta name="description" content="An interrupted file transfer to a Ventoy USB drive will generally result in an incomplete, unbootable image file, but it is extremely unlikely to damage the core Ventoy bootloader. However, depending on how the transfer was interrupted—such as a clean">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-an-interrupted-file-transfer-corrupt-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does an Interrupted File Transfer Corrupt Ventoy? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-an-interrupted-file-transfer-corrupt-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="An interrupted file transfer to a Ventoy USB drive will generally result in an incomplete, unbootable image file, but it is extremely unlikely to damage the core Ventoy bootloader. However, depending on how the transfer was interrupted—such as a clean" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-an-interrupted-file-transfer-corrupt-ventoy">Does an
+Interrupted File Transfer Corrupt Ventoy?</h1>
+<p>An interrupted file transfer to a Ventoy USB drive will generally
+result in an incomplete, unbootable image file, but it is extremely
+unlikely to damage the core Ventoy bootloader. However, depending on how
+the transfer was interrupted—such as a clean software cancellation
+versus an abrupt physical removal of the drive—the file system on the
+data partition can suffer metadata corruption. This guide explains how
+Ventoy's architecture isolates system files, what risks an interrupted
+transfer poses to the file system and boot configuration, and how to
+resolve potential issues.</p>
+<h3 id="ventoy-dual-partition-architecture">Ventoy Dual-Partition
+Architecture</h3>
+<p>To understand the risks, it is essential to understand how Ventoy
+structures a USB drive. When you install Ventoy, it automatically
+divides the drive into two distinct partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Data Partition):</strong> Formatted typically
+as exFAT (or NTFS/ext4), this takes up almost the entire drive. This is
+where you copy and paste your ISO, WIM, IMG, or VHD files, and where an
+optional <code>ventoy</code> configuration folder resides.</li>
+<li><strong>Partition 2 (<code>VTOYEFI</code> Partition):</strong> A
+small, hidden FAT-formatted partition located at the end of the drive.
+It contains the GRUB bootloader, EFI binaries, and essential Ventoy core
+files.</li>
+</ol>
+<p>Because standard file transfers only write to Partition 1, the
+bootloader residing on Partition 2 remains completely untouched and safe
+from write interruptions.</p>
+<h3 id="the-impact-on-the-bootloader-configuration">The Impact on the
+Bootloader Configuration</h3>
+<p>The Ventoy bootloader configuration depends on two components: the
+core boot binaries on Partition 2 and optional custom settings (such as
+theme configurations or auto-install scripts) defined in a
+<code>ventoy.json</code> file inside the <code>ventoy</code> directory
+on Partition 1.</p>
+<ul>
+<li><strong>Core Bootloader:</strong> An interrupted file transfer will
+not corrupt the bootloader files on Partition 2 because the operating
+system does not write to that partition during everyday file
+transfers.</li>
+<li><strong><code>ventoy.json</code> Configuration:</strong> If the
+interrupted transfer was an ISO or other image, your configuration file
+remains unaffected. The configuration is only at risk if you were
+actively editing or overwriting <code>ventoy.json</code> at the exact
+moment the interruption occurred.</li>
+</ul>
+<h3 id="risks-to-the-file-system">Risks to the File System</h3>
+<p>The primary concern during an interrupted transfer is the integrity
+of the data partition's file system:</p>
+<ul>
+<li><strong>Canceling via the Operating System:</strong> If you click
+"Cancel" in your file manager, the operating system stops writing and
+cleanly closes the file system allocation tables. The result is
+typically a partially written, useless ISO file, but the underlying file
+system remains structurally healthy.</li>
+<li><strong>Abrupt Disconnection or Power Loss:</strong> If the transfer
+is interrupted by pulling the USB drive out or experiencing a power cut,
+write caching can cause the file system to become "dirty" or corrupted.
+In exFAT or NTFS, this can lead to orphaned allocation clusters, broken
+directory structures, or read-only volume flags. While rare, extreme
+file system corruption could make Partition 1 temporarily unreadable by
+both the host OS and Ventoy.</li>
+</ul>
+<h3 id="how-to-fix-interrupted-transfer-issues">How to Fix Interrupted
+Transfer Issues</h3>
+<p>If an ISO transfer was interrupted, follow these steps to restore
+normal operation:</p>
+<ol type="1">
+<li><strong>Delete Partial Files:</strong> Reconnect the drive, locate
+the partially transferred file, and delete it. Attempting to boot an
+incomplete ISO will result in boot loops or kernel panic errors.</li>
+<li><strong>Run a File System Check:</strong>
+<ul>
+<li><strong>Windows:</strong> Open Command Prompt as Administrator and
+run <code>chkdsk X: /f</code> (replace <code>X:</code> with your Ventoy
+data drive letter) to fix index tables and clear orphaned clusters.</li>
+<li><strong>Linux:</strong> Unmount the partition and run
+<code>fsck.exfat /dev/sdX1</code> or <code>fsck.ntfs /dev/sdX1</code>
+depending on the partition format.</li>
+</ul></li>
+<li><strong>Re-transfer the File:</strong> Copy the image file again,
+and always use the "Safely Remove Hardware" or "Eject" feature before
+unplugging the drive.</li>
+<li><strong>Repair the Bootloader (If Needed):</strong> If the drive
+fails to boot entirely due to rare partition-table damage, run the
+Ventoy installer and select the non-destructive <strong>Update</strong>
+option. This rewrites Partition 2 and repairs the boot code without
+wiping the files stored on Partition 1.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

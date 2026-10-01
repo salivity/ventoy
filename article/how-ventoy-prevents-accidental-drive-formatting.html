@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Prevents Accidental Drive Formatting - ventoy</title>
+    <meta name="description" content="Ventoy is an open-source tool used to create bootable USB drives by directly copying ISO files onto storage media. Because formatting storage devices carries the inherent risk of severe data loss, the Ventoy installer incorporates several deliberate safe">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-prevents-accidental-drive-formatting">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Prevents Accidental Drive Formatting - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-prevents-accidental-drive-formatting" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy is an open-source tool used to create bootable USB drives by directly copying ISO files onto storage media. Because formatting storage devices carries the inherent risk of severe data loss, the Ventoy installer incorporates several deliberate safe" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-prevents-accidental-drive-formatting">How Ventoy
+Prevents Accidental Drive Formatting</h1>
+<p>Ventoy is an open-source tool used to create bootable USB drives by
+directly copying ISO files onto storage media. Because formatting
+storage devices carries the inherent risk of severe data loss, the
+Ventoy installer incorporates several deliberate safeguards to prevent
+users from accidentally wiping their primary operating system drives,
+internal hard drives, and solid-state drives.</p>
+<h3 id="default-removable-media-filtering">Default Removable Media
+Filtering</h3>
+<p>By default, the Ventoy graphical user interface (GUI) and
+command-line interface (CLI) automatically scan and filter the host
+machine's connected drives, displaying only removable storage media.
+Internal fixed disks—such as NVMe SSDs, SATA SSDs, and internal
+mechanical hard drives—are hidden from the device selection menu by
+default. This automatic exclusion significantly reduces the chance that
+an operating system drive will be selected by mistake.</p>
+<h3 id="the-show-all-devices-safe-lock">The "Show All Devices" Safe
+Lock</h3>
+<p>Some external storage solutions, such as USB-attached external hard
+drives or large solid-state drives, report to the operating system as
+fixed disks rather than removable media. To format these devices, users
+must intentionally open the options menu and check the "Show all
+devices" option (or use an explicit flag in the CLI). This action
+functions as a conscious override, ensuring that fixed disks can only be
+targeted through deliberate user intent rather than accidental
+oversight.</p>
+<h3 id="detailed-device-identification">Detailed Device
+Identification</h3>
+<p>To prevent misidentification when multiple USB drives are connected,
+Ventoy displays critical metadata alongside the drive selection
+dropdown. The installer shows the drive letter, vendor name, model, and
+the total capacity of the media. This information enables users to
+visually verify that the targeted disk matches the physical
+specifications of their intended USB stick rather than a high-capacity
+internal drive.</p>
+<h3 id="multi-stage-confirmation-dialogs">Multi-Stage Confirmation
+Dialogs</h3>
+<p>Executing the installation triggers multiple consecutive warning
+prompts. The installer presents dialog boxes explicitly stating that the
+target device will be formatted and that all existing data will be
+permanently destroyed. The user must confirm this destructive operation
+twice before any partitioning or write operations are sent to the
+drive.</p>
+<h3 id="operating-system-write-restrictions">Operating System Write
+Restrictions</h3>
+<p>Ventoy relies on and respects host operating system write
+protections. Modern operating systems, including Windows and Linux,
+enforce low-level volume locks on the active system partition containing
+the running OS kernel. Even if a user attempts to force-select an active
+system drive, the operating system's underlying disk management
+subsystem blocks the raw partition table modifications and formatting
+commands required by the Ventoy installation process.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

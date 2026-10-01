@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Write Caching Impact on Ventoy Stability - ventoy</title>
+    <meta name="description" content="Windows write-caching settings can significantly impact the stability and reliability of a Ventoy installation. While write-caching improves perceived transfer speeds by holding data in system RAM before writing it to a flash drive, it introduces substan">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/windows-write-caching-impact-on-ventoy-stability">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Windows Write Caching Impact on Ventoy Stability - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/windows-write-caching-impact-on-ventoy-stability" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Windows write-caching settings can significantly impact the stability and reliability of a Ventoy installation. While write-caching improves perceived transfer speeds by holding data in system RAM before writing it to a flash drive, it introduces substan" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="windows-write-caching-impact-on-ventoy-stability">Windows Write
+Caching Impact on Ventoy Stability</h1>
+<p>Windows write-caching settings can significantly impact the stability
+and reliability of a Ventoy installation. While write-caching improves
+perceived transfer speeds by holding data in system RAM before writing
+it to a flash drive, it introduces substantial risks of file corruption,
+bootloader failure, and incomplete image transfers. Understanding how
+Windows handles USB caching policies helps prevent common Ventoy boot
+errors and ensures the long-term integrity of your multiboot drive.</p>
+<h3 id="understanding-windows-disk-policies">Understanding Windows Disk
+Policies</h3>
+<p>Windows provides two primary removal policies for external USB
+storage devices: <strong>Quick removal</strong> and <strong>Better
+performance</strong>.</p>
+<ul>
+<li><strong>Quick removal (Default):</strong> Disables write-caching on
+the device and in Windows. Data is written directly to the USB drive,
+allowing you to disconnect it safely without using the "Safely Remove
+Hardware" notification icon (provided you are not actively transferring
+files).</li>
+<li><strong>Better performance:</strong> Enables write-caching in
+Windows. The operating system writes data to a temporary cache in RAM
+first and slowly flushes it to the physical flash storage in the
+background.</li>
+</ul>
+<h3 id="how-write-caching-affects-initial-ventoy-installation">How
+Write-Caching Affects Initial Ventoy Installation</h3>
+<p>During the initial installation of Ventoy, the installer modifies the
+disk partition table, creates two distinct partitions (an exFAT/NTFS
+data partition and a hidden FAT VTOYEFI boot partition), and writes
+low-level boot code to the Master Boot Record (MBR) or GUID Partition
+Table (GPT).</p>
+<p>If "Better performance" (write-caching) is enabled, the disk
+management operations and boot sector writes may sit in cache rather
+than being instantly committed to the physical drive. If the write fails
+to flush properly, or if a user unplugs the drive shortly after the
+installation utility declares success, the partition structure or
+bootloader files can become corrupted. This manifests as an unbootable
+drive, "Missing operating system" errors, or UEFI boot loop
+failures.</p>
+<h3 id="impact-on-iso-storage-and-runtime-stability">Impact on ISO
+Storage and Runtime Stability</h3>
+<p>The primary use of Ventoy is hosting multiple operating system ISO
+images on the secondary data partition. Because ISO images are typically
+several gigabytes in size, write-caching creates a deceptive transfer
+experience:</p>
+<ol type="1">
+<li><strong>Premature Completion Indicators:</strong> The Windows file
+copy dialog may show 100% completion while gigabytes of data still
+reside purely in system memory waiting to be committed to the flash
+controller.</li>
+<li><strong>Corrupted Payloads:</strong> Disconnecting the drive before
+the internal cache flushes completely will sever the transfer mid-write.
+The ISO will appear on the disk with the correct file size, but internal
+blocks will be missing or zeroed out.</li>
+<li><strong>Boot-Time Crashes:</strong> When booting a truncated ISO
+through Ventoy, the installation environment will often launch
+successfully into memory via the Ventoy kernel, only to crash midway
+through the OS setup due to a failed checksum, missing SquashFS image,
+or corrupted initramfs.</li>
+</ol>
+<h3 id="recommended-configuration-for-ventoy">Recommended Configuration
+for Ventoy</h3>
+<p>To maintain maximum stability for a Ventoy USB drive:</p>
+<ul>
+<li><strong>Retain the Quick Removal Policy:</strong> Ensure the USB
+drive's removal policy in Windows Device Manager is set to "Quick
+removal" under the device's <strong>Properties &gt; Policies</strong>
+tab.</li>
+<li><strong>Always Safely Remove Hardware:</strong> If you choose to
+enable "Better performance" to maximize sustained sequential write
+speeds for large image files, you must always use the "Safely Remove
+Hardware and Eject Media" tray utility. Wait until Windows explicitly
+confirms it is safe to remove the device before disconnecting the
+physical drive.</li>
+<li><strong>Verify Image Integrity:</strong> After copying large ISOs to
+a Ventoy drive under a cached environment, check the SHA-256 or MD5 hash
+of the file directly on the USB drive to confirm the physical write
+completed successfully.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

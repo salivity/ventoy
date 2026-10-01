@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Add Kernel Parameters to ISO in Ventoy - ventoy</title>
+    <meta name="description" content="Yes, you can add custom kernel parameters to a Linux ISO before booting it in Ventoy. This can be accomplished either temporarily during the boot process using Ventoy's built-in GRUB interface or permanently by configuring Ventoy's custom configuration f">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-add-kernel-parameters-to-iso-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Add Kernel Parameters to ISO in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-add-kernel-parameters-to-iso-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, you can add custom kernel parameters to a Linux ISO before booting it in Ventoy. This can be accomplished either temporarily during the boot process using Ventoy's built-in GRUB interface or permanently by configuring Ventoy's custom configuration f" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-add-kernel-parameters-to-iso-in-ventoy">How to Add Kernel
+Parameters to ISO in Ventoy</h1>
+<p>Yes, you can add custom kernel parameters to a Linux ISO before
+booting it in Ventoy. This can be accomplished either temporarily during
+the boot process using Ventoy's built-in GRUB interface or permanently
+by configuring Ventoy's custom configuration files or modifying the ISO
+itself.</p>
+<h3 id="method-1-add-parameters-temporarily-at-boot">Method 1: Add
+Parameters Temporarily at Boot</h3>
+<p>The fastest way to test or apply one-time boot parameters (such as
+<code>nomodeset</code>, <code>single</code>, or hardware-specific flags)
+is through the bootloader menu.</p>
+<ol type="1">
+<li>Boot your computer from the Ventoy USB drive.</li>
+<li>Navigate to the Linux ISO you wish to run and press
+<strong>Enter</strong>.</li>
+<li>Select <strong>Boot in normal mode</strong>.</li>
+<li>When the Linux distribution's bootloader menu appears (usually GRUB
+or Syslinux), highlight the desired boot option.</li>
+<li>Press <strong><code>e</code></strong> (in GRUB) or
+<strong><code>Tab</code></strong> (in Syslinux) to edit the boot
+parameters.</li>
+<li>Locate the line starting with <code>linux</code>,
+<code>linuxefi</code>, or <code>vmlinuz</code>.</li>
+<li>Move the cursor to the end of that line, type a space, and append
+your custom kernel parameters (e.g., <code>nomodeset</code>).</li>
+<li>Press <strong><code>Ctrl + X</code></strong> or
+<strong><code>F10</code></strong> to boot the system with the modified
+parameters.</li>
+</ol>
+<h3 id="method-2-add-parameters-permanently-using-ventoy_grubcfg">Method
+2: Add Parameters Permanently Using <code>ventoy_grub.cfg</code></h3>
+<p>If you require persistent custom parameters without re-typing them
+every time, you can create a custom GRUB menu in Ventoy.</p>
+<ol type="1">
+<li>Open your Ventoy USB drive in your operating system's file
+manager.</li>
+<li>Navigate to the <code>ventoy</code> folder in the root of the USB
+drive (create the folder if it does not exist).</li>
+<li>Create a plain text file named <code>ventoy_grub.cfg</code> inside
+the <code>ventoy</code> directory.</li>
+<li>Add a custom boot entry pointing to your ISO with your desired
+kernel arguments:</li>
+</ol>
+<pre class="text"><code>menuentry &quot;Ubuntu Live (Custom Parameters)&quot; {
+    set iso_path=&quot;/ubuntu-22.04-desktop-amd64.iso&quot;
+    loopback loop $iso_path
+    linux (loop)/casper/vmlinuz boot=casper iso-scan/filename=$iso_path nomodeset quiet splash ---
+    initrd (loop)/casper/initrd
+}</code></pre>
+<ol start="5" type="1">
+<li>Save the file.</li>
+<li>When booting Ventoy, press <strong><code>F6</code></strong> to load
+the custom menu defined in <code>ventoy_grub.cfg</code> and select your
+custom entry.</li>
+</ol>
+<h3 id="method-3-modify-the-iso-directly">Method 3: Modify the ISO
+Directly</h3>
+<p>For distributions where automated configuration is necessary across
+multiple machines:</p>
+<ol type="1">
+<li>Extract the ISO contents using a tool like <code>xorriso</code> or
+7-Zip.</li>
+<li>Locate the bootloader configuration file (commonly
+<code>/boot/grub/grub.cfg</code> or
+<code>/isolinux/isolinux.cfg</code>).</li>
+<li>Open the file in a text editor, find the default boot entry, and add
+your parameters to the kernel launch line.</li>
+<li>Repack the files into a bootable ISO image using an ISO creation
+tool (such as <code>xorriso</code> or <code>mkisofs</code>).</li>
+<li>Copy the newly modified ISO to your Ventoy USB drive.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

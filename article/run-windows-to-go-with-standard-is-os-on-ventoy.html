@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Windows To Go with Standard ISOs on Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy fully supports running portable Windows environments like Windows To Go directly alongside standard operating system ISO files on the exact same USB drive. By utilizing VHD and VHDX virtual hard disk files, users can carry a fully functional, pers">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/run-windows-to-go-with-standard-is-os-on-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Run Windows To Go with Standard ISOs on Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/run-windows-to-go-with-standard-is-os-on-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy fully supports running portable Windows environments like Windows To Go directly alongside standard operating system ISO files on the exact same USB drive. By utilizing VHD and VHDX virtual hard disk files, users can carry a fully functional, pers" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="run-windows-to-go-with-standard-isos-on-ventoy">Run Windows To
+Go with Standard ISOs on Ventoy</h1>
+<p>Ventoy fully supports running portable Windows environments like
+Windows To Go directly alongside standard operating system ISO files on
+the exact same USB drive. By utilizing VHD and VHDX virtual hard disk
+files, users can carry a fully functional, persistent Windows desktop
+while simultaneously maintaining a multi-boot library of Linux
+distributions, rescue utilities, and standard Windows installer media on
+a single device.</p>
+<h3 id="how-ventoy-handles-windows-to-go">How Ventoy Handles Windows To
+Go</h3>
+<p>Instead of dedicating an entire flash drive to a single Windows To Go
+(WTG) installation, Ventoy allows you to encapsulate the portable OS
+inside a single <code>.vhd</code> or <code>.vhdx</code> file. Ventoy
+recognizes and boots virtual hard disks directly from its main storage
+partition, treating them just like any standard <code>.iso</code>,
+<code>.img</code>, or <code>.efi</code> file in your menu.</p>
+<p>Because the operating system resides entirely within the VHD
+container, all file modifications, software installations, and user
+settings persist across reboots without interfering with the other ISO
+images stored on the drive.</p>
+<h3 id="requirements-for-running-wtg-on-ventoy">Requirements for Running
+WTG on Ventoy</h3>
+<p>To boot a Windows To Go environment alongside standard ISOs, you
+need:</p>
+<ul>
+<li><strong>Ventoy USB Drive:</strong> A flash drive or external SSD
+formatted with Ventoy.</li>
+<li><strong>A Windows To Go VHD/VHDX File:</strong> A virtual disk
+containing an installed, bootable version of Windows.</li>
+<li><strong>The Ventoy VHD Plugin:</strong> A small helper file
+(<code>ventoy_vhdboot.img</code>) that provides the necessary drivers
+for Ventoy to chainload Windows from a virtual disk in both UEFI and
+Legacy BIOS modes.</li>
+</ul>
+<h3 id="step-by-step-setup">Step-by-Step Setup</h3>
+<ol type="1">
+<li><strong>Create the VHD/VHDX:</strong> Use tools such as Rufus,
+Hasleo WinToUSB, or the native Windows Disk Management tool alongside
+DISM to install Windows into a fixed or dynamically expanding VHD/VHDX
+container.</li>
+<li><strong>Install the VHD Boot Plugin:</strong> Download the
+<code>ventoy_vhdboot</code> package from Ventoy's official plugin
+repository. Extract the <code>ventoy_vhdboot.img</code> file and place
+it inside a folder named <code>ventoy</code> located in the root of your
+Ventoy partition.</li>
+<li><strong>Transfer the Files:</strong> Copy your created
+<code>.vhd</code> or <code>.vhdx</code> file directly into the Ventoy
+USB partition, placing it in the same directory (or organized
+subdirectories) alongside your installer ISOs.</li>
+<li><strong>Boot and Configure:</strong> Boot from the Ventoy drive,
+select your VHD/VHDX from the on-screen menu, and complete the initial
+Windows setup (OOBE) if running it for the first time.</li>
+</ol>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ul>
+<li><strong>Drive Hardware:</strong> Running a full Windows operating
+system generates frequent read and write requests. A fast USB 3.1/3.2
+flash drive, or preferably an external NVMe/SATA SSD enclosure, is
+recommended to prevent system stuttering.</li>
+<li><strong>VHD Disk Type:</strong> While dynamic VHDs save initial
+space on your Ventoy drive, fixed-size VHDs offer significantly faster
+read/write performance and lower fragmentation, which is beneficial for
+portable OS stability.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

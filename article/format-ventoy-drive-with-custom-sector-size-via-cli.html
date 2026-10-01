@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Format Ventoy Drive with Custom Sector Size via CLI - ventoy</title>
+    <meta name="description" content="This article explains how to format a USB drive with Ventoy and apply custom sector or cluster sizes using command-line interface (CLI) tools in Linux. While Ventoy's native script provisions the partition table and boot partition, altering the data part">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/format-ventoy-drive-with-custom-sector-size-via-cli">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Format Ventoy Drive with Custom Sector Size via CLI - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/format-ventoy-drive-with-custom-sector-size-via-cli" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how to format a USB drive with Ventoy and apply custom sector or cluster sizes using command-line interface (CLI) tools in Linux. While Ventoy's native script provisions the partition table and boot partition, altering the data part" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="format-ventoy-drive-with-custom-sector-size-via-cli">Format
+Ventoy Drive with Custom Sector Size via CLI</h1>
+<p>This article explains how to format a USB drive with Ventoy and apply
+custom sector or cluster sizes using command-line interface (CLI) tools
+in Linux. While Ventoy's native script provisions the partition table
+and boot partition, altering the data partition's allocation and sector
+alignment requires combining Ventoy’s shell installer with native
+filesystem utilities like <code>mkfs.exfat</code> or
+<code>mkfs.ntfs</code>.</p>
+<h3 id="step-1-identify-the-target-drive">Step 1: Identify the Target
+Drive</h3>
+<p>Insert your USB flash drive and open your terminal. Run the following
+command to identify the correct block device:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">lsblk</span></span></code></pre></div>
+<p>Locate your drive node (for example, <code>/dev/sdb</code> or
+<code>/dev/sdc</code>). Ensure you do not target your primary OS
+disk.</p>
+<h3 id="step-2-install-the-ventoy-base-system">Step 2: Install the
+Ventoy Base System</h3>
+<p>Download and extract the latest Ventoy Linux package, then navigate
+into the extracted directory. Run <code>Ventoy2Disk.sh</code> to
+initialize the disk structure:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ./Ventoy2Disk.sh <span class="at">-i</span> <span class="at">-g</span> /dev/sdX</span></code></pre></div>
+<ul>
+<li>Replace <code>/dev/sdX</code> with your target drive.</li>
+<li>The <code>-g</code> flag creates a GPT partition layout, which is
+recommended for modern systems and proper 4K alignment.</li>
+<li>The <code>-i</code> flag performs a fresh install.</li>
+</ul>
+<p>This command writes the bootloader to Partition 2
+(<code>/dev/sdX2</code>) and creates the main data partition on
+Partition 1 (<code>/dev/sdX1</code>).</p>
+<h3
+id="step-3-reformat-the-data-partition-with-custom-sector-sizes">Step 3:
+Reformat the Data Partition with Custom Sector Sizes</h3>
+<p>Ventoy allows Partition 1 to be reformatted to different filesystems
+and cluster configurations without breaking boot functionality. Unmount
+the partition before modifying it:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /dev/sdX1</span></code></pre></div>
+<h4 id="formatting-as-exfat-with-custom-sectors-per-cluster">Formatting
+as exFAT with Custom Sectors per Cluster</h4>
+<p>Use <code>mkfs.exfat</code> to specify the volume label and cluster
+sizing:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkfs.exfat <span class="at">-s</span> 128 <span class="at">-n</span> <span class="st">&quot;VENTOY&quot;</span> /dev/sdX1</span></code></pre></div>
+<ul>
+<li><code>-s &lt;sectors&gt;</code>: Defines the number of sectors per
+cluster. Setting <code>-s 128</code> on a standard 512-byte sector disk
+produces a 64 KB cluster size.</li>
+</ul>
+<h4 id="formatting-as-ntfs-with-custom-clustersector-sizing">Formatting
+as NTFS with Custom Cluster/Sector Sizing</h4>
+<p>If using NTFS, specify the exact cluster byte size directly:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkfs.ntfs <span class="at">-Q</span> <span class="at">-c</span> 4096 <span class="at">-L</span> <span class="st">&quot;VENTOY&quot;</span> /dev/sdX1</span></code></pre></div>
+<ul>
+<li><code>-c &lt;size&gt;</code>: Sets the cluster size in bytes (e.g.,
+<code>4096</code>, <code>16384</code>, <code>65536</code>).</li>
+<li><code>-Q</code>: Performs a quick format to avoid overwriting all
+blocks unnecessarily.</li>
+</ul>
+<h3 id="step-4-verify-the-new-configuration">Step 4: Verify the New
+Configuration</h3>
+<p>Verify that the filesystem block and sector parameters were written
+properly:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> blkid /dev/sdX1</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> blockdev <span class="at">--getpbsz</span> <span class="at">--getss</span> /dev/sdX</span></code></pre></div>
+<p>Partition 1 is now configured with your custom allocation settings,
+and Partition 2 remains untouched to preserve Ventoy's multi-boot
+environment. You can now mount the drive and copy ISO files into
+Partition 1.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

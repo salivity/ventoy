@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Bypass Windows 11 Microsoft Account Using Ventoy - ventoy</title>
+    <meta name="description" content="Installing Windows 11 typically forces users to connect to the internet and sign in with a Microsoft account during the Out-of-Box Experience (OOBE). Ventoy, a popular open-source tool for creating bootable USB drives, provides a native mechanism to bypa">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-bypass-windows-11-microsoft-account-using-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Bypass Windows 11 Microsoft Account Using Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-bypass-windows-11-microsoft-account-using-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Installing Windows 11 typically forces users to connect to the internet and sign in with a Microsoft account during the Out-of-Box Experience (OOBE). Ventoy, a popular open-source tool for creating bootable USB drives, provides a native mechanism to bypa" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-bypass-windows-11-microsoft-account-using-ventoy">How to
+Bypass Windows 11 Microsoft Account Using Ventoy</h1>
+<p>Installing Windows 11 typically forces users to connect to the
+internet and sign in with a Microsoft account during the Out-of-Box
+Experience (OOBE). Ventoy, a popular open-source tool for creating
+bootable USB drives, provides a native mechanism to bypass this
+mandatory requirement without altering the official Windows 11 ISO. By
+leveraging Ventoy's global control plugin, users can automatically
+inject a registry tweak that restores the option to set up a standard
+offline local account.</p>
+<h3 id="how-the-bypass-works">How the Bypass Works</h3>
+<p>Starting with version 1.0.86, Ventoy introduced the
+<code>VTOY_WIN11_BYPASS_NRO</code> configuration option. During the
+Windows 11 boot and setup phase, Ventoy intercepts the installation
+environment and automatically applies the <code>BypassNRO</code>
+registry modification
+(<code>reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t REG_DWORD /d 1 /f</code>).
+This tweak removes the strict internet requirement screen and brings
+back the "I don't have internet" option, allowing you to proceed with an
+offline, local account.</p>
+<h3 id="step-by-step-configuration">Step-by-Step Configuration</h3>
+<p>To enable the bypass on your Ventoy USB drive, follow these
+steps:</p>
+<ol type="1">
+<li><strong>Prepare the USB Directory:</strong> Plug your Ventoy USB
+drive into your computer. In the root directory of the drive, create a
+folder named <code>ventoy</code> (all lowercase).</li>
+<li><strong>Create the Configuration File:</strong> Inside the
+<code>ventoy</code> folder, create a new text file named
+<code>ventoy.json</code>.</li>
+<li><strong>Add the Bypass Parameter:</strong> Open
+<code>ventoy.json</code> in any text editor and insert the following
+configuration:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;VTOY_WIN11_BYPASS_NRO&quot;</span><span class="fu">:</span> <span class="st">&quot;1&quot;</span> <span class="fu">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>If you also wish to bypass hardware checks (such as TPM 2.0, Secure
+Boot, and minimum RAM checks), you can combine the parameters like
+this:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;control&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;VTOY_WIN11_BYPASS_CHECK&quot;</span><span class="fu">:</span> <span class="st">&quot;1&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">&quot;VTOY_WIN11_BYPASS_NRO&quot;</span><span class="fu">:</span> <span class="st">&quot;1&quot;</span> <span class="fu">}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<ol start="4" type="1">
+<li><strong>Save and Close:</strong> Save the file and ensure its
+extension remains <code>.json</code> rather than
+<code>.json.txt</code>.</li>
+</ol>
+<h3 id="installing-windows-11-with-a-local-account">Installing Windows
+11 with a Local Account</h3>
+<p>Once configured, boot your target computer from the Ventoy USB drive
+and select your official Windows 11 ISO.</p>
+<p>When the installation progresses to the "Let's connect you to a
+network" screen, you will now see an active option labeled <strong>"I
+don't have internet."</strong> Click this option, followed by
+<strong>"Continue with limited setup."</strong> Windows setup will
+immediately skip the mandatory Microsoft account login and prompt you to
+create a traditional offline local username and password.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

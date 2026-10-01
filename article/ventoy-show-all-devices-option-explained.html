@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Show All Devices Option Explained - ventoy</title>
+    <meta name="description" content="This article explains the purpose, functionality, and risks associated with the "Show all devices" toggle in the Ventoy graphical user interface (GUI). By reading further, you will learn how Ventoy detects storage drives by default, what changes when thi">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-show-all-devices-option-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Show All Devices Option Explained - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-show-all-devices-option-explained" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the purpose, functionality, and risks associated with the "Show all devices" toggle in the Ventoy graphical user interface (GUI). By reading further, you will learn how Ventoy detects storage drives by default, what changes when thi" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-show-all-devices-option-explained">Ventoy Show All
+Devices Option Explained</h1>
+<p>This article explains the purpose, functionality, and risks
+associated with the "Show all devices" toggle in the Ventoy graphical
+user interface (GUI). By reading further, you will learn how Ventoy
+detects storage drives by default, what changes when this setting is
+activated, and why caution is required when using it.</p>
+<h3 id="default-drive-detection-in-ventoy">Default Drive Detection in
+Ventoy</h3>
+<p>By default, the Ventoy installation tool restricts its target device
+list to removable media. When you open the application, it automatically
+scans your system and populates the device dropdown menu with recognized
+USB flash drives, SD cards (via card readers), and standard removable
+storage units.</p>
+<p>This behavior acts as a safety mechanism. Because installing Ventoy
+formats the target drive and creates a new partition layout, limiting
+the menu to removable disks prevents users from accidentally selecting
+and erasing critical system drives.</p>
+<h3 id="what-the-show-all-devices-toggle-does">What the "Show All
+Devices" Toggle Does</h3>
+<p>The "Show all devices" option is located under the
+<strong>Option</strong> dropdown menu in the top navigation bar of the
+Ventoy GUI. When this option is checked, Ventoy disables its hardware
+filter and queries the operating system for every connected storage
+disk, regardless of its classification.</p>
+<p>Once enabled, the device selection list updates to show:</p>
+<ul>
+<li><strong>Internal Drives:</strong> Primary and secondary NVMe SSDs,
+SATA SSDs, and internal mechanical hard drives (HDDs).</li>
+<li><strong>Fixed External Drives:</strong> High-capacity external
+desktop drives or USB enclosures that identify to the operating system
+as "Fixed Disks" rather than "Removable Disks."</li>
+<li><strong>Advanced Storage:</strong> Connected storage arrays, virtual
+disks, and certain types of Thunderbolt or eSATA storage.</li>
+</ul>
+<h3 id="when-to-use-this-option">When to Use This Option</h3>
+<p>In most standard workflows, this option should remain disabled.
+However, there are specific scenarios where toggling it on is
+necessary:</p>
+<ol type="1">
+<li><strong>External SSDs and Hard Drives:</strong> Many modern portable
+SSDs and high-capacity external drives are flagged at the hardware
+firmware level as fixed disks. Under default settings, Ventoy will not
+detect them. Enabling "Show all devices" allows you to install Ventoy
+onto these fast, high-capacity external drives.</li>
+<li><strong>Internal Drive Installations:</strong> If you are
+configuring a dedicated multi-boot test system and wish to install
+Ventoy directly onto an internal drive rather than booting from a USB
+stick, this option makes the internal drive accessible in the GUI.</li>
+</ol>
+<h3 id="risks-and-precautions">Risks and Precautions</h3>
+<p>Enabling "Show all devices" significantly increases the risk of data
+loss. If you select the wrong disk and proceed with the installation,
+Ventoy will destroy the partition table and overwrite the existing data
+on that drive, including your primary Windows or Linux installation.</p>
+<p>Before clicking <strong>Install</strong> with this option active,
+always verify:</p>
+<ul>
+<li><strong>Drive Capacity:</strong> Ensure the gigabyte (GB) or
+terabyte (TB) count matches your target drive, not your host system's
+primary storage.</li>
+<li><strong>Model Identifier:</strong> Look closely at the drive model
+name provided in the dropdown (e.g., matching the vendor name of your
+external drive).</li>
+<li><strong>Disk Management / Partition Tools:</strong> Cross-reference
+disk letters or physical disk numbers using Windows Disk Management or
+Linux terminal utilities (such as <code>lsblk</code>) before committing
+changes.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

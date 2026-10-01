@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a Pre-Seeded Ventoy Image Using Docker - ventoy</title>
+    <meta name="description" content="Yes, you can create a custom, pre-seeded Ventoy disk image using Docker. By running the Ventoy installation scripts inside a Linux container, you can automate the generation of raw disk image (.img) files pre-configured with themes, configuration setting">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/build-a-pre-seeded-ventoy-image-using-docker">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Build a Pre-Seeded Ventoy Image Using Docker - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/build-a-pre-seeded-ventoy-image-using-docker" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, you can create a custom, pre-seeded Ventoy disk image using Docker. By running the Ventoy installation scripts inside a Linux container, you can automate the generation of raw disk image (.img) files pre-configured with themes, configuration setting" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="build-a-pre-seeded-ventoy-image-using-docker">Build a Pre-Seeded
+Ventoy Image Using Docker</h1>
+<p>Yes, you can create a custom, pre-seeded Ventoy disk image using
+Docker. By running the Ventoy installation scripts inside a Linux
+container, you can automate the generation of raw disk image
+(<code>.img</code>) files pre-configured with themes, configuration
+settings (<code>ventoy.json</code>), unattended installation scripts,
+and bootable ISOs. This guide covers the containerized workflow needed
+to build a deployable, headless Ventoy image ready for distribution or
+direct flashing to USB drives.</p>
+<h3 id="the-containerized-approach">The Containerized Approach</h3>
+<p>Ventoy typically installs directly to physical block devices, but its
+command-line utilities also support raw disk image files. Using Docker
+allows you to isolate dependencies—such as <code>parted</code>,
+<code>fdisk</code>, and <code>util-linux</code>—and produce identical,
+portable <code>.img</code> artifacts across different development
+environments without risking your host machine's partition tables.</p>
+<h3 id="requirements-for-the-docker-host">Requirements for the Docker
+Host</h3>
+<p>To manipulate virtual block devices and loop mounts, your Docker
+environment requires elevated permissions:</p>
+<ul>
+<li>Docker engine installed on a Linux host.</li>
+<li>Container runtime with privileged access (<code>--privileged</code>)
+to allow <code>losetup</code> and mount operations within the
+container.</li>
+</ul>
+<h3 id="step-1-create-the-dockerfile">Step 1: Create the Dockerfile</h3>
+<p>The Dockerfile installs the necessary partitioning utilities and
+downloads the official Ventoy release.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> ubuntu:22.04</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> DEBIAN_FRONTEND=noninteractive</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> VENTOY_VERSION=1.0.99</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apt-get</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt-get</span> install <span class="at">-y</span> <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    wget <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    tar <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    parted <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    util-linux <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    dosfstools <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    udev <span class="dt">\</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    e2fsprogs <span class="dt">\</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> <span class="at">-rf</span> /var/lib/apt/lists/<span class="pp">*</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /workspace</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Download and extract the Ventoy Linux distribution</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">wget</span> https://github.com/ventoy/Ventoy/releases/download/v<span class="va">${VENTOY_VERSION}</span>/ventoy-<span class="va">${VENTOY_VERSION}</span>-linux.tar.gz <span class="dt">\</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">tar</span> <span class="at">-xzf</span> ventoy-<span class="va">${VENTOY_VERSION}</span>-linux.tar.gz <span class="dt">\</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">mv</span> ventoy-<span class="va">${VENTOY_VERSION}</span> ventoy <span class="dt">\</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> ventoy-<span class="va">${VENTOY_VERSION}</span>-linux.tar.gz</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> build.sh /workspace/build.sh</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">chmod</span> +x /workspace/build.sh</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="kw">ENTRYPOINT</span> [<span class="st">&quot;/workspace/build.sh&quot;</span>]</span></code></pre></div>
+<h3 id="step-2-create-the-image-creation-script-buildsh">Step 2: Create
+the Image Creation Script (<code>build.sh</code>)</h3>
+<p>The build script creates a blank raw disk file, initializes Ventoy on
+it, and copies over your pre-seeded configurations.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-e</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="va">IMAGE_NAME</span><span class="op">=</span><span class="st">&quot;/output/ventoy_custom.img&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="va">IMAGE_SIZE_MB</span><span class="op">=</span><span class="va">${IMAGE_SIZE_MB</span><span class="op">:-</span>4096<span class="va">}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;1. Allocating blank image file (</span><span class="va">${IMAGE_SIZE_MB}</span><span class="st">MB)...&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/zero of=<span class="st">&quot;</span><span class="va">${IMAGE_NAME}</span><span class="st">&quot;</span> bs=1M count=<span class="st">&quot;</span><span class="va">${IMAGE_SIZE_MB}</span><span class="st">&quot;</span> status=progress</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;2. Installing Ventoy to disk image...&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /workspace/ventoy</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -I forces installation; -g specifies GPT partition scheme</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sh</span> Ventoy2Disk.sh <span class="at">-I</span> <span class="at">-g</span> <span class="st">&quot;</span><span class="va">${IMAGE_NAME}</span><span class="st">&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;3. Attaching image via loop device...&quot;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="va">LOOP_DEV</span><span class="op">=</span><span class="va">$(</span><span class="ex">losetup</span> <span class="at">-fP</span> <span class="at">--show</span> <span class="st">&quot;</span><span class="va">${IMAGE_NAME}</span><span class="st">&quot;</span><span class="va">)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="va">DATA_PART</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${LOOP_DEV}</span><span class="st">p1&quot;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /mnt/ventoy</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="st">&quot;</span><span class="va">${DATA_PART}</span><span class="st">&quot;</span> /mnt/ventoy</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;4. Pre-seeding configuration and assets...&quot;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /mnt/ventoy/ventoy</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Seed custom configuration</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; &#39;EOF&#39;</span> <span class="op">&gt;</span> /mnt/ventoy/ventoy/ventoy.json</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="st">{</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="st">  &quot;control&quot;: [</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="st">    { &quot;VTOY_DEFAULT_SEARCH_ROOT&quot;: &quot;/ISO&quot; },</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="st">    { &quot;VTOY_MENU_TIMEOUT&quot;: 10 }</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="st">  ]</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy local seed directories if mounted</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;/seed&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> /seed/<span class="pp">*</span> /mnt/ventoy/</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;5. Cleaning up mounts...&quot;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="fu">sync</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">umount</span> /mnt/ventoy</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="ex">losetup</span> <span class="at">-d</span> <span class="st">&quot;</span><span class="va">${LOOP_DEV}</span><span class="st">&quot;</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Build complete: </span><span class="va">${IMAGE_NAME}</span><span class="st">&quot;</span></span></code></pre></div>
+<h3 id="step-3-build-and-execute-the-container">Step 3: Build and
+Execute the Container</h3>
+<p>Place your pre-seeded files (such as automated kickstart scripts,
+unattend XML files, themes, and ISOs) into a local directory named
+<code>seed</code>. Then, run the following commands:</p>
+<ol type="1">
+<li><p>Build the Docker image:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> ventoy-builder .</span></code></pre></div></li>
+<li><p>Generate the seeded image by mounting an output folder and your
+seed files:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--privileged</span> <span class="at">--rm</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/output:/output <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/seed:/seed <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> IMAGE_SIZE_MB=8192 <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ventoy-builder</span></code></pre></div></li>
+</ol>
+<h3 id="deploying-the-custom-image">Deploying the Custom Image</h3>
+<p>The generated <code>ventoy_custom.img</code> in the
+<code>output</code> directory contains both the standard Ventoy boot
+partitions (supporting UEFI and legacy BIOS) and the pre-populated data
+partition. You can flash this output file directly to any physical drive
+using standard flashing tools:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=output/ventoy_custom.img of=/dev/sdX bs=4M status=progress conv=fsync</span></code></pre></div>
+<p>Replace <code>/dev/sdX</code> with the destination drive. Once
+written, the drive will boot directly into the Ventoy environment using
+your custom configurations and pre-loaded assets.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

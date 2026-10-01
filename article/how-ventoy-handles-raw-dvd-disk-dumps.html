@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles Raw DVD Disk Dumps - ventoy</title>
+    <meta name="description" content="Ventoy simplifies bootable media management by allowing systems to boot directly from raw disk images stored on a single partition without requiring extraction or pre-formatting. When handling raw disk dumps created from physical DVD-ROM discs, Ventoy by">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-raw-dvd-disk-dumps">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles Raw DVD Disk Dumps - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-raw-dvd-disk-dumps" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy simplifies bootable media management by allowing systems to boot directly from raw disk images stored on a single partition without requiring extraction or pre-formatting. When handling raw disk dumps created from physical DVD-ROM discs, Ventoy by" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-raw-dvd-disk-dumps">How Ventoy Handles Raw
+DVD Disk Dumps</h1>
+<p>Ventoy simplifies bootable media management by allowing systems to
+boot directly from raw disk images stored on a single partition without
+requiring extraction or pre-formatting. When handling raw disk dumps
+created from physical DVD-ROM discs, Ventoy bypasses the need for
+burning discs by emulating the original optical hardware at the firmware
+level. This article explains the technical mechanisms Ventoy uses to
+detect, hook, and boot these 1:1 optical disc images across modern UEFI
+and legacy BIOS architectures.</p>
+<h3 id="sector-recognition-and-image-types">Sector Recognition and Image
+Types</h3>
+<p>A raw disk dump created from a physical DVD-ROM is typically a
+sector-by-sector binary copy formatted as an ISO file (ISO 9660 or UDF
+filesystem), though some tools dump them as raw <code>.img</code> or
+<code>.bin</code> files. Ventoy natively recognizes the ISO extension
+and can process uncompressed raw sector files. Because a 1:1 optical
+dump contains exact 2,048-byte user data sectors, Ventoy reads the
+image's structure directly from the underlying exFAT, NTFS, or ext4
+storage partition without altering any bits.</p>
+<h3 id="the-el-torito-specification-parsing">The El Torito Specification
+Parsing</h3>
+<p>Physical DVD-ROMs boot using the El Torito Bootable CD-ROM Format
+Specification. When an image is selected from the Ventoy menu:</p>
+<ol type="1">
+<li>Ventoy reads the image’s Primary Volume Descriptor and locates the
+Boot Record Volume Descriptor.</li>
+<li>It parses the El Torito boot catalog inside the dump to find the
+designated boot entry, typically a "No Emulation" mode image used by
+modern operating systems or "Floppy/Hard Disk Emulation" used by legacy
+recovery tools.</li>
+<li>Ventoy prepares the firmware environment to execute this boot image,
+mimicking the initialization sequence of an optical disc drive.</li>
+</ol>
+<h3 id="hardware-emulation-via-firmware-hooking">Hardware Emulation via
+Firmware Hooking</h3>
+<p>Ventoy does not load the entire DVD dump into RAM unless specifically
+directed to do so using Memdisk mode. Instead, it creates virtual block
+devices through runtime hooking:</p>
+<ul>
+<li><strong>Legacy BIOS:</strong> Ventoy hooks the real-mode interrupt
+vector <code>INT 13h</code>. When the boot code requests sector reads
+from the optical drive (typically assigned device ID <code>0x9F</code>
+or <code>0xE0</code>), Ventoy redirects these read operations to the
+specific byte offsets of the raw dump file on the physical flash
+drive.</li>
+<li><strong>UEFI:</strong> Ventoy installs hooks into the UEFI driver
+execution environment. It creates a virtual
+<code>EFI_BLOCK_IO_PROTOCOL</code> instance representing the DVD-ROM,
+allowing the loaded EFI executable (such as <code>bootx64.efi</code>) to
+query and read files directly from the ISO image as a standard optical
+device path.</li>
+</ul>
+<h3 id="maintaining-media-access-at-the-kernel-level">Maintaining Media
+Access at the Kernel Level</h3>
+<p>A common limitation of standard BIOS/UEFI disk emulation is that the
+OS kernel terminates firmware hooks once it takes control of the memory
+map. When this happens, typical installers lose sight of the virtual
+DVD-ROM and throw errors indicating missing installation media.</p>
+<p>Ventoy solves this by dynamically injecting OS-specific mechanisms
+into the boot process:</p>
+<ul>
+<li><strong>Linux:</strong> Ventoy injects helper scripts into the
+<code>initramfs</code> (via dracut or custom hooks) that look for the
+original storage drive, mount it, and map the raw DVD dump as a loopback
+block device (<code>/dev/loopX</code>) matching the root filesystem
+search parameters.</li>
+<li><strong>Windows:</strong> Ventoy maps the raw dump via an in-memory
+driver (such as a temporary virtual CD-ROM driver) so
+<code>setup.exe</code> detects the installation source files just as it
+would from a physical ATAPI optical drive.</li>
+</ul>
+<p>Through these combined methods of sector mapping, El Torito parsing,
+and kernel-level storage hooks, Ventoy allows raw DVD-ROM dumps to
+function identically to original physical discs without data loss or
+modifications to the dumped image.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Handles FreeBSD and OpenBSD Images - ventoy</title>
+    <meta name="description" content="Ventoy allows users to boot FreeBSD and OpenBSD installation media directly from standard ISO and IMG files without reformatting the USB drive. Because BSD operating systems use fundamentally different bootloaders, kernels, and device-mounting architectu">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-handles-free-bsd-and-open-bsd-images">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Handles FreeBSD and OpenBSD Images - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-handles-free-bsd-and-open-bsd-images" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy allows users to boot FreeBSD and OpenBSD installation media directly from standard ISO and IMG files without reformatting the USB drive. Because BSD operating systems use fundamentally different bootloaders, kernels, and device-mounting architectu" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-handles-freebsd-and-openbsd-images">How Ventoy
+Handles FreeBSD and OpenBSD Images</h1>
+<p>Ventoy allows users to boot FreeBSD and OpenBSD installation media
+directly from standard ISO and IMG files without reformatting the USB
+drive. Because BSD operating systems use fundamentally different
+bootloaders, kernels, and device-mounting architectures compared to
+Linux, Ventoy employs specialized bootloader patching, memory mapping,
+and custom device-injection mechanisms rather than traditional loopback
+techniques.</p>
+<h3 id="the-challenge-of-booting-bsd-on-ventoy">The Challenge of Booting
+BSD on Ventoy</h3>
+<p>Standard Linux distributions typically boot through a ramdisk
+(<code>initramfs</code>) where Ventoy hooks into the system, locates the
+ISO file on the USB filesystem (exFAT, NTFS, or ext4), and creates a
+loop device that the installer reads as a physical drive.</p>
+<p>FreeBSD and OpenBSD do not use a standard Linux
+<code>initramfs</code>. Their boot processes rely on proprietary
+secondary bootloaders and monolithic kernels that immediately take over
+hardware control, discarding BIOS/UEFI virtual disk services unless
+explicitly instructed or patched.</p>
+<h3 id="how-ventoy-boots-freebsd">How Ventoy Boots FreeBSD</h3>
+<p>Ventoy supports both official FreeBSD <code>.iso</code> and
+<code>.img</code> installer media through the following process:</p>
+<ol type="1">
+<li><strong>Bootloader Interception:</strong> When you select a FreeBSD
+image, Ventoy’s GRUB-based core loads the FreeBSD bootloader
+(<code>loader.efi</code> under UEFI or <code>loader</code> under legacy
+BIOS).</li>
+<li><strong>Hooking the GEOM Layer:</strong> In FreeBSD, storage devices
+are managed by the GEOM subsystem. Ventoy injects a dedicated driver
+into the FreeBSD boot stage.</li>
+<li><strong>Mounting the Virtual Media:</strong> Once the FreeBSD kernel
+initializes, Ventoy's hooked driver presents the original ISO/IMG file
+as a memory-backed disk or virtual block device (similar to FreeBSD’s
+native <code>md</code> memory disk).</li>
+<li><strong>Installer Handoff:</strong> When <code>bsdinstall</code>
+launches, it looks for installation sets. Because the Ventoy driver
+maintains access to the ISO structure, the installer detects the virtual
+CD/drive normally and proceeds without requiring network-only
+media.</li>
+</ol>
+<h3 id="how-ventoy-boots-openbsd">How Ventoy Boots OpenBSD</h3>
+<p>OpenBSD has strict hardware validation and does not support standard
+ISO loopback mounting during runtime. Ventoy handles OpenBSD using an
+approach tailored to the OpenBSD ramdisk kernel:</p>
+<ol type="1">
+<li><strong>Memory Mapping (Memdisk):</strong> For OpenBSD installer
+images (such as <code>install*.iso</code> or
+<code>miniroot*.img</code>), Ventoy maps the image directly into system
+RAM. In Legacy BIOS mode, it relies on INT 13h emulation; in UEFI mode,
+it uses UEFI RAM-disk protocols.</li>
+<li><strong>Kernel Execution:</strong> Ventoy executes the OpenBSD
+secondary boot program (<code>boot</code>), which loads the ramdisk
+installation kernel (<code>bsd.rd</code>).</li>
+<li><strong>Installer Limitations and Media Detection:</strong> Because
+OpenBSD’s kernel disables BIOS/UEFI runtime disk emulation after taking
+control of the hardware, it often loses visibility of the virtual disk
+holding the installation sets. In such scenarios, the OpenBSD installer
+runs in RAM, but you may need to point the installer to an HTTP/FTP
+mirror or an uncompressed partition containing the installation file
+sets (<code>base*.tgz</code>, <code>etc*.tgz</code>).</li>
+</ol>
+<h3 id="best-practices-for-bsd-on-ventoy">Best Practices for BSD on
+Ventoy</h3>
+<ul>
+<li><strong>Image Formats:</strong> Use raw <code>.img</code> files
+where available, especially for OpenBSD, as they often boot more
+reliably than hybrid <code>.iso</code> files.</li>
+<li><strong>Boot Mode:</strong> Ensure the machine boots using the
+firmware mode (UEFI or Legacy BIOS) that matches the target installation
+image. OpenBSD performs more predictably under native UEFI boot on
+modern Ventoy versions.</li>
+<li><strong>Ventoy Memdisk Mode:</strong> If a BSD image fails to boot
+using the normal mode, pressing <code>F1</code> in Ventoy enables
+Memdisk mode, which forces the entire image into RAM prior to
+execution.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

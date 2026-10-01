@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Ventoy UEFI Workaround? - ventoy</title>
+    <meta name="description" content="The "Ventoy UEFI workaround" is a configuration setting found in operating system installers and boot configuration menus designed to solve bootloader installation failures caused by Ventoy’s unique dynamic boot mechanism. While Ventoy allows users to">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/what-is-the-ventoy-uefi-workaround">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Ventoy UEFI Workaround? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/what-is-the-ventoy-uefi-workaround" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The "Ventoy UEFI workaround" is a configuration setting found in operating system installers and boot configuration menus designed to solve bootloader installation failures caused by Ventoy’s unique dynamic boot mechanism. While Ventoy allows users to" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-ventoy-uefi-workaround">What Is the Ventoy UEFI
+Workaround?</h1>
+<p>The "Ventoy UEFI workaround" is a configuration setting found in
+operating system installers and boot configuration menus designed to
+solve bootloader installation failures caused by Ventoy’s unique dynamic
+boot mechanism. While Ventoy allows users to boot multiple ISO files
+directly from a single USB drive without reformatting, its method of
+virtualizing ISO images in memory can interfere with the way modern UEFI
+systems register boot entries. This option modifies the installation
+environment to ensure the target drive successfully configures its EFI
+bootloader without errors.</p>
+<h3 id="the-conflict-between-ventoy-and-uefi-installers">The Conflict
+Between Ventoy and UEFI Installers</h3>
+<p>Under a standard installation from a conventionally flashed USB drive
+(using tools like Rufus or <code>dd</code>), the installation media maps
+directly as a physical block device. The operating system installer
+interacts directly with the hardware, detects the UEFI firmware
+interface, mounts the EFI System Partition (ESP), and uses utilities
+like <code>efibootmgr</code> to register the new operating system with
+the motherboard’s NVRAM.</p>
+<p>Ventoy operates differently. Instead of extracting files to disk, it
+creates a virtual filesystem in memory via custom GRUB hooks to present
+the ISO to the kernel as a physical CD/DVD or drive. In UEFI mode, this
+emulation layer can cause two primary issues:</p>
+<ul>
+<li><strong>EFI Variable Access Locks:</strong> Ventoy's memory hooks
+can restrict or corrupt the installer’s access to <code>efivarfs</code>,
+preventing the installer from writing new boot entries to the
+motherboard's NVRAM.</li>
+<li><strong>Storage Device Confusion:</strong> The installer may
+misidentify the virtualized Ventoy ISO structure as a physical
+installation target or struggle to resolve the true root filesystem
+paths during post-install bootloader configuration.</li>
+</ul>
+<h3 id="how-the-workaround-operates">How the Workaround Operates</h3>
+<p>When enabled in an installer configuration, the Ventoy UEFI
+workaround alters how the installer interacts with the underlying boot
+hardware. Depending on the specific installer (such as Linux
+distributions using the Calamares installer framework), the workaround
+typically applies one or more of the following fixes:</p>
+<ol type="1">
+<li><strong>Remapping Device Paths:</strong> It forces the installer to
+bypass the virtual block devices created by Ventoy, ensuring that
+bootloader scripts (like <code>grub-install</code> or
+<code>systemd-boot</code>) target the actual physical NVMe or SATA
+drive.</li>
+<li><strong>Fallback Bootloader Configuration:</strong> If the installer
+detects that NVRAM variables cannot be reliably written due to Ventoy's
+UEFI hooks, it places a copy of the bootloader binary at the default
+fallback path (<code>/EFI/BOOT/BOOTX64.EFI</code>). This ensures the
+system remains bootable even if the direct NVRAM entry creation
+fails.</li>
+<li><strong>Firmware Quirk Mitigation:</strong> On buggy UEFI
+implementations that drop connection to the installation media during
+the transition from the bootloader to the kernel, the workaround forces
+standard memory map preservation.</li>
+</ol>
+<h3 id="when-to-enable-the-workaround">When to Enable the
+Workaround</h3>
+<ul>
+<li><strong>Enable it</strong> if you are installing an operating system
+from a Ventoy USB drive in UEFI mode and the installation crashes near
+the end—typically at 90% or higher during the "Installing bootloader" or
+<code>efibootmgr</code> execution phase.</li>
+<li><strong>Leave it disabled</strong> if you are performing an
+installation from a standard, non-Ventoy USB drive, or if your Ventoy
+installation proceeds to completion without bootloader generation
+errors.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

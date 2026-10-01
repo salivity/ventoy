@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy Documents and Tests ISO Compatibility - ventoy</title>
+    <meta name="description" content="Ventoy has established itself as an essential utility for creating multiboot USB drives by allowing users to boot directly from raw ISO files without reformatting. A primary factor in its widespread adoption is its verified compatibility with more than 1">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-documents-and-tests-iso-compatibility">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy Documents and Tests ISO Compatibility - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-documents-and-tests-iso-compatibility" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy has established itself as an essential utility for creating multiboot USB drives by allowing users to boot directly from raw ISO files without reformatting. A primary factor in its widespread adoption is its verified compatibility with more than 1" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy-documents-and-tests-iso-compatibility">How Ventoy
+Documents and Tests ISO Compatibility</h1>
+<p>Ventoy has established itself as an essential utility for creating
+multiboot USB drives by allowing users to boot directly from raw ISO
+files without reformatting. A primary factor in its widespread adoption
+is its verified compatibility with more than 1,100 operating system
+images, ranging from mainstream Windows and Linux distributions to niche
+rescue disks and hypervisors. This article details the mechanisms the
+Ventoy community and its core developer rely on to test, document,
+troubleshoot, and maintain this extensive, ever-growing compatibility
+database.</p>
+<h3 id="the-role-of-developer-testing-and-core-architecture">The Role of
+Developer Testing and Core Architecture</h3>
+<p>The core of Ventoy’s compatibility maintenance relies on its primary
+developer, known online as <em>longpanda</em>. Unlike traditional
+bootable USB creators that extract ISO contents or alter disk
+partitions, Ventoy loads an entire ISO into memory directly through a
+tailored GRUB-based boot mechanism. Because this method requires hooking
+into the specific bootloaders of target operating systems (such as
+GRUB2, syslinux, isolinux, or systemd-boot), testing requires continuous
+low-level analysis. The developer frequently pulls upstream ISO
+releases, verifies boot sequences across various architectures (x86_64,
+IA32, ARM64, and MIPS64), and develops targeted runtime patches or
+custom boot scripts when an ISO fails to initialize.</p>
+<h3 id="community-submissions-via-github-and-forums">Community
+Submissions via GitHub and Forums</h3>
+<p>Due to the vast number of operating system distributions, desktop
+environments, and versions released globally, the Ventoy project relies
+heavily on crowd-sourced testing. Community members report both
+successes and boot failures primarily through:</p>
+<ul>
+<li><strong>GitHub Issues:</strong> The main repository on GitHub serves
+as the primary tracking platform for booting bugs, kernel panics, and
+UEFI compatibility problems.</li>
+<li><strong>The Ventoy Official Forum:</strong> A dedicated space where
+users post experimental results, test edge-case hardware, and compare
+notes on obscure distributions.</li>
+</ul>
+<p>When an unsupported or malfunctioning ISO is reported, community
+guidelines encourage users to provide detailed hardware and software
+telemetry. This typically includes the exact file name, SHA256 checksum,
+architecture, boot mode (Legacy BIOS vs. UEFI), Secure Boot status, and
+the specific stage at which the boot sequence fails.</p>
+<h3 id="documentation-on-the-official-tested-list">Documentation on the
+Official Tested List</h3>
+<p>Once an ISO is verified by the developer or independently confirmed
+by trusted community contributors, it is added to the official "Tested
+ISO" list hosted on the Ventoy project website.</p>
+<p>The list is structured and updated continuously according to specific
+standards:</p>
+<ul>
+<li><strong>Categorization:</strong> Operating systems are cataloged
+into distinct groups, such as Windows, Linux distributions, BSD systems,
+Hypervisors (like VMware ESXi and Proxmox), and Utilities (such as
+Clonezilla or Memtest86).</li>
+<li><strong>Version Pinning:</strong> Entries specify exact version
+numbers and desktop environments, acknowledging that a minor update to a
+distro's installer can alter its bootloader layout.</li>
+<li><strong>Release Notes Integration:</strong> Compatibility milestones
+and newly supported distributions are documented in the changelog
+accompanying every new release of the Ventoy binary.</li>
+</ul>
+<h3 id="workarounds-plugins-and-secondary-verification">Workarounds,
+Plugins, and Secondary Verification</h3>
+<p>Not all ISO files work out of the box due to proprietary boot
+mechanisms or hardcoded path expectations within an installer. To bridge
+these gaps without breaking the core system, the Ventoy community
+develops and documents custom plugins.</p>
+<p>Through the <code>ventoy.json</code> configuration file, users can
+deploy auto-installation scripts, injection plugins, and custom boot
+options. When an ISO requires specific parameter tweaks to boot
+successfully, the community documents these workarounds in the forum and
+wiki, allowing other users to reproduce the solution until a native fix
+is built into the next Ventoy release. This collaborative loop of
+testing, reporting, patching, and documenting ensures the project's
+compatibility database remains accurate and up to date.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

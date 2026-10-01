@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Alias Long ISO Filenames in Ventoy - ventoy</title>
+    <meta name="description" content="Ventoy allows users to replace long, cluttered ISO filenames with clean, readable titles in the boot menu using its native menualias plugin. While Ventoy does not inherently parse and invent dynamic titles on the fly without configuration, it provides a">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-to-alias-long-iso-filenames-in-ventoy">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Alias Long ISO Filenames in Ventoy - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-to-alias-long-iso-filenames-in-ventoy" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy allows users to replace long, cluttered ISO filenames with clean, readable titles in the boot menu using its native menualias plugin. While Ventoy does not inherently parse and invent dynamic titles on the fly without configuration, it provides a" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-alias-long-iso-filenames-in-ventoy">How to Alias Long ISO
+Filenames in Ventoy</h1>
+<p>Ventoy allows users to replace long, cluttered ISO filenames with
+clean, readable titles in the boot menu using its native
+<code>menu_alias</code> plugin. While Ventoy does not inherently parse
+and invent dynamic titles on the fly without configuration, it provides
+a robust system through a JSON configuration file where you can map
+filenames to human-readable labels, or utilize automated scripts to
+generate dynamic aliases programmatically.</p>
+<h3 id="how-the-ventoy-menu-alias-plugin-works">How the Ventoy Menu
+Alias Plugin Works</h3>
+<p>By default, Ventoy scans the USB drive and displays the exact
+filename of each ISO, WIM, or IMG file. Distributions often release ISOs
+with long names containing build numbers, architecture strings, and
+release dates.</p>
+<p>Ventoy solves this through the <code>ventoy.json</code> configuration
+file located in the <code>ventoy</code> directory on the first partition
+of your USB drive. Within this file, the <code>menu_alias</code> array
+maps full paths or file names directly to user-defined display
+strings.</p>
+<h3 id="configuring-aliases-in-ventoyjson">Configuring Aliases in
+<code>ventoy.json</code></h3>
+<p>To set up aliases, create a folder named <code>ventoy</code> at the
+root of your Ventoy USB drive (if it does not already exist) and place a
+file named <code>ventoy.json</code> inside it.</p>
+<p>Here is a standard configuration example:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;menu_alias&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/ubuntu-22.04.3-desktop-amd64.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Ubuntu 22.04 LTS (Desktop)&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/Win11_23H2_English_x64v2.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Windows 11 23H2 64-bit&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;image&quot;</span><span class="fu">:</span> <span class="st">&quot;/ISO/archlinux-2024.01.01-x86_64.iso&quot;</span><span class="fu">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="dt">&quot;alias&quot;</span><span class="fu">:</span> <span class="st">&quot;Arch Linux (Latest)&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>When Ventoy loads, it reads this configuration and displays the
+specified alias instead of the raw file path, while preserving the
+original boot behavior.</p>
+<h3 id="handling-dynamic-aliases">Handling Dynamic Aliases</h3>
+<p>Ventoy does not have a native regex engine or dynamic pattern
+replacer built directly into the bootloader to strip out build dates or
+version numbers automatically. However, you can achieve dynamic aliasing
+through the following methods:</p>
+<h4 id="1-automated-script-generation">1. Automated Script
+Generation</h4>
+<p>Because <code>ventoy.json</code> is a standard JSON file stored on a
+writable FAT32 or exFAT partition, you can use a local script (such as
+PowerShell, Bash, or Python) to dynamically parse ISO names and rewrite
+<code>ventoy.json</code>. For example, a script can scan the
+<code>/ISO/</code> directory, identify OS signatures, trim unnecessary
+metadata strings, and output the updated alias mappings automatically
+whenever you add new files.</p>
+<h4 id="2-ventoy-auto-memdisk-and-variable-aliasing">2. Ventoy Auto
+Memdisk and Variable Aliasing</h4>
+<p>If you use Ventoy's auto-installation or custom boot scripts, you can
+tie into Ventoy's secondary boot menus or Grub-based configurations
+(<code>ventoy_grub.cfg</code>) to script dynamic menu entries using GNU
+GRand Unified Bootloader (GRUB) syntax, which does support variables and
+string manipulation.</p>
+<h3 id="summary">Summary</h3>
+<p>Ventoy supports aliases out of the box through its
+<code>menu_alias</code> plugin in <code>ventoy.json</code>. While the
+configuration itself requires explicit mappings, pairing this feature
+with an automated sync script offers a fully dynamic, clean boot menu
+for systems with frequently updated ISO files.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Ventoy to Prefer 64-Bit EFI Bootloaders - ventoy</title>
+    <meta name="description" content="This guide explains how to force or configure Ventoy to prioritize 64-bit (x8664) EFI bootloaders over 32-bit (IA32) implementations. On hardware platforms with mixed or dual-architecture UEFI firmware—such as certain Intel Atom tablets and budget lapt">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/configure-ventoy-to-prefer-64-bit-efi-bootloaders">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Configure Ventoy to Prefer 64-Bit EFI Bootloaders - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/configure-ventoy-to-prefer-64-bit-efi-bootloaders" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This guide explains how to force or configure Ventoy to prioritize 64-bit (x8664) EFI bootloaders over 32-bit (IA32) implementations. On hardware platforms with mixed or dual-architecture UEFI firmware—such as certain Intel Atom tablets and budget lapt" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="configure-ventoy-to-prefer-64-bit-efi-bootloaders">Configure
+Ventoy to Prefer 64-Bit EFI Bootloaders</h1>
+<p>This guide explains how to force or configure Ventoy to prioritize
+64-bit (x86_64) EFI bootloaders over 32-bit (IA32) implementations. On
+hardware platforms with mixed or dual-architecture UEFI firmware—such as
+certain Intel Atom tablets and budget laptops—the system firmware may
+default to 32-bit EFI execution. By modifying the boot files within
+Ventoy's dedicated EFI system partition or adjusting firmware boot
+parameters, you can ensure that the 64-bit EFI environment is always
+loaded first.</p>
+<h3 id="understanding-ventoys-efi-architecture">Understanding Ventoy's
+EFI Architecture</h3>
+<p>Ventoy formats storage drives into two partitions:</p>
+<ol type="1">
+<li><strong>Partition 1 (Ventoy):</strong> An exFAT, NTFS, or ext4
+partition that holds your ISO, WIM, and IMG files.</li>
+<li><strong>Partition 2 (VTOYEFI):</strong> A small, hidden FAT
+partition containing the bootloaders for different hardware
+architectures (<code>BOOTX64.EFI</code> for 64-bit x86,
+<code>BOOTIA32.EFI</code> for 32-bit x86, <code>BOOTAA64.EFI</code> for
+ARM64, and <code>BOOTMIPS64EL.EFI</code> for MIPS).</li>
+</ol>
+<p>Because UEFI firmware loads the bootloader prior to launching
+Ventoy's main interface, Ventoy cannot dynamically override the
+architecture chosen by the motherboard firmware. To prioritize or force
+64-bit EFI, you must modify the boot binaries on the
+<code>VTOYEFI</code> partition or select the proper boot path in your
+motherboard setup.</p>
+<hr />
+<h3 id="method-1-disable-32-bit-efi-on-the-ventoy-efi-partition">Method
+1: Disable 32-Bit EFI on the Ventoy EFI Partition</h3>
+<p>The most reliable way to force 64-bit execution is to disable or
+remove the 32-bit EFI binary from Ventoy’s hidden system partition. This
+forces the host firmware to bypass the 32-bit entry and execute
+<code>BOOTX64.EFI</code>.</p>
+<h4 id="on-windows">On Windows:</h4>
+<ol type="1">
+<li>Insert the Ventoy USB drive.</li>
+<li>Open <strong>Command Prompt</strong> or <strong>PowerShell</strong>
+as Administrator.</li>
+<li>Launch the DiskPart utility:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>diskpart</span></code></pre></div></li>
+<li>List the disks and select your Ventoy drive:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>list disk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>select disk X</span></code></pre></div>
+<em>(Replace <code>X</code> with your USB drive number.)</em></li>
+<li>List partitions and select the <code>VTOYEFI</code> partition
+(typically Partition 2, ~32MB in size):
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>list partition</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>select partition 2</span></code></pre></div></li>
+<li>Assign a temporary drive letter to access the files:
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>assign letter=Z</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div></li>
+<li>Open File Explorer or use the command line to navigate to
+<code>Z:\EFI\BOOT\</code>.</li>
+<li>Locate <code>BOOTIA32.EFI</code> and rename it to
+<code>BOOTIA32.EFI.bak</code> (or delete it entirely).</li>
+<li>Remove the drive letter via DiskPart:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>diskpart</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>select disk X</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>select partition 2</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>remove letter=Z</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div></li>
+</ol>
+<h4 id="on-linux">On Linux:</h4>
+<ol type="1">
+<li>Insert the Ventoy USB drive.</li>
+<li>Identify the second partition using <code>lsblk</code> (e.g.,
+<code>/dev/sdb2</code>).</li>
+<li>Mount the partition to a temporary directory:
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkdir <span class="at">-p</span> /mnt/vtoyefi</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount /dev/sdb2 /mnt/vtoyefi</span></code></pre></div></li>
+<li>Navigate to the bootloader directory:
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /mnt/vtoyefi/EFI/BOOT/</span></code></pre></div></li>
+<li>Rename the 32-bit binary:
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mv BOOTIA32.EFI BOOTIA32.EFI.bak</span></code></pre></div></li>
+<li>Unmount the partition:
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /mnt/vtoyefi</span></code></pre></div></li>
+</ol>
+<hr />
+<h3
+id="method-2-selecting-64-bit-efi-via-motherboard-boot-override">Method
+2: Selecting 64-Bit EFI via Motherboard Boot Override</h3>
+<p>If your device supports both 32-bit and 64-bit UEFI environments, the
+firmware boot menu may present separate options for each:</p>
+<ol type="1">
+<li>Connect the Ventoy drive to the target computer.</li>
+<li>Power on the system and press the boot menu key (typically
+<code>F8</code>, <code>F11</code>, <code>F12</code>, or
+<code>Esc</code>).</li>
+<li>Look for explicit architecture tags in the boot list, such as:
+<ul>
+<li><code>UEFI: &lt;Device Name&gt;, Partition 2 (x64)</code></li>
+<li><code>UEFI: &lt;Device Name&gt; (64-bit)</code></li>
+</ul></li>
+<li>If your UEFI setup has a file browser boot override (common on
+modern AMI and Insyde BIOSes), select <strong>Boot from File</strong>,
+navigate to <code>EFI -&gt; BOOT -&gt; BOOTX64.EFI</code>, and press
+Enter.</li>
+</ol>
+<hr />
+<h3 id="method-3-handling-dual-architecture-isos-with-ventoyjson">Method
+3: Handling Dual-Architecture ISOs with <code>ventoy.json</code></h3>
+<p>Once the 64-bit EFI loader is running, certain multi-architecture
+ISOs (such as dual-architecture Windows or Linux installers) may default
+to a specific architecture.</p>
+<p>To configure how Ventoy interacts with files on Partition 1:</p>
+<ol type="1">
+<li>Open the primary Ventoy partition (where your ISOs are stored).</li>
+<li>Create a folder named <code>ventoy</code> if it does not already
+exist.</li>
+<li>Create or edit <code>ventoy.json</code> inside that folder.</li>
+<li>Use standard Ventoy controls to manage the boot menu presentation
+and file ordering. For multi-architecture images, Ventoy will
+automatically inherit the bitness of the EFI environment loaded at
+startup (<code>x86_64</code> once <code>BOOTIA32.EFI</code> is
+disabled).</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

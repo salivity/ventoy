@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Ventoy Support PXE Booting Raw ISO Images? - ventoy</title>
+    <meta name="description" content="Ventoy does support booting raw ISO images over a local area network (LAN) using Preboot Execution Environment (PXE). While standard Ventoy is primarily recognized as a tool for creating bootable USB drives, its ecosystem provides direct network booting">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/does-ventoy-support-pxe-booting-raw-iso-images">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Does Ventoy Support PXE Booting Raw ISO Images? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/does-ventoy-support-pxe-booting-raw-iso-images" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does support booting raw ISO images over a local area network (LAN) using Preboot Execution Environment (PXE). While standard Ventoy is primarily recognized as a tool for creating bootable USB drives, its ecosystem provides direct network booting" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="does-ventoy-support-pxe-booting-raw-iso-images">Does Ventoy
+Support PXE Booting Raw ISO Images?</h1>
+<p>Ventoy does support booting raw ISO images over a local area network
+(LAN) using Preboot Execution Environment (PXE). While standard Ventoy
+is primarily recognized as a tool for creating bootable USB drives, its
+ecosystem provides direct network booting capabilities without requiring
+you to extract or modify the original ISO files. This is achieved either
+through the built-in PXE server functionality inside traditional Ventoy
+or via its dedicated network boot utility, iVentoy.</p>
+<h3 id="native-ventoy-pxe-mode">Native Ventoy PXE Mode</h3>
+<p>Standard Ventoy includes a local PXE feature. When you boot a machine
+using a Ventoy USB drive, you can press <strong>F5: Tools</strong> and
+select the <strong>PXE</strong> option to start an integrated PXE server
+directly from that computer.</p>
+<p>Once activated:</p>
+<ul>
+<li>The host machine serves as a temporary DHCP and TFTP server on your
+local network.</li>
+<li>Target client machines configured to boot from LAN can connect
+directly to the host machine.</li>
+<li>The target machines will load the Ventoy menu over the network and
+can boot from the raw ISO files stored on the host's Ventoy USB
+drive.</li>
+</ul>
+<h3 id="the-dedicated-network-tool-iventoy">The Dedicated Network Tool:
+iVentoy</h3>
+<p>For dedicated network deployments without relying on a physical USB
+drive plugged into a client, the developer of Ventoy created
+<strong>iVentoy</strong>.</p>
+<p>iVentoy functions as an enhanced PXE server software that runs on
+Windows or Linux:</p>
+<ul>
+<li><strong>Direct ISO Storage:</strong> You place raw ISO files into a
+single directory on the server machine.</li>
+<li><strong>No Extraction Required:</strong> Like standard Ventoy,
+iVentoy mounts and streams raw ISOs directly across the network using
+HTTP or NBD (Network Block Device).</li>
+<li><strong>Cross-Architecture Support:</strong> It supports both x86
+Legacy BIOS and modern UEFI (IA32, x86_64, and ARM64) clients
+simultaneously.</li>
+<li><strong>Flexible DHCP Integration:</strong> It can run its own
+integrated DHCP server or operate as a DHCP proxy alongside an existing
+router or enterprise DHCP server.</li>
+</ul>
+<h3 id="how-network-iso-booting-works">How Network ISO Booting
+Works</h3>
+<p>When a client initiates a network boot:</p>
+<ol type="1">
+<li>The client receives network boot instructions via PXE/TFTP.</li>
+<li>iVentoy transfers an iPXE kernel to the client machine.</li>
+<li>The client loads the familiar Ventoy graphical interface showing all
+ISO images available on the host machine.</li>
+<li>When an image is selected, the raw ISO is streamed over the local
+network into the client's memory or loaded via network block hooks,
+allowing the OS installer or live environment to run as if booted from
+physical media.</li>
+</ol>
+<h3 id="requirements-and-limitations">Requirements and Limitations</h3>
+<ul>
+<li><strong>Network Bandwidth:</strong> Booting raw ISOs over the
+network requires substantial bandwidth. A wired Gigabit Ethernet (1000
+Mbps) connection is strongly recommended for responsive boot times.</li>
+<li><strong>Installer Quirks:</strong> Most Linux live distributions,
+WinPE environments, and standard Windows installers boot seamlessly.
+However, certain specialized operating system installers may attempt to
+look for physical CD/USB media during the second phase of installation
+and may require driver injection or network repository paths to finish
+installing.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

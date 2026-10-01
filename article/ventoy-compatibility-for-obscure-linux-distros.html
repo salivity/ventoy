@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy Compatibility for Obscure Linux Distros - ventoy</title>
+    <meta name="description" content="You can request compatibility fixes for an obscure Linux distribution directly from the Ventoy developer, primarily through the project's official GitHub repository. While the developer actively works to support as many operating systems as possible, the">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-compatibility-for-obscure-linux-distros">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy Compatibility for Obscure Linux Distros - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-compatibility-for-obscure-linux-distros" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="You can request compatibility fixes for an obscure Linux distribution directly from the Ventoy developer, primarily through the project's official GitHub repository. While the developer actively works to support as many operating systems as possible, the" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-compatibility-for-obscure-linux-distros">Ventoy
+Compatibility for Obscure Linux Distros</h1>
+<p>You can request compatibility fixes for an obscure Linux distribution
+directly from the Ventoy developer, primarily through the project's
+official GitHub repository. While the developer actively works to
+support as many operating systems as possible, the success and speed of
+your request depend heavily on whether the distribution follows standard
+Linux boot structures and how much diagnostic information you
+provide.</p>
+<h3 id="how-to-submit-a-compatibility-request">How to Submit a
+Compatibility Request</h3>
+<p>The primary channel for requesting support is the Ventoy GitHub
+repository under the "Issues" tab. When submitting a request for a
+lesser-known or niche distribution, you should select the issue template
+for a new ISO/distro request or a bug report.</p>
+<p>To ensure the maintainer can reproduce and fix the issue, include the
+following details in your submission:</p>
+<ul>
+<li><strong>Official Download Link:</strong> A direct link to the ISO
+image or the project page where the image can be downloaded.</li>
+<li><strong>Architecture and Release Version:</strong> Specify the exact
+version, architecture (x86_64, i386, ARM64), and desktop environment (if
+applicable).</li>
+<li><strong>Boot Mode:</strong> Indicate whether the issue occurs in
+Legacy BIOS mode, UEFI mode, or both, as well as whether Secure Boot was
+enabled.</li>
+<li><strong>Failure Point:</strong> Clarify where the boot process fails
+(e.g., Ventoy boot menu, kernel loading, or hardware initialization
+inside the initramfs/dracut stage).</li>
+<li><strong>Logs and Errors:</strong> Provide text logs or clear photos
+of the boot screen showing panic messages, mounting failures, or
+dracut/initramfs shell prompts.</li>
+</ul>
+<h3 id="why-obscure-distros-fail-in-ventoy">Why Obscure Distros Fail in
+Ventoy</h3>
+<p>Ventoy works by hooking into the boot process and modifying the
+initramfs/dracut scripts in real time to locate and mount the ISO file
+from the USB drive. Mainstream distributions rely on standardized
+live-boot frameworks such as <code>casper</code>, <code>dracut</code>,
+<code>live-boot</code>, or <code>archiso</code>.</p>
+<p>Obscure distributions frequently fail if they utilize:</p>
+<ul>
+<li>Custom, non-standard boot and mount scripts that Ventoy does not
+recognize.</li>
+<li>Hardcoded media checks that look strictly for a physical CD-ROM or
+standard USB block device rather than a virtual block device mapped by
+Ventoy.</li>
+<li>Incomplete kernel modules that do not include necessary loopback or
+device-mapper drivers.</li>
+</ul>
+<h3 id="alternatives-and-workarounds">Alternatives and Workarounds</h3>
+<p>If the maintainer does not add native support right away, several
+alternatives can help boot obscure ISOs:</p>
+<ul>
+<li><strong>Memdisk Mode:</strong> For small distributions or
+floppy/CD-based utilities, pressing <code>F1</code> in Ventoy enables
+Memdisk mode, which loads the entire ISO into system RAM before
+booting.</li>
+<li><strong>Ventoy Compatible Hook:</strong> If you are in contact with
+the distribution's developer, they can adopt the "Ventoy Compatible"
+specification. By placing a small hook script inside their
+distribution's initramfs, they can enable automatic compatibility
+without requiring upstream changes to Ventoy.</li>
+<li><strong>Custom GRUB Configurations:</strong> You can use Ventoy’s
+custom menu plugin (<code>ventoy.json</code> or custom boot menus) to
+pass specific kernel parameters, such as <code>findiso</code>,
+<code>fromiso</code>, or <code>iso-scan/filename</code>, which allow the
+ISO's native kernel to locate its own image.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

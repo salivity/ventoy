@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Ventoy2Disk.sh Confirms Drives Before Formatting - ventoy</title>
+    <meta name="description" content="The Ventoy2Disk.sh shell script includes built-in safeguard mechanisms designed to prevent users from accidentally overwriting important system drives. This article examines how the script inspects the specified target device, presents critical disk meta">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/how-ventoy-2-disk-sh-confirms-drives-before-formatting">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Ventoy2Disk.sh Confirms Drives Before Formatting - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/how-ventoy-2-disk-sh-confirms-drives-before-formatting" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The Ventoy2Disk.sh shell script includes built-in safeguard mechanisms designed to prevent users from accidentally overwriting important system drives. This article examines how the script inspects the specified target device, presents critical disk meta" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-ventoy2disksh-confirms-drives-before-formatting">How
+Ventoy2Disk.sh Confirms Drives Before Formatting</h1>
+<p>The <code>Ventoy2Disk.sh</code> shell script includes built-in
+safeguard mechanisms designed to prevent users from accidentally
+overwriting important system drives. This article examines how the
+script inspects the specified target device, presents critical disk
+metadata to the user, and enforces interactive, multi-step confirmations
+to verify the drive before executing destructive formatting
+operations.</p>
+<h3 id="device-validation-and-information-gathering">Device Validation
+and Information Gathering</h3>
+<p>When you run <code>Ventoy2Disk.sh</code> with an install flag (such
+as <code>-i</code> or <code>-I</code>) and specify a target device (such
+as <code>/dev/sdb</code>), the script first ensures that the provided
+parameter points to a valid block device. It verifies that the path
+exists in <code>/dev</code> and is neither a standard file nor a system
+partition.</p>
+<p>Once validated, the script queries the operating system for hardware
+details using system utilities such as <code>lsblk</code>,
+<code>fdisk</code>, or <code>parted</code>. It extracts critical
+metadata, including:</p>
+<ul>
+<li>The disk vendor and model name</li>
+<li>The total storage capacity (size)</li>
+<li>Existing partition schemes and file systems</li>
+</ul>
+<h3 id="visual-confirmation-prompt">Visual Confirmation Prompt</h3>
+<p>Before writing any data, <code>Ventoy2Disk.sh</code> prints the
+gathered disk information to the standard terminal output. Displaying
+the drive's model and size alongside the device node allows the user to
+visually cross-reference the target path with their intended USB drive,
+ensuring they have not accidentally targeted an internal hard drive or
+secondary backup drive.</p>
+<h3 id="the-double-confirmation-safety-check">The Double-Confirmation
+Safety Check</h3>
+<p>Unless run with a force-install parameter, the script halts execution
+and initiates an interactive verification loop:</p>
+<ol type="1">
+<li><strong>First Confirmation:</strong> The script prints a prominent
+warning stating that the target device will be formatted and that all
+existing data will be lost. It then prompts the user to enter
+<code>y</code> or <code>n</code> to continue.</li>
+<li><strong>Second Confirmation:</strong> To prevent reflexive or
+accidental keypresses, the script immediately presents a second prompt
+asking for confirmation once more (often phrased as "Double check,
+please confirm again").</li>
+</ol>
+<p>If the user enters anything other than <code>y</code> or
+<code>Y</code> at either prompt, the script aborts immediately without
+altering the partition table or formatting the storage medium.</p>
+<h3 id="overriding-confirmations">Overriding Confirmations</h3>
+<p>For automated deployments or headless scripts,
+<code>Ventoy2Disk.sh</code> provides force-mode options (such as the
+<code>-I</code> flag). When invoked with this option, the interactive
+user prompts are bypassed. However, in standard interactive operations,
+the combination of device attribute discovery, explicit data loss
+warnings, and the dual-prompt requirement serves as the primary barrier
+against accidental drive destruction.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventoy for macOS: Is There an Official Installer? - ventoy</title>
+    <meta name="description" content="Ventoy does not provide an official native installer application for macOS users. While Ventoy is one of the most popular open-source utilities for creating bootable multi-ISO USB drives, its official development focuses exclusively on Windows and Linux">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/ventoy-for-mac-os-is-there-an-official-installer">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ventoy for macOS: Is There an Official Installer? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/ventoy-for-mac-os-is-there-an-official-installer" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Ventoy does not provide an official native installer application for macOS users. While Ventoy is one of the most popular open-source utilities for creating bootable multi-ISO USB drives, its official development focuses exclusively on Windows and Linux" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="ventoy-for-macos-is-there-an-official-installer">Ventoy for
+macOS: Is There an Official Installer?</h1>
+<p>Ventoy does not provide an official native installer application for
+macOS users. While Ventoy is one of the most popular open-source
+utilities for creating bootable multi-ISO USB drives, its official
+development focuses exclusively on Windows and Linux operating systems.
+Mac users looking to create a Ventoy drive directly on their machines
+must rely on alternative methods, third-party workarounds, or
+virtualized environments, as there is no official <code>.dmg</code> or
+native Mac app package available from the developer.</p>
+<h3 id="official-platform-support">Official Platform Support</h3>
+<p>Ventoy's developer provides official installation packages solely for
+Windows and Linux:</p>
+<ul>
+<li><strong>Windows:</strong> Available via a native GUI executable
+(<code>Ventoy2Disk.exe</code>).</li>
+<li><strong>Linux:</strong> Available via native graphical interfaces,
+command-line scripts, and a local web-based user interface
+(<code>VentoyWeb</code>).</li>
+</ul>
+<p>There is no native macOS binary or graphical installer bundled in
+official releases on Ventoy's repository. The low-level disk
+partitioning, file system manipulation, and custom bootloader
+installation required by Ventoy are tailored specifically to Windows and
+Linux disk-management structures.</p>
+<h3 id="workarounds-for-macos-users">Workarounds for macOS Users</h3>
+<p>Although there is no native application for macOS, users can still
+initialize a Ventoy drive using several proven workarounds:</p>
+<ol type="1">
+<li><p><strong>Virtual Machines with USB Passthrough:</strong> Running a
+lightweight Linux distribution or Windows inside a virtual machine (such
+as UTM, VMware Fusion, or VirtualBox) allows you to pass the physical
+USB drive through to the guest operating system. From there, you can run
+the official Windows or Linux Ventoy installer directly.</p></li>
+<li><p><strong>Initial Setup on a Windows or Linux PC:</strong> The
+installer is only required once to prepare and partition the USB flash
+drive. Once formatted with Ventoy, the drive acts as a standard storage
+volume (typically formatted as exFAT). macOS can natively read and write
+to exFAT, allowing you to drag and drop ISO files onto the drive in
+Finder without needing the installer again.</p></li>
+<li><p><strong>Community-Developed Scripts:</strong> Independent
+developers have created unofficial terminal scripts and Homebrew
+packages to port Ventoy’s installation process to macOS. However,
+because these are not maintained by the official Ventoy project,
+compatibility can be inconsistent with newer macOS updates, and users
+must exercise caution when executing unverified scripts with root disk
+privileges.</p></li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

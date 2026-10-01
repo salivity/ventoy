@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Linux Splash Screens Flicker After Ventoy Menu - ventoy</title>
+    <meta name="description" content="When booting a Linux distribution from a Ventoy USB drive, the brief flickering or black screen that occurs between the Ventoy menu and the OS splash screen is primarily caused by graphics hardware handoffs. This visual disruption stems from the transiti">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/why-linux-splash-screens-flicker-after-ventoy-menu">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Linux Splash Screens Flicker After Ventoy Menu - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/why-linux-splash-screens-flicker-after-ventoy-menu" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When booting a Linux distribution from a Ventoy USB drive, the brief flickering or black screen that occurs between the Ventoy menu and the OS splash screen is primarily caused by graphics hardware handoffs. This visual disruption stems from the transiti" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-linux-splash-screens-flicker-after-ventoy-menu">Why Linux
+Splash Screens Flicker After Ventoy Menu</h1>
+<p>When booting a Linux distribution from a Ventoy USB drive, the brief
+flickering or black screen that occurs between the Ventoy menu and the
+OS splash screen is primarily caused by graphics hardware handoffs. This
+visual disruption stems from the transition between the generic firmware
+framebuffer used by the bootloader and the native Kernel Mode Setting
+(KMS) drivers loaded by the Linux kernel, a process often compounded by
+Plymouth’s display initialization in live environments.</p>
+<h3 id="the-graphics-handshake-gop-to-kernel-mode-setting-kms">The
+Graphics Handshake: GOP to Kernel Mode Setting (KMS)</h3>
+<p>Ventoy relies on GRUB2 to display its interface. Under modern UEFI
+systems, GRUB renders using the UEFI Graphics Output Protocol (GOP),
+while legacy BIOS systems rely on standard VESA modes. These protocols
+use a basic, unaccelerated software framebuffer to display graphics at a
+set resolution.</p>
+<p>Once you select an operating system, control passes to the Linux
+kernel. Early in the boot process, the kernel unloads the firmware's
+generic display driver and initializes native hardware drivers (such as
+<code>amdgpu</code>, <code>i915</code>, or
+<code>nouveau</code>/<code>nvidia</code>). This process is known as
+Kernel Mode Setting (KMS). When KMS initializes, the graphics card's
+display controller is physically reset to configure native resolutions,
+color depths, and refresh rates. This hardware reset momentarily cuts
+the video signal, resulting in a visible flash or a black screen.</p>
+<h3 id="plymouth-initialization-and-double-buffering">Plymouth
+Initialization and Double-Buffering</h3>
+<p>The animated splash screen seen during Linux startup is typically
+managed by Plymouth. Plymouth is designed to create a seamless
+transition from bootloader to desktop, but it requires access to the
+display buffer.</p>
+<p>If Plymouth launches before the native GPU drivers are fully loaded,
+it temporarily attaches to the basic UEFI framebuffer. Once the kernel
+finishes loading the native KMS driver, Plymouth must drop the temporary
+buffer and rebind to the new Direct Rendering Manager (DRM) interface.
+This secondary handoff causes a second flicker or causes the splash
+animation to stutter, disappear, and reappear.</p>
+<h3 id="live-iso-limitations-vs-installed-systems">Live ISO Limitations
+vs. Installed Systems</h3>
+<p>Installed Linux systems can be tuned to eliminate flicker using
+techniques like "seamless boot" or "fastboot" (e.g., preserving the GOP
+framebuffer smoothly into KMS via early initramfs driver loading).</p>
+<p>Ventoy, however, boots standard live ISO images. These images are
+engineered for broad hardware compatibility rather than visual
+optimization. Live environments typically:</p>
+<ul>
+<li>Do not load native GPU drivers in the earliest stages of the initial
+ramdisk (initramfs).</li>
+<li>Lack hardware-specific kernel parameters (such as
+<code>i915.fastboot=1</code>) that prevent unnecessary mode
+switches.</li>
+<li>Force a safe, baseline resolution that must be changed later in the
+boot sequence to match the monitor's native panel timing.</li>
+</ul>
+<h3 id="multi-gpu-and-hybrid-display-switching">Multi-GPU and Hybrid
+Display Switching</h3>
+<p>The flicker is often more pronounced on laptops featuring hybrid
+graphics (such as an integrated Intel/AMD processor paired with a
+discrete NVIDIA GPU). When Ventoy hands execution to the kernel, the
+system may query and power up the secondary GPU or switch multiplexers
+to route the display panel. This physical hardware switching introduces
+an unavoidable delay and visual flicker before the splash screen
+stabilizes.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

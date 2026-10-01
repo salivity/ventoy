@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can You Unplug a Ventoy USB After Booting? - ventoy</title>
+    <meta name="description" content="Unplugging a Ventoy USB drive after booting generally causes the operating system to freeze, crash, or throw read errors, though the exact behavior depends on whether the operating system runs entirely from system RAM or continues to read data directly f">
+    <link rel="canonical" href="https://salivity.github.io/ventoy/article/can-you-unplug-a-ventoy-usb-after-booting">
+    <link rel="search" type="application/opensearchdescription+xml" title="ventoy" href="/ventoy/opensearch.xml">
+    <link rel="icon" href="/ventoy/favicon.ico">
+    <link rel="stylesheet" href="/ventoy/css/style.css">
+    <link media="print" rel="stylesheet" href="/ventoy/css/print.css">
+    <script src="/ventoy/js/fuse.min.js"></script>
+    <script src="/ventoy/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can You Unplug a Ventoy USB After Booting? - ventoy" />
+    <meta property="og:url" content="https://salivity.github.io/ventoy/article/can-you-unplug-a-ventoy-usb-after-booting" />
+    <meta property="og:image" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/ventoy/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Unplugging a Ventoy USB drive after booting generally causes the operating system to freeze, crash, or throw read errors, though the exact behavior depends on whether the operating system runs entirely from system RAM or continues to read data directly f" />
+    <link rel="manifest" href="/ventoy/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/ventoy/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>ventoy</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/ventoy/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-you-unplug-a-ventoy-usb-after-booting">Can You Unplug a
+Ventoy USB After Booting?</h1>
+<p>Unplugging a Ventoy USB drive after booting generally causes the
+operating system to freeze, crash, or throw read errors, though the
+exact behavior depends on whether the operating system runs entirely
+from system RAM or continues to read data directly from the drive. While
+a few lightweight environments and specialized configurations will
+survive the disconnection, standard live distributions and operating
+system installers require a persistent connection to access their
+underlying file systems.</p>
+<h3 id="standard-live-linux-environments">Standard Live Linux
+Environments</h3>
+<p>Most standard live Linux distributions (such as Ubuntu, Linux Mint,
+or Fedora) do not load their entire file system into memory. Instead,
+they mount a compressed file system (SquashFS) located inside the ISO on
+the USB drive. When you run an application, open a menu, or perform an
+action that requires unbuffered data, the kernel reads directly from the
+USB drive.</p>
+<p>If you remove the Ventoy drive under these conditions:</p>
+<ul>
+<li>Active programs may remain responsive briefly if already cached in
+RAM.</li>
+<li>Launching new applications or executing terminal commands will fail
+immediately.</li>
+<li>The system will generate continuous I/O read errors in the
+background.</li>
+<li>The desktop will eventually freeze completely, often resulting in a
+kernel panic or dropping you into an emergency shell.</li>
+</ul>
+<h3 id="operating-system-installers">Operating System Installers</h3>
+<p>If you are running an installer for Windows or Linux, unplugging the
+Ventoy drive interrupts the installation process. The installer needs
+continuous access to the installation archives to write files to your
+target internal drive. Removing the USB will cause the setup utility to
+pause, throw a "media missing" or "cannot find source files" error, and
+abort the installation.</p>
+<h3 id="systems-running-entirely-in-ram">Systems Running Entirely in
+RAM</h3>
+<p>If an operating system is designed to load completely into system
+memory, you can safely remove the Ventoy drive after the boot process
+completes. These include:</p>
+<ul>
+<li><strong>Distributions with Copy-to-RAM features:</strong> Systems
+booted with flags like <code>toram</code> (available on Tails, Puppy
+Linux, and various live distributions) copy the entire SquashFS image
+into RAM during startup.</li>
+<li><strong>Minimalist distributions:</strong> Lightweight OS
+environments such as Tiny Core Linux or Slax, which load all core
+binaries into memory by default.</li>
+<li><strong>WinPE environments:</strong> Certain Windows Preinstallation
+Environment (WinPE) rescue disks load their entire virtual RAM disk
+(<code>boot.wim</code>) into memory upon boot.</li>
+</ul>
+<p>Once the initial transfer to RAM finishes, these operating systems no
+longer reference the physical USB storage, and unplugging the drive has
+zero impact on performance or stability.</p>
+<h3 id="ventoys-memdisk-mode">Ventoy's Memdisk Mode</h3>
+<p>Ventoy provides a native Memdisk mode (accessible by pressing
+<code>Ctrl+m</code> before selecting an ISO). This mode loads the entire
+ISO image into system RAM before initiating the boot sequence. If your
+target ISO supports memdisk booting and your machine has enough physical
+RAM to hold the entire file, the operating system runs purely from
+memory. In this specific scenario, the Ventoy drive can be safely
+unplugged as soon as the boot process finishes.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/ventoy'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/ventoy/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/ventoy/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
